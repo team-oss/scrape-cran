@@ -5,9 +5,9 @@ library(stringr)
 library(rvest)
 source(file = "src/eiriki/01_web_scrape.R")
 
-#Getting the first three pages and storing them into a master list
+#Getting the first ten pages and storing them into a master list
 master_list <- c()
-for(i in 1:3){
+for(i in 1:10){
   SFTitle_Link <- read_html(paste("https://sourceforge.net/directory/?page=",i, sep=""))
 
   #Get the list of the titles on the given page
@@ -29,11 +29,11 @@ for(i in 1:3){
 }
 master_list
 
-#apply the function to this list and store in a data frame
+#apply the function to the master list and store in a data frame
 sf_scrape(master_list[1])
 New_SF <- data.frame(OSS, avg_rat, Desc, last_update, num_rat, week_down,category,date_registered, stringsAsFactors = F)
 
-for(i in 2:75){
+for(i in 2:250){
   sf_scrape(master_list[i])
   New_SF<- rbind(New_SF, c(OSS, avg_rat, Desc, last_update, num_rat, week_down, category, date_registered))
 }
