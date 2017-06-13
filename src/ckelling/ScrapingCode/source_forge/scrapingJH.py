@@ -29,17 +29,17 @@ for j in url:
     soup2 = BeautifulSoup(s)
     if soup2.find_all("section", class_="social-sharing")!=[]: # not enterprise
         review = soup2.find_all("section", class_="content")
-        if str(review[0].get_text().split()[2])=='Stars': 
+        if str(review[0].get_text().split()[2])=='Stars':
             average_rating.append(float(review[0].get_text().split('\n')[2].split()[0].encode('ascii','ignore').replace(',','')))
             num_ratings.append(int(review[0].get_text().split('\n')[3].encode('ascii','ignore').replace('(','').replace(')','')))
-        else: 
+        else:
             average_rating.append(0)
             num_ratings.append(0)
         if str(review[0].get_text().split()[1])=='Downloads':
             last_update.append(str(' '.join(review[1].get_text().split()[2:])))
-        else:    
+        else:
             last_update.append(str(' '.join(review[2].get_text().split()[2:])))
-    else: 
+    else:
         review = soup2.find_all("div", class_="project-rating")
         if str(review[0].get_text().split()[0]) == 'Last':
             average_rating.append(0)
@@ -51,7 +51,7 @@ for j in url:
             last_update.append(str(review[0].get_text().split('|')[1])[18:][:-1])
     print(str((float(counter)+1)*100/1250)+'%')
     counter = counter + 1
-        
+
 Dataset = pd.DataFrame(
     {'OSS': titles,
      'description': descriptions,
