@@ -10,50 +10,50 @@ sf_scrape <- function(link){
   new_link <- paste("https://sourceforge.net", link, sep ="")
   SFLink <- read_html(new_link)
 
-  #Get the Title
-  OSS <- SFLink %>%
+  #Get the Title of OSS
+  OSS <<- SFLink %>%
     html_node('div h1') %>%
     html_text() %>%
     str_trim()
 
   #Get the Average Rating
-  avg_rat <-SFLink %>%
+  avg_rat <<-SFLink %>%
     html_node('section a') %>%
     html_text() %>%
     str_trim()
 
   #Get the Description
-  Desc <- SFLink %>%
+  Desc <<- SFLink %>%
     html_node('div h2') %>%
     html_text() %>%
     str_trim()
 
   #Get the Last update
-  last_update <- SFLink %>%
+  last_update <<- SFLink %>%
     html_node('section time') %>%
     html_text() %>%
     str_trim()
 
   #Get number of Ratings
-  num_rat <- SFLink %>%
+  num_rat <<- SFLink %>%
     html_node('#counts-sharing span') %>%
     html_text() %>%
     str_trim()
 
   #Get weekly downloads
-  week_down <- SFLink %>%
+  week_down <<- SFLink %>%
     html_node('#call-to-action-stats') %>%
     html_text() %>%
     str_trim()
 
   #Get the category
-  category <- SFLink %>%
+  category <<- SFLink %>%
     html_node('li:nth-child(3) span') %>%
     html_text() %>%
     str_trim()
 
   #Get the date registered
-  date_registered <- SFLink %>%
+  date_registered <<- SFLink %>%
     html_node('#project-awards+ .project-info .content') %>%
     html_text() %>%
     str_trim()
