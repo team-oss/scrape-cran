@@ -34,5 +34,5 @@ New_SF <- data.frame()
 for(i in 1:length(master_list)){
   new_data <- sf_scrape(master_list[i])
   New_SF<- rbind(New_SF, new_data)
-  Sys.sleep(runif(1, 0, 1) * 10)  ## randomly sleep the the system from 0 to 10 seconds
+  Sys.sleep(runif(1, 0, 1) * 3)  ## randomly sleep the the system from 0 to 3 seconds
 }
