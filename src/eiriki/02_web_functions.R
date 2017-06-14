@@ -33,7 +33,7 @@ master_list
 sf_scrape(master_list[1])
 New_SF <- data.frame(OSS, avg_rat, Desc, last_update, num_rat, week_down,category,date_registered, stringsAsFactors = F)
 
-for(i in 2:250){
+for(i in 2:length(master_list)){
   sf_scrape(master_list[i])
   New_SF<- rbind(New_SF, c(OSS, avg_rat, Desc, last_update, num_rat, week_down, category, date_registered))
 }
