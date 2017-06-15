@@ -20,7 +20,7 @@ set.seed(312)
 #### Setup
 ####
 library(httr)
-
+library(XML)
 
 ####
 #### Test: pulling information in the Account section
@@ -38,14 +38,33 @@ openhub_api <- function(path) {
 
 # Single user
 user_one <- openhub_api("/accounts/odvarko")
-user_two <- openhub_api("/accounts/Stefan")
+cont <- content(user_one)
 
-#curl(https://www.openhub.net/accounts.xml)
+rvest::html_nodes(cont, '.pull-left')
+
+
+library(rvest)
+
+
+user_two <- openhub_api("/accounts/Stefan")
+all_accounts <- openhub_api("/accounts")
+
 
 # Single project
+proj_one <- openhub_api("/projects/firefox/analyses/latest/size_facts")
 proj_one <- openhub_api("/projects/firefox")
-proj_one_info <- content(proj_one)
-#curl https://www.openhub.net/projects.xml
+proj_one
+proj_one_info <- content(proj_one, as = "parsed")
+content(proj_one, "text")
+content(proj_one, as = "parsed")
+
+all_projs <- openhub_api("/projects")
+
+# Single organization
+org_one <- openhub_api("/orgs/mozilla")
+
+
+
 
 
 
