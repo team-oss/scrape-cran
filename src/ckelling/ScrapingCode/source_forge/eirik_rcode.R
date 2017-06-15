@@ -71,7 +71,7 @@ sf_scrape <- function(link){
 }
 
 #This is the script to retrieve all projects in sourceforge
-source(file = "src/eiriki/01_web_scrape.R")
+#source(file = "src/eiriki/01_web_scrape.R")
 
 #Getting the first three pages and storing them into a master list
 master_list <- c()
