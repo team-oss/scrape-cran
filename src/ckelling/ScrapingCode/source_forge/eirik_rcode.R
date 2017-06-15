@@ -71,10 +71,6 @@ sf_scrape <- function(link){
 }
 
 #This is the script to retrieve all projects in sourceforge
-library(RCurl)
-library(XML)
-library(stringr)
-library(rvest)
 source(file = "src/eiriki/01_web_scrape.R")
 
 #Getting the first three pages and storing them into a master list
@@ -173,9 +169,6 @@ hour_set <- grep('hour',New_SF$Last.Update, TRUE)
 
 #needs fixing
 extract_date <- Sys.Date()-1
-Last.Update2 = rep(0,nrow(New_SF))
-New_SF[,13] = Last.Update2
-
 dateup_clean = function(data){
   if(length(grep('day', data)) == 0){
     if(length(grep('hour',data))==0){
@@ -188,25 +181,13 @@ dateup_clean = function(data){
       return(extract_date)
     }
   }else if(grep('day', data) == 1){
-    #return(as.Date(extract_date - as.numeric(substr(data,1,1))))
-    #a= as.Date(extract_date)
-    #a
-    #return(a)
-    return()
-    #return(extract_date - as.numeric(substr(data,1,1)))
-    #return(class(as.Date(extract_date - as.numeric(substr(data,1,1)))))
+    return(as.character(as.Date(extract_date - as.numeric(substr(data,1,1)))))
   }else{
     return('error')
   }
 }
+New_SF$Last.Update2 <- lapply(New_SF$Last.Update, FUN=dateup_clean)
+New_SF$Last.Update2= lubridate::ymd[New_SF$Last.Update2]
 
-New_SF$Last.Update2= lapply(New_SF$Last.Update, FUN=dateup_clean)
-#data = New_SF$Last.Update[2]
-New_SF$Last.Update2=c()
+save(New_SF, file = 'src/ckelling/ScrapingCode/source_forge/SF.Rdata')
 
-grep('day', New_SF$Last.Update[1], value= FALSE)
-
-grep('day', New_SF$Last.Update[2])
-
-grep('day', New_SF$Last.Update[1])
-grep('day', New_SF$Last.Update[8])
