@@ -14,8 +14,8 @@ library(RCurl)
 library(XML)
 library(stringr)
 library(rvest)
-source(file = "src/eiriki/01_web_scrape.R")
-source(file = "src/eiriki/03_web_scrape_enterprise.R")
+source(file = "~/git/oss/src/eiriki/01_web_scrape.R")
+source(file = "~/git/oss/src/eiriki/03_web_scrape_enterprise.R")
 # new code to test
 
 #Getting the first ten pages and storing them into a master list to scrape
