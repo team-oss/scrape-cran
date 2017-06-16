@@ -4,10 +4,11 @@ library(XML)
 library(stringr)
 library(rvest)
 source(file = "src/eiriki/01_web_scrape.R")
+source(file = "src/eiriki/03_web_scrape_enterprise.R")
 
-#Getting the first three pages and storing them into a master list
+#Getting the first ten pages and storing them into a master list to scrape
 master_list <- c()
-for(i in 1:3){
+for(i in 1:10){
   SFTitle_Link <- read_html(paste("https://sourceforge.net/directory/?page=",i, sep=""))
 
   #Get the list of the titles on the given page
@@ -33,6 +34,14 @@ master_list
 New_SF <- data.frame()
 for(i in 1:length(master_list)){
   new_data <- sf_scrape(master_list[i])
+
+  #Enterprise projects will usually return "Overview" for their descriptions. In that case, call the
+  #enterprise_scrape function instead of the normal one.
+  if(new_data$Description == "Overview")
+  {
+    new_data <- enterprise_scrape(master_list[i])
+  }
+
   New_SF<- rbind(New_SF, new_data)
   Sys.sleep(runif(1, 0, 1) * 3)  ## randomly sleep the the system from 0 to 3 seconds
 }
