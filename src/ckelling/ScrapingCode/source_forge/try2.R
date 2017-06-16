@@ -40,7 +40,7 @@ for(i in 1:200){
     master_list[length(master_list) + 1] <- List_Titles[j]
   }
 }
-master_list
+#master_list
 
 #apply the function to the master list and store in a data frame
 New_SF <- data.frame()
