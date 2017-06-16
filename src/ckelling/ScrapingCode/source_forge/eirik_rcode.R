@@ -1,3 +1,11 @@
+###########################################################################################
+#### Code to scrape data from Sourceforge.net
+############################################################################################
+
+#### Created by: Eirik, Dan, Claire
+#### Created on: 06/14/2017
+#### Last edited on: 06/16/2017
+
 #Eirik and Dan's Code
 #Claire trying to customize
 
@@ -75,7 +83,7 @@ sf_scrape <- function(link){
 
 #Getting the first three pages and storing them into a master list
 master_list <- c()
-for(i in 1:100){
+for(i in 1:1){
   SFTitle_Link <- read_html(paste("https://sourceforge.net/directory/?page=",i, sep=""))
 
   #Get the list of the titles on the given page
@@ -131,63 +139,6 @@ ggplot(df2, aes(Category))+ geom_bar()+ theme(axis.text.x = element_text(angle =
 #initial comments:
 #Some bugs with "Share on Facebook" when they are enterprise
 
-#data cleaning
-#downloads cleaning
-down_clean=function(data){
-  as.numeric(gsub(",", "",substr(data, 1, nchar(data)-10)))
-}
-New_SF$Weekly.Downloads2 = lapply(New_SF$Weekly.Downloads, FUN=down_clean)
+orig_data <- New_SF
 
-#rating cleaning
-numrate_clean=function(data){
-  if(is.na(data) == TRUE){
-    return(NA)
-  }else if(data == "(This Week)"){
-    return(0)
-  }else if(is.na(data)==FALSE){
-    return(as.numeric(substr(data, 2, nchar(data)-1)))
-  }else{
-    return(NA)
-  }
-}
-New_SF$Number.of.Ratings2 = lapply(New_SF$Number.of.Ratings, FUN=numrate_clean)
-
-#cleaning Average Rating
-avgrate_clean=function(data){
-  if(nchar(data)==9){
-    return(as.numeric(substr(data, 1, nchar(data)-6)))
-  }else{
-    return(NA)
-  }
-}
-New_SF$Average.Rating2 = lapply(New_SF$Average.Rating, FUN=avgrate_clean)
-
-
-#cleaning last update
-day_set <- grep('day', New_SF$Last.Update, TRUE)
-hour_set <- grep('hour',New_SF$Last.Update, TRUE)
-
-#needs fixing
-extract_date <- Sys.Date()-1
-dateup_clean = function(data){
-  if(length(grep('day', data)) == 0){
-    if(length(grep('hour',data))==0){
-      if(length(grep('minute',data))==0){
-        return(data)
-      }else if(grep('minute',data)==1){
-        return(extract_date)
-      }
-    }else if(grep('hour',data)==1){
-      return(extract_date)
-    }
-  }else if(grep('day', data) == 1){
-    return(as.character(as.Date(extract_date - as.numeric(substr(data,1,1)))))
-  }else{
-    return('error')
-  }
-}
-New_SF$Last.Update2 <- lapply(New_SF$Last.Update, FUN=dateup_clean)
-New_SF$Last.Update2= lubridate::ymd[New_SF$Last.Update2]
-
-save(New_SF, file = 'src/ckelling/ScrapingCode/source_forge/SF.Rdata')
-
+save(orig_data, file = '~/git/oss/src/ckelling/ScrapingCode/source_forge/orig_SF.Rdata')
