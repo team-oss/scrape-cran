@@ -6,9 +6,9 @@ library(rvest)
 source(file = "src/eiriki/01_web_scrape.R")
 source(file = "src/eiriki/03_web_scrape_enterprise.R")
 
-#Getting the first ten pages and storing them into a master list to scrape
+#Getting the first three pages and storing them into a master list to scrape
 master_list <- c()
-for(i in 1:10){
+for(i in 1:3){
   SFTitle_Link <- read_html(paste("https://sourceforge.net/directory/?page=",i, sep=""))
 
   #Get the list of the titles on the given page

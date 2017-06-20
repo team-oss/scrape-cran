@@ -28,6 +28,7 @@ sf_scrape <- function(link){
     html_text() %>%
     str_trim()
 
+
   #Get the Last update
   last_update <- SFLink %>%
     html_node('section time') %>%
@@ -46,20 +47,28 @@ sf_scrape <- function(link){
     html_text() %>%
     str_trim()
 
-  #Get the category
+  #Get the categories
   category <- SFLink %>%
-    html_node('li:nth-child(3) span') %>%
+    html_nodes('#breadcrumbs li~ li+ li span') %>%
     html_text() %>%
     str_trim()
 
   #Get the date registered
+  #date_registered <- SFLink %>%
+   # html_nodes('#project-additional-trove .content') %>%
+    #html_text() %>%
+    #str_trim()
   date_registered <- SFLink %>%
     html_node('#project-awards+ .project-info .content') %>%
     html_text() %>%
     str_trim()
 
+  #match <- grep(pattern = '200', x = date_registered)
+  #date_registered <- date_registered[match]
+
+
   v = list('OSS Title' = oss, 'Average Rating' = avg_rat, 'Description' = desc, 'Last Update' = last_update,
-           'Number of Ratings' = num_rat, 'Weekly Downloads' = week_down, 'Category' = category,
-           'Date registered' = date_registered)
+           'Number of Ratings' = num_rat, 'Weekly Downloads' = week_down, 'Category 1' = category[1],
+           'Category 2' = category[2], 'Category 3' = category[3], 'Date registered' = date_registered)
   return(data.frame(v, stringsAsFactors = F))
 }

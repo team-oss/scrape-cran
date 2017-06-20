@@ -23,11 +23,17 @@ enterprise_scrape <- function(link){
     html_attr('content') %>%
     str_trim()
 
-  #Get the Description
+  #Get the Description, BUT if return NA, look for it in another place
   desc <- SFLink %>%
     html_node('#project-summary') %>%
     html_text() %>%
     str_trim()
+  if(is.na(desc)){  #looking in another place for descriptions
+    desc <- SFLink %>%
+      html_node('#project-description') %>%
+      html_text() %>%
+      str_trim()
+  }
 
   #Get the Last update
   last_update <- SFLink %>%
@@ -49,7 +55,7 @@ enterprise_scrape <- function(link){
 
   #Get the category
   category <- SFLink %>%
-    html_node('#breadcrumbs span') %>%
+    html_nodes('#breadcrumbs span') %>%
     html_text() %>%
     str_trim()
 
@@ -60,7 +66,8 @@ enterprise_scrape <- function(link){
     str_trim()
 
   v = list('OSS Title' = oss, 'Average Rating' = avg_rat, 'Description' = desc, 'Last Update' = last_update,
-           'Number of Ratings' = num_rat, 'Weekly Downloads' = week_down, 'Category' = category,
+           'Number of Ratings' = num_rat, 'Weekly Downloads' = week_down, 'Category 1' = category[1],
+           'Category 2' = category[2], 'Category 3' = category[3],
            'Date registered' = date_registered)
   return(data.frame(v, stringsAsFactors = F))
 }
