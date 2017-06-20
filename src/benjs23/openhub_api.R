@@ -5,7 +5,7 @@
 
 #### Created by: sphadke, benjs23
 #### Creted on: 06/15/2017
-#### Last edited on: 06/18/2017
+#### Last edited on: 06/20/2017
 
 
 ####################
@@ -94,6 +94,10 @@ user_ids <- xml_nodes(all_users, 'login') %>% html_text()
 
 ## Projects
 # Pulling project IDs
+# Next two lines not clean. This is how we get page 2
+url <- "https://www.openhub.net/projects.xml?page=2&api_key=d32768dd2ec65efd004d19a9f3c7262d7f30cd8959d9009ce4f9b8e7e19ff0ef&v=1"
+info <- content(GET(url), as="parsed")
+
 all_projects <- api_q("/projects")
 project_ids <- str_split((xml_nodes(all_projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
 
