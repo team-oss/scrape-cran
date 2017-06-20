@@ -37,6 +37,7 @@ library(XML)
 # Still using the one from last year
 # Sayali needs to request her own!
 oh_key <- "d32768dd2ec65efd004d19a9f3c7262d7f30cd8959d9009ce4f9b8e7e19ff0ef&v=1"
+oh_key2 <- "ea13e69a9fe006292249cffce39e96a5781088724a61cda6dba72fd9e71ecc06"
 
 # Function to create the correct path, get xml from it, and parse out the info
 api_q <- function(path){
@@ -100,6 +101,39 @@ info <- content(GET(url), as="parsed")
 
 all_projects <- api_q("/projects")
 project_ids <- str_split((xml_nodes(all_projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+
+
+########################################################
+########################################################
+###   Loop to return all projects and write to text file
+########################################################
+path = "/projects"
+projectMasterID <-NULL
+projects <- NULL
+n = 67000 #estimate of number of project pages
+fileConn1<-file("openHubProjectMasterID.txt")
+fileConn2<-file("openHubProjectMaster.txt")
+
+for (pages in c(1:n)){
+  projectsTemp <-  content(GET(sprintf('https://www.openhub.net%s.xml?page=%s&api_key=%s',
+                                        path,
+                                        pages,
+                                        oh_key)))
+  
+  ######this code still needs to append all project info gathered in projectsTemp to object 'projects'#######
+  
+  projectID <- str_split((xml_nodes(projectsTemp, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+  
+  projectMasterID <- c(projectMasterID, projectID)
+  
+  write(projectMasterID, fileConn1, append = TRUE)
+  write(projects, fileConn2, append = TRUE) ###cannot write list to txt file
+}
+close(fileConn1)
+close(fileConn2)
+
+###############################
+
 
 ## Organizations
 # This gives only 10. There is an easy way to pull more

@@ -37,3 +37,7 @@ for (pages in c(1:n)){
   user_IDs <- c(user_IDs, user)
 }
 
+
+
+###Ben's API Key = ea13e69a9fe006292249cffce39e96a5781088724a61cda6dba72fd9e71ecc06
+###Oauth secret = d736586438af252bacb6d16140243f3b7a70003f320e199fa6bb94fab0e7932a
