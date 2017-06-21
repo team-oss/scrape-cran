@@ -5,7 +5,7 @@
 
 #### Created by: sphadke, benjs23
 #### Creted on: 06/15/2017
-#### Last edited on: 06/20/2017
+#### Last edited on: 06/21/2017
 
 
 ####################
@@ -33,74 +33,54 @@ library(XML)
 # Function to pull from openhub
 # All thanks to Daniel Chen, and help from https://github.com/r-lib/httr/blob/master/vignettes/api-packages.Rmd and http://bradleyboehmke.github.io/2016/01/scraping-via-apis.html#httr_api
 
-# API key
-# Still using the one from last year
-# Sayali needs to request her own!
+# API keys
+# Alex's key
 oh_key <- "d32768dd2ec65efd004d19a9f3c7262d7f30cd8959d9009ce4f9b8e7e19ff0ef&v=1"
-oh_key2 <- "ea13e69a9fe006292249cffce39e96a5781088724a61cda6dba72fd9e71ecc06"
+
+# Ben's key
+oh_key_bjs <- "ea13e69a9fe006292249cffce39e96a5781088724a61cda6dba72fd9e71ecc06"
+
+# Sayali's key
+oh_key_sp <- "f4b26446fe7946dc11e35e1e34e99aa9c2362b4294ce5d9799913fb6edcb7487"
 
 # Function to create the correct path, get xml from it, and parse out the info
-api_q <- function(path){
-  info <- content(GET(sprintf('https://www.openhub.net%s.xml?api_key=%s',
-                              path,
-                              oh_key)),
+api_q <- function(path, page_no, api_key){
+  info <- content(GET(sprintf('https://www.openhub.net%s.xml?%s&api_key=%s',
+                              path, #page URL
+                              page_no, #must be in form "page=n"
+                              api_key)),
                   as = "parsed")
   return(info)
 }
 
 
-# ####################
-# #### Testing
-# ####################
-# proj_path <- '/projects/firefox'
-# user_path <- '/accounts/Stefan'
-# org_path <- '/orgs/mozilla'
-# 
-# proj <- api_q(proj_path)
-# xml_nodes(proj, 'name')
-# xml_nodes(proj, 'tag')
-# rvest::xml_nodes(proj, 'tag') %>% rvest::html_text()
-# rvest::xml_nodes(proj, 'tag') %>% rvest::html_text() %>% paste(collapse = ';')
-# 
-# user <- api_q(user_path)
-# xml_nodes(user, 'country_code') %>% html_text()
-# (xml_nodes(user, 'name') %>% html_text())[1]
-# xml_nodes(user, 'id') %>% html_text()
-# 
-# all_projs <- api_q("/projects")
-# xml_nodes(all_projs, 'name') %>% html_text()
-# 
-# all_accounts <- api_q("/accounts")
-# xml_nodes(all_accounts, 'login') %>% html_text()
-# 
-# org <- api_q(org_path)
-# xml_nodes(org, 'name')
+####################
+#### Testing: code at the end
+####################
 
 
 ####################
-#### Pulling tables
+#### Pulling ids
 ####################
-
-####
-#### Setup
-####
-
 # We create IDs for a set of 10 users, projects, and organizations
 # They go into a path, which then feeds into the API call to then pull tables
 
 ## Users
-# Pulling account IDs
-all_users <- api_q("/accounts")
-user_ids <- xml_nodes(all_users, 'login') %>% html_text()
+ten_users <- api_q("/accounts", "page=1", oh_key)
+user_ids <- xml_nodes(ten_users, 'login') %>% html_text()
+save(user_ids, file = "~/git/oss/output/OpenHub/Sample_of_10/ten_user_ids.R")
 
 ## Projects
-# Pulling project IDs
-# Next two lines not clean. This is how we get page 2
-url <- "https://www.openhub.net/projects.xml?page=2&api_key=d32768dd2ec65efd004d19a9f3c7262d7f30cd8959d9009ce4f9b8e7e19ff0ef&v=1"
-info <- content(GET(url), as="parsed")
+ten_projects <- api_q("/projects", "page=1", oh_key)
+project_ids <- str_split((xml_nodes(ten_projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+save(project_ids, file = "~/git/oss/output/OpenHub/Sample_of_10/ten_project_ids.R")
 
-all_projects <- api_q("/projects")
-project_ids <- str_split((xml_nodes(all_projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+## Organizations
+ten_orgs <- api_q("/orgs", "page=1", oh_key)
+org_ids <- str_split((xml_nodes(ten_orgs, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+save(org_ids, file = "~/git/oss/output/OpenHub/Sample_of_10/ten_org_ids.R")
+
+
 
 
 ########################################################
@@ -135,23 +115,17 @@ close(fileConn2)
 ###############################
 
 
-## Organizations
-# This gives only 10. There is an easy way to pull more
-# https://github.com/blackducksoftware/ohloh_api/blob/master/reference/organization-collection.md
 
-# Pulling org IDs
-all_orgs <- api_q("/orgs")
-org_ids <- str_split((xml_nodes(all_orgs, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
 
+####################
+#### Pulling tables
+####################
 
 ####
-#### Let's get them tables!
-#### Start with all projects that take users as inputs
+#### All tables that take users as inputs
 ####
 
-##
 ## Table 'account': takes users
-##
 # Creating a path that can directly go into the API function
 user_paths <- paste("/", "accounts", "/", user_ids, sep = "")
 
@@ -161,15 +135,13 @@ colnames(account) <- c("user_name", "country_code")
 
 # The info we need
 for(i in 1:nrow(account)){
-  info <- api_q(user_paths[i])
+  info <- api_q(user_paths[i], "", oh_key)
   account[i,1] <- (xml_nodes(info, 'name') %>% html_text())[1]
   account[i,2] <- xml_nodes(info, 'country_code') %>% html_text()
 }
 
 
-##
 ## Table 'kudo': takes users
-##
 # Creating a path that can directly go into the API function
 user_paths <- paste("/", "accounts", "/", user_ids, "/", "kudos", sep = "")
 
@@ -179,7 +151,7 @@ colnames(kudo) <- c("user_name", "created_at", "sender_account_name", "receiver_
 
 # The info we need
 for(i in 1:nrow(account)){
-  info <- api_q(user_paths[i])
+  info <- api_q(user_paths[i], "", oh_key)
   kudo[i,1] <- user_ids[i]
   kudo[i,2] <- xml_nodes(info, 'created_at') %>% html_text() %>% paste(collapse = ';')
   kudo[i,3] <- xml_nodes(info, 'sender_account_name') %>% html_text() %>% paste(collapse = ';')
@@ -189,9 +161,7 @@ for(i in 1:nrow(account)){
 }
 
 
-##
 ## Table 'positions': takes users
-##
 # Creating a path that can directly go into the API function
 user_paths <- paste("/", "accounts", "/", user_ids, "/", "positions", sep = "")
 
@@ -201,7 +171,7 @@ colnames(positions) <- c("user_name", "title", "organization", "updated_at", "st
 
 # The info we need
 for(i in 1:nrow(account)){
-  info <- api_q(user_paths[i])
+  info <- api_q(user_paths[i], "", oh_key)
   positions[i,1] <- user_ids[i]
   positions[i,2] <- xml_nodes(info, 'title') %>% html_text() %>% paste(collapse = ';')
   positions[i,3] <- xml_nodes(info, 'organization') %>% html_text() %>% paste(collapse = ';')
@@ -216,7 +186,7 @@ for(i in 1:nrow(account)){
 ## Merge all user tables
 ##
 user_table <- cbind(account, kudo, positions)
-
+save(user_table, file = "~/git/oss/output/OpenHub/Sample_of_10/user_table.R")
 
 
 
@@ -236,6 +206,40 @@ for(i in 1:nrow(activity_fact)){
   account[i,2] <- xml_nodes(info, 'code') %>% html_text()
 }
 
+
+
+
+
+
+
+
+
+# ####################
+# #### Testing
+# ####################
+# proj_path <- '/projects/firefox'
+# user_path <- '/accounts/Stefan'
+# org_path <- '/orgs/mozilla'
+# 
+# proj <- api_q(proj_path)
+# xml_nodes(proj, 'name')
+# xml_nodes(proj, 'tag')
+# rvest::xml_nodes(proj, 'tag') %>% rvest::html_text()
+# rvest::xml_nodes(proj, 'tag') %>% rvest::html_text() %>% paste(collapse = ';')
+# 
+# user <- api_q(user_path)
+# xml_nodes(user, 'country_code') %>% html_text()
+# (xml_nodes(user, 'name') %>% html_text())[1]
+# xml_nodes(user, 'id') %>% html_text()
+# 
+# all_projs <- api_q("/projects")
+# xml_nodes(all_projs, 'name') %>% html_text()
+# 
+# all_accounts <- api_q("/accounts")
+# xml_nodes(all_accounts, 'login') %>% html_text()
+# 
+# org <- api_q(org_path)
+# xml_nodes(org, 'name')
 
 
 
