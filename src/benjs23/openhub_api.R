@@ -93,7 +93,7 @@ projectMasterID <-NULL
 projects <- NULL
 n = 2 #estimate of number of project pages
 fileConn1<-file("openHubProjectMasterID.txt")
-fileConn2<-file("openHubProjectMaster.txt")
+fileConn2<-file("projects.txt")
 
 for (pages in c(1:n)){
   projectsTemp <-  content(GET(sprintf('https://www.openhub.net%s.xml?page=%s&api_key=%s',
@@ -114,7 +114,7 @@ for (pages in c(1:n)){
   projectMasterID <- c(projectMasterID, projectID)
  
   write(projectMasterID, fileConn1, append = TRUE)
- 
+  writeLines(projects, )
 
 }
 sink("~/git/oss/data/oss/original/projects.txt") ###HOW TO WRITE ENTIRE CONTENTS OF A NESTED LIST TO A TEXT FILE?????
