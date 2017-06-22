@@ -68,29 +68,30 @@ api_q <- function(path, page_no, api_key){
 ## Users
 ten_users <- api_q("/accounts", "page=1", oh_key)
 user_ids <- xml_nodes(ten_users, 'login') %>% html_text()
-save(user_ids, file = "~/git/oss/output/openhub/sample_of_10/ten_user_ids.R")
+save(user_ids, file = "~/git/oss/output/OpenHub/Sample_of_10/ten_user_ids.R")
 
 ## Projects
 ten_projects <- api_q("/projects", "page=1", oh_key)
 project_ids <- str_split((xml_nodes(ten_projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
-save(project_ids, file = "~/git/oss/output/openhub/sample_of_10/ten_project_ids.R")
+save(project_ids, file = "~/git/oss/output/OpenHub/Sample_of_10/ten_project_ids.R")
 
 ## Organizations
 ten_orgs <- api_q("/orgs", "page=1", oh_key)
 org_ids <- str_split((xml_nodes(ten_orgs, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
-save(org_ids, file = "~/git/oss/output/openhub/sample_of_10/ten_org_ids.R")
+save(org_ids, file = "~/git/oss/output/OpenHub/Sample_of_10/ten_org_ids.R")
 
 
 
 
-########################################################
-########################################################
-###   Loop to return all projects and write to text file
-########################################################
+############################################################
+############################################################
+###  Loop to return all projects and write to text file  ###
+############################################################
+############################################################
 path = "/projects"
 projectMasterID <-NULL
 projects <- NULL
-n = 67000 #estimate of number of project pages
+n = 2 #estimate of number of project pages
 fileConn1<-file("openHubProjectMasterID.txt")
 fileConn2<-file("openHubProjectMaster.txt")
 
@@ -100,15 +101,25 @@ for (pages in c(1:n)){
                                         pages,
                                         oh_key)))
   
-  ######this code still needs to append all project info gathered in projectsTemp to object 'projects'#######
-  
+  if(is.null(projects[[1]])==TRUE)
+  {
+    projects[[1]] <- projectsTemp
+  }
+  else
+  {
+  projects <- list(projects, projectsTemp)
+  }
   projectID <- str_split((xml_nodes(projectsTemp, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
   
   projectMasterID <- c(projectMasterID, projectID)
-  
+ 
   write(projectMasterID, fileConn1, append = TRUE)
-  write(projects, fileConn2, append = TRUE) ###cannot write list to txt file
+ 
+
 }
+sink("~/git/oss/data/oss/original/projects.txt") ###HOW TO WRITE ENTIRE CONTENTS OF A NESTED LIST TO A TEXT FILE?????
+print(projects)
+sink()
 close(fileConn1)
 close(fileConn2)
 
@@ -182,137 +193,34 @@ for(i in 1:nrow(account)){
 }
 
 
-# # Table: 'stack: takes users
-# # Creating a path that can directly go into the API function
-# user_paths <- paste("/", "accounts", "/", user_ids, "/", "stacks", sep = "")
-# sprintf('https://www.openhub.net%s.xml?%s&api_key=%s',
-#         user_paths[i], #page URL
-#         "", #must be in form "page=n"
-#         oh_key)
-# stack <- matrix(NA, 10, 4)
-# colnames(project) <- c("user_name", "title", "project_count", "stack_entries", "account")
-# 
-# for(i in 1:nrow(stack)){
-#   info <- api_q(user_paths[i], "", oh_key)
-#   stack[i,1] <- user_ids[i]
-#   stack[i,2] <- xml_nodes(info, 'project_count') %>% html_text()
-#   stack[i,3] <- xml_nodes(info, 'average_rating') %>% html_text()
-#   stack[i,4] <- xml_nodes(info, 'tag') %>% html_text() %>% paste(collapse = ';')
-#   stack[i,4] <- xml_nodes(info, 'tag') %>% html_text() %>% paste(collapse = ';')
-# }
-
-
+##
 ## Merge all user tables
+##
 user_table <- cbind(account, kudo, positions)
-save(user_table, file = "~/git/oss/output/openhub/sample_of_10/user_table.R")
+save(user_table, file = "~/git/oss/output/OpenHub/Sample_of_10/user_table.R")
 
 
-####
-#### All tables that take projects as inputs
-####
 
-## Table 'activity_fact': takes projects
-# Creating a path that can directly go into the API function
-project_paths <- paste("/", "projects", "/", project_ids, "/analyses/latest/activity_facts", sep = "")
-
-activity_fact <- matrix(NA, 10, 10)
-colnames(activity_fact) <- c("project_name", "date", "code_added", "code_removed", "comments_added", "comments_removed", "blanks_added", "blanks_removed", "commits", "contributors")
-
-# The info we need
-for(i in 1:nrow(activity_fact)){
-  info <- api_q(project_paths[i], "", oh_key)
-  activity_fact[i,1] <- project_ids[i]
-  activity_fact[i,2] <- xml_nodes(info, 'month') %>% html_text() %>% paste(collapse = ';')
-  activity_fact[i,3] <- xml_nodes(info, 'code_added') %>% html_text() %>% paste(collapse = ';')
-  activity_fact[i,4] <- xml_nodes(info, 'code_removed') %>% html_text() %>% paste(collapse = ';')
-  activity_fact[i,5] <- xml_nodes(info, 'comments_added') %>% html_text() %>% paste(collapse = ';')
-  activity_fact[i,6] <- xml_nodes(info, 'comments_removed') %>% html_text() %>% paste(collapse = ';')
-  activity_fact[i,7] <- xml_nodes(info, 'blanks_added') %>% html_text() %>% paste(collapse = ';')
-  activity_fact[i,8] <- xml_nodes(info, 'blanks_removed') %>% html_text() %>% paste(collapse = ';')
-  activity_fact[i,9] <- xml_nodes(info, 'commits') %>% html_text() %>% paste(collapse = ';')
-  activity_fact[i,10] <- xml_nodes(info, 'contributors') %>% html_text() %>% paste(collapse = ';')
-}
-
-
-## Table 'activity': takes projects
-# Creating a path that can directly go into the API function
-project_paths <- paste("/", "projects", "/", project_ids, "/analyses/latest", sep = "")
-
-activity <- matrix(NA, 10, 10)
-colnames(activity) <- c("project_name", "update_at", "min_month", "max_month", "twelve_month_contributor_count", "total_contributor_count", "twelve_month_commit_count", "total_commit_count", "total_code_lines", "main_language_name")
-
-# The info we need
-for(i in 1:nrow(activity)){
-  info <- api_q(project_paths[i], "", oh_key)
-  activity[i,1] <- project_ids[i]
-  activity[i,2] <- xml_nodes(info, 'updated_at') %>% html_text() %>% paste(collapse = ';')
-  activity[i,3] <- xml_nodes(info, 'min_month') %>% html_text()
-  activity[i,4] <- xml_nodes(info, 'max_month') %>% html_text()
-  activity[i,5] <- xml_nodes(info, 'twelve_month_contributor_count') %>% html_text()
-  activity[i,6] <- xml_nodes(info, 'total_contributor_count') %>% html_text()
-  activity[i,7] <- xml_nodes(info, 'twelve_month_commit_count') %>% html_text()
-  activity[i,8] <- xml_nodes(info, 'total_commit_count') %>% html_text()
-  activity[i,9] <- xml_nodes(info, 'total_code_lines') %>% html_text()
-  activity[i,10] <- xml_nodes(info, 'main_language_name') %>% html_text()
-}
-
-
-## Table 'contributorfact': takes projects
-# Creating a path that can directly go into the API function
-project_paths <- paste("/", "projects", "/", project_ids, "/", "contributors", sep = "")
-
-contributorfact <- matrix(NA, 10, 9)
-colnames(contributorfact) <- c("project_name", "contributor_name", "account_name", "primary_language_nice_name", "comment_ratio", "first_commit_time", "last_commit_time", "man_months", "commits")
-
-for(i in 1:nrow(contributorfact)){
-  info <- api_q(project_paths[i], "", oh_key)
-  contributorfact[i,1] <- project_ids[i]
-  contributorfact[i,2] <- xml_nodes(info, 'contributor_name') %>% html_text() %>% paste(collapse = ';')
-  contributorfact[i,3] <- xml_nodes(info, 'account_name') %>% html_text() %>% paste(collapse = ';')
-  contributorfact[i,4] <- xml_nodes(info, 'primary_language_nice_name') %>% html_text() %>% paste(collapse = ';')
-  contributorfact[i,5] <- xml_nodes(info, 'comment_ratio') %>% html_text() %>% paste(collapse = ';')
-  contributorfact[i,6] <- xml_nodes(info, 'first_commit_time') %>% html_text() %>% paste(collapse = ';')
-  contributorfact[i,7] <- xml_nodes(info, 'last_commit_time') %>% html_text() %>% paste(collapse = ';')
-  contributorfact[i,8] <- xml_nodes(info, 'man_months') %>% html_text() %>% paste(collapse = ';')
-  contributorfact[i,9] <- xml_nodes(info, 'commits') %>% html_text() %>% paste(collapse = ';')
-}
-
-
-## Table 'project': takes projects
+##
+## Table 'activityfact': takes projects
+##
 # Creating a path that can directly go into the API function
 project_paths <- paste("/", "projects", "/", project_ids, sep = "")
 
-project <- matrix(NA, 10, 4)
-colnames(project) <- c("project_name", "user_count", "average_rating", "tags")
+activity_fact <- matrix(NA, 10, 10)
+colnames(activity_fact) <- c("project_name", "month", "code_added", "code_removed", "comments_added", "comments_removed", "blanks_added", "blanks_removed", "commits", "contributors")
 
-for(i in 1:nrow(project)){
-  info <- api_q(project_paths[i], "", oh_key)
-  project[i,1] <- project_ids[i]
-  project[i,2] <- xml_nodes(info, 'user_count') %>% html_text()
-  project[i,3] <- xml_nodes(info, 'average_rating') %>% html_text()
-  project[i,4] <- xml_nodes(info, 'tag') %>% html_text() %>% paste(collapse = ';')
+# The info we need
+for(i in 1:nrow(activity_fact)){
+  info <- api_q(project_paths[i])
+  account[i,1] <- (xml_nodes(info, 'name') %>% html_text())[1]
+  account[i,2] <- xml_nodes(info, 'code') %>% html_text()
 }
 
 
-# # Table: 'stack: takes project
-# # Creating a path that can directly go into the API function
-# project_paths <- paste("/", "projects", "/", project_ids, "/", "stacks", sep = "")
-# 
-# project <- matrix(NA, 10, 4)
-# colnames(project) <- c("project_name", "user_count", "average_rating", "tags")
-# 
-# for(i in 1:nrow(project)){
-#   info <- api_q(project_paths[i], "", oh_key)
-#   project[i,1] <- project_ids[i]
-#   project[i,2] <- xml_nodes(info, 'user_count') %>% html_text()
-#   project[i,3] <- xml_nodes(info, 'average_rating') %>% html_text()
-#   project[i,4] <- xml_nodes(info, 'tag') %>% html_text() %>% paste(collapse = ';')
-# }
 
 
-## Merge all user tables
-project_table <- cbind(project, contributorfact, activity, activity_fact)
-save(user_table, file = "~/git/oss/output/openhub/sample_of_10/project_table.R")
+
 
 
 
