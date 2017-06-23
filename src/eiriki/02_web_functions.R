@@ -7,10 +7,10 @@ source(file = "src/eiriki/01_web_scrape.R")
 source(file = "src/eiriki/03_web_scrape_enterprise.R")
 library(tictoc)
 
-#Getting the first three pages and storing them into a master list to scrape
+#Getting ALL pages and storing them into a master list to scrape
 master_list <- c()
 tic()
-for(i in 1:3){
+for(i in 1:18806){
   SFTitle_Link <- read_html(paste("https://sourceforge.net/directory/?page=",i, sep=""))
 
   #Get the list of the titles on the given page
@@ -26,7 +26,7 @@ for(i in 1:3){
 
 
   #copy each title in the list over to the master list
-  for(j in 1:25){
+  for(j in 1:length(List_Titles)){
     master_list[length(master_list) + 1] <- List_Titles[j]
   }
 }
@@ -47,4 +47,5 @@ for(i in 1:length(master_list)){
   New_SF<- rbind(New_SF, new_data)
   Sys.sleep(runif(1, 0, 1) * 3)  ## randomly sleep the the system from 0 to 3 seconds
 }
+save(New_SF, file= '~/git/lab/oss/src/eiriki/New_SF.RData')
 toc()

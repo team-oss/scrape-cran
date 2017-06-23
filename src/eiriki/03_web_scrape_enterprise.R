@@ -84,6 +84,6 @@ enterprise_scrape <- function(link){
            'Number of Ratings' = num_rat, 'Weekly Downloads' = week_down, 'Project Type' = is_enterpise,
            'Category 1' = category[1], 'Category 2' = category[2], 'Category 3' = category[3],
            'Date registered' = date_registered, 'Authors' = authors, 'Ease' = NA, 'features' = NA,
-           'design' = NA, 'support' = NA, 'Google Plus likes' = NA, 'Facebook Likes' = NA)
+           'design' = NA, 'support' = NA)
   return(data.frame(v, stringsAsFactors = F))
 }
