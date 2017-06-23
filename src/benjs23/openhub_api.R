@@ -5,7 +5,7 @@
 
 #### Created by: sphadke, benjs23
 #### Creted on: 06/15/2017
-#### Last edited on: 06/21/2017
+#### Last edited on: 06/23/2017
 
 
 ####################
@@ -105,7 +105,7 @@ for (pages in c(1:n)){
   projectsParsed <- xmlParse(projectsTemp)
 
   projects <- append(projects, projectsParsed)
-  
+
   projectID <- str_split((xml_nodes(projectsTemp, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
 
   projectMasterID <- c(projectMasterID, projectID)
@@ -196,8 +196,8 @@ for(i in 1:nrow(account)){
 
 ## Merge all user tables
 user_table <- cbind(account, kudo, positions)
-save(user_table, file = "~/git/oss/output/openhub/sample_of_10/user_table.R")
-
+#save(user_table, file = "~/git/oss/output/openhub/sample_of_10/user_table.R")
+#write.csv(user_table, file = "~/git/oss/output/openhub/sample_of_10/user_table.csv")
 
 ####
 #### All tables that take projects as inputs
@@ -290,7 +290,8 @@ for(i in 1:nrow(project)){
 
 ## Merge all project tables
 project_table <- cbind(project, contributorfact, activity, activity_fact)
-save(user_table, file = "~/git/oss/output/openhub/sample_of_10/project_table.R")
+# save(user_table, file = "~/git/oss/output/openhub/sample_of_10/project_table.R")
+# write.csv(project_table, file = "~/git/oss/output/openhub/sample_of_10/project_table.csv")
 
 
 ####
@@ -334,8 +335,8 @@ for(i in 1:nrow(organization)){
 }
 
 # Save the table
-save(organization, file = "~/git/oss/output/openhub/sample_of_10/org_table.R")
-
+# save(organization, file = "~/git/oss/output/openhub/sample_of_10/org_table.R")
+# write.csv(organization, file = "~/git/oss/output/openhub/sample_of_10/org_table.csv")
 
 
 
