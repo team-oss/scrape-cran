@@ -5,9 +5,11 @@ library(stringr)
 library(rvest)
 source(file = "src/eiriki/01_web_scrape.R")
 source(file = "src/eiriki/03_web_scrape_enterprise.R")
+library(tictoc)
 
 #Getting the first three pages and storing them into a master list to scrape
 master_list <- c()
+tic()
 for(i in 1:3){
   SFTitle_Link <- read_html(paste("https://sourceforge.net/directory/?page=",i, sep=""))
 
@@ -45,3 +47,4 @@ for(i in 1:length(master_list)){
   New_SF<- rbind(New_SF, new_data)
   Sys.sleep(runif(1, 0, 1) * 3)  ## randomly sleep the the system from 0 to 3 seconds
 }
+toc()

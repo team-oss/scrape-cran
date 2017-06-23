@@ -83,6 +83,7 @@ enterprise_scrape <- function(link){
   v = list('OSS Title' = oss, 'Average Rating' = avg_rat, 'Description' = desc, 'Last Update' = last_update,
            'Number of Ratings' = num_rat, 'Weekly Downloads' = week_down, 'Project Type' = is_enterpise,
            'Category 1' = category[1], 'Category 2' = category[2], 'Category 3' = category[3],
-           'Date registered' = date_registered, 'Authors' = authors)
+           'Date registered' = date_registered, 'Authors' = authors, 'Ease' = NA, 'features' = NA,
+           'design' = NA, 'support' = NA, 'Google Plus likes' = NA, 'Facebook Likes' = NA)
   return(data.frame(v, stringsAsFactors = F))
 }
