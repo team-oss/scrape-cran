@@ -122,18 +122,28 @@ sf_scrape <- function(link){
   return(data.frame(v, stringsAsFactors = F))
 }
 #SFLink1 <- read_html("https://sourceforge.net/projects/audacity/?source=directory")
-g <- read_html("https://apis.google.com/u/0/se/0/_/+1/fastbutton?usegapi=1&size=medium&annotation=bubble&origin=https%3A%2F%2Fsourceforge.net&url=https%3A%2F%2Fsourceforge.net%2Fprojects%2Faudacity%2F&gsrc=3p&ic=1&jsh=m%3B%2F_%2Fscs%2Fapps-static%2F_%2Fjs%2Fk%3Doz.gapi.en.3t1xUeVe_Z4.O%2Fm%3D__features__%2Fam%3DAQ%2Frt%3Dj%2Fd%3D1%2Frs%3DAGLTcCN4hcAMb3eb3WPJTJu8oC1Cduzc2g#_methods=onPlusOne%2C_ready%2C_close%2C_open%2C_resizeMe%2C_renderstart%2Concircled%2Cdrefresh%2Cerefresh%2Conload&id=I0_1498069485200&parent=https%3A%2F%2Fsourceforge.net&pfname=&rpctoken=17547165")
-google <- g %>%
-  html_node('#aggregateCount') %>%
-  html_text() %>%
-  str_trim()
+
 google
 
-fb <- read_html("https://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fsourceforge.net%2Fprojects%2Faudacity%2F&send=false&layout=button_count&width=80&show_faces=false&action=like&colorscheme=light&font&height=21")
-likes <- fb %>%
-  html_node('#u_0_2') %>%
-  html_text() %>%
-  str_trim()
-likes
 #iterate through project google likes urls by changing project name after projects%2F in URL
 #same with fb
+
+google_vec <- c()
+fb_vec <- c()
+for(i in 1:length(list_of_titles)){
+  nl <- paste("https://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fsourceforge.net%2Fprojects%2F", list_of_titles[i], sep="", "%2F&send=false&layout=button_count&width=80&show_faces=false&action=like&colorscheme=light&font&height=21")
+  fb <- read_html(nl)
+  likes <- fb %>%
+    html_node('#u_0_2') %>%
+    html_text() %>%
+    str_trim()
+  fb_vec[i] <- likes
+  nl2 <- paste("https://apis.google.com/u/0/se/0/_/+1/fastbutton?usegapi=1&size=medium&annotation=bubble&origin=https%3A%2F%2Fsourceforge.net&url=https%3A%2F%2Fsourceforge.net%2Fprojects%2F", list_of_titles[i], sep="", "%2F&gsrc=3p&ic=1&jsh=m%3B%2F_%2Fscs%2Fapps-static%2F_%2Fjs%2Fk%3Doz.gapi.en.3t1xUeVe_Z4.O%2Fm%3D__features__%2Fam%3DAQ%2Frt%3Dj%2Fd%3D1%2Frs%3DAGLTcCN4hcAMb3eb3WPJTJu8oC1Cduzc2g#_methods=onPlusOne%2C_ready%2C_close%2C_open%2C_resizeMe%2C_renderstart%2Concircled%2Cdrefresh%2Cerefresh%2Conload&id=I0_1498069485200&parent=https%3A%2F%2Fsourceforge.net&pfname=&rpctoken=17547165")
+  g <- read_html(nl2)
+  google <- g %>%
+    html_node('#aggregateCount') %>%
+    html_text() %>%
+    str_trim()
+  google_vec[i] <- google
+}
+
