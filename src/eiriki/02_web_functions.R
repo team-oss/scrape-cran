@@ -46,6 +46,7 @@ for(i in 1:length(master_list)){
 
   New_SF<- rbind(New_SF, new_data)
   Sys.sleep(runif(1, 0, 1) * 3)  ## randomly sleep the the system from 0 to 3 seconds
+  print(i)
 }
 save(New_SF, file= '~/git/lab/oss/src/eiriki/New_SF.RData')
 toc()
