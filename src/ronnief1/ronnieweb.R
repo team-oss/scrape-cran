@@ -127,7 +127,21 @@ google
 
 #iterate through project google likes urls by changing project name after projects%2F in URL
 #same with fb
+getUrlTitles <- function(urlList){
+  urlTitles <- c()
 
+  for(i in 1: length(urlList)){
+    urlTitles[i] <- str_split(urlList[i], "/")
+  }
+  urlTitles
+  final_list <- c()
+  for(i in 1:length(urlTitles)){
+    final_list[i] <- urlTitles[[i]][3]
+  }
+  final_list
+}
+list_of_titles <- getUrlTitles(master_list)
+list_of_titles
 google_vec <- c()
 fb_vec <- c()
 for(i in 1:length(list_of_titles)){
