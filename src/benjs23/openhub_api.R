@@ -65,20 +65,23 @@ api_q <- function(path, page_no, api_key){
 # We create IDs for a set of 10 users, projects, and organizations
 # They go into a path, which then feeds into the API call to then pull tables
 
-## Users
-ten_users <- api_q("/accounts", "page=1", oh_key)
-user_ids <- xml_nodes(ten_users, 'login') %>% html_text()
-save(user_ids, file = "~/git/oss/output/openhub/sample_of_10/ten_user_ids.R")
+# ## Users
+# ten_users <- api_q("/accounts", "page=1", oh_key)
+# user_ids <- xml_nodes(ten_users, 'login') %>% html_text()
+# save(user_ids, file = "~/git/oss/output/openhub/sample_of_10/ten_user_ids.R")
+load("~/git/oss/output/openhub/sample_of_10/ten_user_ids.R")
 
-## Projects
-ten_projects <- api_q("/projects", "page=1", oh_key)
-project_ids <- str_split((xml_nodes(ten_projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
-save(project_ids, file = "~/git/oss/output/openhub/sample_of_10/ten_project_ids.R")
+# ## Projects
+# ten_projects <- api_q("/projects", "page=1", oh_key)
+# project_ids <- str_split((xml_nodes(ten_projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+# save(project_ids, file = "~/git/oss/output/openhub/sample_of_10/ten_project_ids.R")
+load("~/git/oss/output/openhub/sample_of_10/ten_project_ids.R")
 
-## Organizations
-ten_orgs <- api_q("/orgs", "page=1", oh_key)
-org_ids <- str_split((xml_nodes(ten_orgs, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
-save(org_ids, file = "~/git/oss/output/openhub/sample_of_10/ten_org_ids.R")
+# ## Organizations
+# ten_orgs <- api_q("/orgs", "page=1", oh_key)
+# org_ids <- str_split((xml_nodes(ten_orgs, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+# save(org_ids, file = "~/git/oss/output/openhub/sample_of_10/ten_org_ids.R")
+load("~/git/oss/output/openhub/sample_of_10/ten_org_ids.R")
 
 
 
@@ -193,25 +196,7 @@ for(i in 1:nrow(account)){
 }
 
 
-# # Table: 'stack: takes users
-# # Creating a path that can directly go into the API function
-# user_paths <- paste("/", "accounts", "/", user_ids, "/", "stacks", sep = "")
-# sprintf('https://www.openhub.net%s.xml?%s&api_key=%s',
-#         user_paths[i], #page URL
-#         "", #must be in form "page=n"
-#         oh_key)
-# stack <- matrix(NA, 10, 4)
-# colnames(project) <- c("user_name", "title", "project_count", "stack_entries", "account")
-#
-# for(i in 1:nrow(stack)){
-#   info <- api_q(user_paths[i], "", oh_key)
-#   stack[i,1] <- user_ids[i]
-#   stack[i,2] <- xml_nodes(info, 'project_count') %>% html_text()
-#   stack[i,3] <- xml_nodes(info, 'average_rating') %>% html_text()
-#   stack[i,4] <- xml_nodes(info, 'tag') %>% html_text() %>% paste(collapse = ';')
-#   stack[i,4] <- xml_nodes(info, 'tag') %>% html_text() %>% paste(collapse = ';')
-# }
-
+# # Table: 'stack: takes users: code under development: at the end
 
 ## Merge all user tables
 user_table <- cbind(account, kudo, positions)
@@ -305,25 +290,56 @@ for(i in 1:nrow(project)){
 }
 
 
-# # Table: 'stack: takes project
-# # Creating a path that can directly go into the API function
-# project_paths <- paste("/", "projects", "/", project_ids, "/", "stacks", sep = "")
-#
-# project <- matrix(NA, 10, 4)
-# colnames(project) <- c("project_name", "user_count", "average_rating", "tags")
-#
-# for(i in 1:nrow(project)){
-#   info <- api_q(project_paths[i], "", oh_key)
-#   project[i,1] <- project_ids[i]
-#   project[i,2] <- xml_nodes(info, 'user_count') %>% html_text()
-#   project[i,3] <- xml_nodes(info, 'average_rating') %>% html_text()
-#   project[i,4] <- xml_nodes(info, 'tag') %>% html_text() %>% paste(collapse = ';')
-# }
+# Table: 'stack: takes project: code under development: at the end
 
-
-## Merge all user tables
+## Merge all project tables
 project_table <- cbind(project, contributorfact, activity, activity_fact)
 save(user_table, file = "~/git/oss/output/openhub/sample_of_10/project_table.R")
+
+
+####
+#### All tables that take projects as inputs
+####
+
+## Table 'activity_fact': takes projects
+# Creating a path that can directly go into the API function
+org_paths <- paste("/", "orgs", "/", org_ids, sep = "")
+
+organization <- matrix(NA, 10, 15)
+colnames(organization) <- c("org_name", "created_date", "type",
+                            "portfolio_projects_count", "portfolio_projects",
+                            "affiliators", "affiliators_committing_to_portfolio_projects",
+                            "affiliator_commits_to_portfolio_projects", "affiliators_commiting_projects",
+                            "outside_committers", "outside_committers_commits", "projects_having_outside_commits",
+                            "outside_projects", "outside_projects_commits", "affiliators_committing_to_outside_projects")
+
+# The info we need
+for(i in 1:nrow(organization)){
+  info <- api_q(org_paths[i], "", oh_key)
+  organization[i,1] <- org_ids[i]
+  organization[i,2] <- xml_nodes(info, 'created_at') %>% html_text()
+  organization[i,3] <- xml_nodes(info, 'type') %>% html_text()
+
+  organization[i,4] <- xml_contents(xml_nodes(info, 'portfolio_projects'))[1] %>% html_text()
+  organization[i,5] <- xml_nodes(xml_nodes(info, 'portfolio_projects'), "name") %>% html_text() %>% paste(collapse = ';')
+
+  organization[i,6] <- xml_nodes(info, 'affiliators') %>% html_text() #Same as affiliated committers
+  organization[i,7] <- xml_nodes(info, 'affiliators_committing_to_portfolio_projects') %>% html_text()
+  organization[i,8] <- xml_nodes(info, 'affiliator_commits_to_portfolio_projects') %>% html_text()
+  organization[i,9] <- xml_nodes(info, 'affiliators_commiting_projects') %>% html_text()
+
+  organization[i,10] <- xml_nodes(info, 'outside_committers') %>% html_text()
+  organization[i,11] <- xml_nodes(info, 'outside_committers_commits') %>% html_text()
+  organization[i,12] <- xml_nodes(info, 'projects_having_outside_commits') %>% html_text()
+
+  organization[i,13] <- xml_nodes(info, 'outside_projects') %>% html_text()
+  organization[i,14] <- xml_nodes(info, 'outside_projects_commits') %>% html_text()
+  organization[i,15] <- xml_nodes(info, 'affiliators_committing_to_outside_projects') %>% html_text()
+}
+
+# Save the table
+save(organization, file = "~/git/oss/output/openhub/sample_of_10/org_table.R")
+
 
 
 
@@ -356,6 +372,42 @@ save(user_table, file = "~/git/oss/output/openhub/sample_of_10/project_table.R")
 # xml_nodes(org, 'name')
 
 
+####
+#### Stack codes: on hold
+####
+# # Table: 'stack: takes project
+# # Creating a path that can directly go into the API function
+# project_paths <- paste("/", "projects", "/", project_ids, "/", "stacks", sep = "")
+#
+# project <- matrix(NA, 10, 4)
+# colnames(project) <- c("project_name", "user_count", "average_rating", "tags")
+#
+# for(i in 1:nrow(project)){
+#   info <- api_q(project_paths[i], "", oh_key)
+#   project[i,1] <- project_ids[i]
+#   project[i,2] <- xml_nodes(info, 'project_count') %>% html_text()
+#   project[i,3] <- xml_nodes(info, 'stack_entries') %>% html_text()
+#   project[i,4] <- xml_nodes(info, 'account') %>% html_text()
+#   project[i,4] <- xml_nodes(info, 'tag') %>% html_text() %>% paste(collapse = ';')
+# }
 
-# Creating a path that can directly go into the API function
-org_paths <- paste("/", "orgs", "/", org_ids, sep = "")
+
+# # Table: 'stack: takes users
+# # Creating a path that can directly go into the API function
+# user_paths <- paste("/", "accounts", "/", user_ids, "/", "stacks", sep = "")
+# sprintf('https://www.openhub.net%s.xml?%s&api_key=%s',
+#         user_paths[i], #page URL
+#         "", #must be in form "page=n"
+#         oh_key)
+# stack <- matrix(NA, 10, 4)
+# colnames(project) <- c("user_name", "title", "project_count", "stack_entries", "account")
+#
+# for(i in 1:nrow(stack)){
+#   info <- api_q(user_paths[i], "", oh_key)
+#   stack[i,1] <- user_ids[i]
+#   stack[i,2] <- xml_nodes(info, 'project_count') %>% html_text()
+#   stack[i,3] <- xml_nodes(info, 'average_rating') %>% html_text()
+#   stack[i,4] <- xml_nodes(info, 'tag') %>% html_text() %>% paste(collapse = ';')
+#   stack[i,4] <- xml_nodes(info, 'tag') %>% html_text() %>% paste(collapse = ';')
+# }
+
