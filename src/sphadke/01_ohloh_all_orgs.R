@@ -64,7 +64,8 @@ api_q <- function(path, page_no, api_key){
 ## Organizations
 # org_ids <- vector()
 # for (i in 1:85){
-#   orgs <- api_q("/orgs", paste("page=", i, sep = ""), oh_key)
+#   get_orgs <- api_q("/orgs", paste("page=", i, sep = ""), oh_key)
+#   orgs <- content(get_orgs, as = "parsed")
 #   ids <- str_split((xml_nodes(orgs, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
 #   org_ids <- c(org_ids, ids)
 # }
@@ -81,8 +82,8 @@ load("~/git/oss/data/oss/original/openhub/all_org_ids.R")
 # Creating a path that can directly go into the API function
 org_paths <- paste("/", "orgs", "/", org_ids, sep = "")
 
-organization <- matrix(NA, length(org_paths), 15)
-colnames(organization) <- c("org_name", "created_date", "type",
+organization <- matrix(NA, length(org_paths), 16)
+colnames(organization) <- c("org_url_id", "org_name", "created_date", "type",
                             "portfolio_projects_count", "portfolio_projects",
                             "affiliators", "affiliators_committing_to_portfolio_projects",
                             "affiliator_commits_to_portfolio_projects", "affiliators_commiting_projects",
@@ -97,24 +98,25 @@ for(i in 1:nrow(organization)){
     info <- content(contents)
 
     organization[i,1] <- org_ids[i]
-    organization[i,2] <- xml_nodes(info, 'created_at') %>% html_text()
-    organization[i,3] <- xml_nodes(info, 'type') %>% html_text()
+    organization[i,2] <- xml_node(info, 'name') %>% html_text()
+    organization[i,3] <- xml_nodes(info, 'created_at') %>% html_text()
+    organization[i,4] <- xml_nodes(info, 'type') %>% html_text()
 
-    organization[i,4] <- xml_contents(xml_nodes(info, 'portfolio_projects'))[1] %>% html_text()
-    organization[i,5] <- xml_nodes(xml_nodes(info, 'portfolio_projects'), "name") %>% html_text() %>% paste(collapse = ';')
+    organization[i,5] <- xml_contents(xml_nodes(info, 'portfolio_projects'))[1] %>% html_text()
+    organization[i,6] <- xml_nodes(xml_nodes(info, 'portfolio_projects'), "name") %>% html_text() %>% paste(collapse = ';')
 
-    organization[i,6] <- xml_nodes(info, 'affiliators') %>% html_text()
-    organization[i,7] <- xml_nodes(info, 'affiliators_committing_to_portfolio_projects') %>% html_text()
-    organization[i,8] <- xml_nodes(info, 'affiliator_commits_to_portfolio_projects') %>% html_text()
-    organization[i,9] <- xml_nodes(info, 'affiliators_commiting_projects') %>% html_text()
+    organization[i,7] <- xml_nodes(info, 'affiliators') %>% html_text()
+    organization[i,8] <- xml_nodes(info, 'affiliators_committing_to_portfolio_projects') %>% html_text()
+    organization[i,9] <- xml_nodes(info, 'affiliator_commits_to_portfolio_projects') %>% html_text()
+    organization[i,10] <- xml_nodes(info, 'affiliators_commiting_projects') %>% html_text()
 
-    organization[i,10] <- xml_nodes(info, 'outside_committers') %>% html_text()
-    organization[i,11] <- xml_nodes(info, 'outside_committers_commits') %>% html_text()
-    organization[i,12] <- xml_nodes(info, 'projects_having_outside_commits') %>% html_text()
+    organization[i,11] <- xml_nodes(info, 'outside_committers') %>% html_text()
+    organization[i,12] <- xml_nodes(info, 'outside_committers_commits') %>% html_text()
+    organization[i,13] <- xml_nodes(info, 'projects_having_outside_commits') %>% html_text()
 
-    organization[i,13] <- xml_nodes(info, 'outside_projects') %>% html_text()
-    organization[i,14] <- xml_nodes(info, 'outside_projects_commits') %>% html_text()
-    organization[i,15] <- xml_nodes(info, 'affiliators_committing_to_outside_projects') %>% html_text()
+    organization[i,14] <- xml_nodes(info, 'outside_projects') %>% html_text()
+    organization[i,15] <- xml_nodes(info, 'outside_projects_commits') %>% html_text()
+    organization[i,16] <- xml_nodes(info, 'affiliators_committing_to_outside_projects') %>% html_text()
   }
   print(i)
 }
