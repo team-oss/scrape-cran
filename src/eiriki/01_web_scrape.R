@@ -73,7 +73,7 @@ sf_scrape <- function(link){
     str_trim()
 
   #filter out for the date
-  match <- grep(pattern = '20', x = date_registered)
+  match <- grep(pattern = '[0-9]{4}-[0-9]{2}-[0-9]{2}', x = date_registered)
   date_registered <- date_registered[match]
   }
   else{
