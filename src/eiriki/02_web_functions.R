@@ -10,7 +10,8 @@ library(tictoc)
 #Getting ALL pages and storing them into a master list to scrape
 master_list <- c()
 tic()
-for(i in 1:18806){
+#18806
+for(i in 1:2){
   SFTitle_Link <- read_html(paste("https://sourceforge.net/directory/?page=",i, sep=""))
 
   #Get the list of the titles on the given page
@@ -30,7 +31,7 @@ for(i in 1:18806){
     master_list[length(master_list) + 1] <- List_Titles[j]
   }
 }
-master_list
+#master_list
 
 #apply the function to the master list and store in a data frame
 New_SF <- data.frame()
@@ -44,10 +45,9 @@ for(i in 1:length(master_list)){
     new_data <- enterprise_scrape(master_list[i])
   }
 
-  New_SF<- rbind(New_SF, new_data)
+  #New_SF<- rbind(New_SF, new_data)
   Sys.sleep(runif(1, 0, 1) * 3)  ## randomly sleep the the system from 0 to 3 seconds
   print(i)
-  save(New_SF, file= '~/git/lab/oss/src/eiriki/New_SF.RData')
+  save(new_data, file= sprintf('~/git/lab/oss/data/oss/original/sourceforge/SF_%06d.RData', i))
 }
-
 toc()
