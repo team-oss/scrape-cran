@@ -20,7 +20,7 @@ source(file = "~/git/oss/src/eiriki/03_web_scrape_enterprise.R")
 
 #Getting the first ten pages and storing them into a master list to scrape
 master_list <- c()
-for(i in 1:200){
+for(i in 1:1){
   SFTitle_Link <- read_html(paste("https://sourceforge.net/directory/?page=",i, sep=""))
 
   #Get the list of the titles on the given page
@@ -58,6 +58,6 @@ for(i in 1:length(master_list)){
   Sys.sleep(runif(1, 0, 1) * 3)  ## randomly sleep the the system from 0 to 3 seconds
 }
 
-orig_data <- New_SF
+orig_data2 <- New_SF
 
-save(orig_data, file = '~/git/oss/src/ckelling/ScrapingCode/source_forge/orig_SF.Rdata')
+save(orig_data2, file = '~/git/oss/src/ckelling/ScrapingCode/source_forge/orig_SF2.Rdata')
