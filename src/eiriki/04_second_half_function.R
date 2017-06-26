@@ -13,7 +13,7 @@ fs <- list.files('data/oss/original/sourceforge/master_list', full.names = TRUE,
 
 load_stuff <- function(file_name) {
   load(file_name)
-  return(new_dat)
+  return(data.frame(new_dat, stringsAsFactors = F))
 }
 
 fl <- lapply(X = fs, FUN = load_stuff)
@@ -24,7 +24,7 @@ master_list_2 <- data.table::rbindlist(fl)
 
 #apply the function to the master list and store in a data frame
 New_SF <- data.frame()
-for(i in 1:length(master_list_2)){
+for(i in 1:nrow(master_list_2)){
   new_data <- sf_scrape(master_list_2[i])
 
   #Enterprise projects will usually return "Overview" for their descriptions. In that case, call the
