@@ -9,7 +9,7 @@ source(file = "~/git/lab/oss/src/eiriki/03_web_scrape_enterprise.R")
 library(tictoc)
 
 tic()
-fs <- list.files('data/oss/original/sourceforge/master_list', full.names = TRUE, pattern = '*.RData')
+fs <- list.files('~/git/lab/oss/data/oss/original/sourceforge/master_list', full.names = TRUE, pattern = '*.RData')
 
 load_stuff <- function(file_name) {
   load(file_name)
