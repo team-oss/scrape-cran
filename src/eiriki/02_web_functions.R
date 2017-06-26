@@ -11,7 +11,7 @@ library(tictoc)
 master_list <- c()
 tic()
 #18810
-for(i in 1654:18810){
+for(i in 1657:18810){
   SFTitle_Link <- read_html(paste("https://sourceforge.net/directory/?page=",i, sep=""))
   print(i)
   #Get the list of the titles on the given page
