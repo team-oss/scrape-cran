@@ -10,17 +10,17 @@ library(tictoc)
 #Getting ALL pages and storing them into a master list to scrape
 master_list <- c()
 tic()
-#18806
-for(i in 1:2){
+#18810
+for(i in 1007:18810){
   SFTitle_Link <- read_html(paste("https://sourceforge.net/directory/?page=",i, sep=""))
-
+  print(i)
   #Get the list of the titles on the given page
   List_Titles <- SFTitle_Link %>%
     html_nodes('.project_info') %>%
     html_nodes('a') %>%
     html_attr('href')
 
-  #This code will filter out the ads (all links that aren't to projects on sourceforge)
+    #This code will filter out the ads (all links that aren't to projects on sourceforge)
   pattern <- '^/projects'
   match <- grep(pattern = pattern, x = List_Titles)
   List_Titles <- List_Titles[match]
@@ -28,26 +28,10 @@ for(i in 1:2){
 
   #copy each title in the list over to the master list
   for(j in 1:length(List_Titles)){
+    new_dat <- List_Titles[j]
+    save(new_dat, file= sprintf('~/git/lab/oss/data/oss/original/sourceforge/master_list/SF_%06d_%02d.RData', i, j))
     master_list[length(master_list) + 1] <- List_Titles[j]
   }
-}
-#master_list
-
-#apply the function to the master list and store in a data frame
-New_SF <- data.frame()
-for(i in 1:length(master_list)){
-  new_data <- sf_scrape(master_list[i])
-
-  #Enterprise projects will usually return "Overview" for their descriptions. In that case, call the
-  #enterprise_scrape function instead of the normal one.
-  if(new_data$Description == "Overview")
-  {
-    new_data <- enterprise_scrape(master_list[i])
-  }
-
-  #New_SF<- rbind(New_SF, new_data)
-  Sys.sleep(runif(1, 0, 1) * 3)  ## randomly sleep the the system from 0 to 3 seconds
-  print(i)
-  save(new_data, file= sprintf('~/git/lab/oss/data/oss/original/sourceforge/SF_%06d.RData', i))
+  #save(master_list, file= sprintf('~/git/lab/oss/data/oss/original/sourceforge/new_data/SF_%06d.RData', i))
 }
 toc()
