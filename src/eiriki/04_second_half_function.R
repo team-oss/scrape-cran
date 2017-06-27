@@ -9,11 +9,11 @@ source(file = "~/git/lab/oss/src/eiriki/03_web_scrape_enterprise.R")
 library(tictoc)
 
 tic()
-fs <- list.files('data/oss/original/sourceforge/master_list', full.names = TRUE, pattern = '*.RData')
+fs <- list.files('~/git/lab/oss/data/oss/original/sourceforge/master_list', full.names = TRUE, pattern = '*.RData')
 
 load_stuff <- function(file_name) {
   load(file_name)
-  return(new_dat)
+  return(data.frame(new_dat, stringsAsFactors = F))
 }
 
 fl <- lapply(X = fs, FUN = load_stuff)
@@ -24,7 +24,7 @@ master_list_2 <- data.table::rbindlist(fl)
 
 #apply the function to the master list and store in a data frame
 New_SF <- data.frame()
-for(i in 1:length(master_list_2)){
+for(i in 1:nrow(master_list_2)){
   new_data <- sf_scrape(master_list_2[i])
 
   #Enterprise projects will usually return "Overview" for their descriptions. In that case, call the

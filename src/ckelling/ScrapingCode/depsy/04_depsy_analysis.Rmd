@@ -1,0 +1,18 @@
+---
+title: "Analysis"
+author: "Claire Kelling"
+date: "6/27/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Now that I have all of the data on Depsy, I will perform analysis on both the nodal features and the edges. 
+
+```{r load data}
+load(file = "~/git/oss/data/oss/original/depsy/node_mat.Rdata")
+load(file = "~/git/oss/data/oss/original/depsy/edge_list.Rdata")
+```
+

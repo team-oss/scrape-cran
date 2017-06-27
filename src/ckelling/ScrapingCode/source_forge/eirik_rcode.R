@@ -83,7 +83,7 @@ sf_scrape <- function(link){
 
 #Getting the first three pages and storing them into a master list
 master_list <- c()
-for(i in 1:100){
+for(i in 1:1){
   SFTitle_Link <- read_html(paste("https://sourceforge.net/directory/?page=",i, sep=""))
 
   #Get the list of the titles on the given page
