@@ -41,6 +41,13 @@ oh_key_cl <- "5c32fe933ee240ff26192dd1c1e1eb6b5f44b6a0b80d3ed5f75a0a0ca425f212"
 # Gizem's key
 oh_key_gk <- "f5e0d9a3818409f1a676f4b1e15323e574ec337a760b79e97960dd270ddc6704"
 
+# Craig's key
+oh_key_cm <- "94ad08fef0f6d41303d99d70a1c80cf96f539592262af8cd10011c6bba562236"
+
+# Sean's key
+oh_key_sep <- "44f8e85c82a77af8b28731b8ade12c6adc40b4ca6fd9a93c2e8b3f20d32af096"
+
+
 ## Test api pull
 # Run this on each new key to make sure it works
 # library(httr)
