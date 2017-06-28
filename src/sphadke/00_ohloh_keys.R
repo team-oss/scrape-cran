@@ -38,19 +38,21 @@ oh_key_hs <- "8da56929b785b7a5035ed04472b05b94301c374da3cf98f3218b28acfe068f70"
 # Chanida's key
 oh_key_cl <- "5c32fe933ee240ff26192dd1c1e1eb6b5f44b6a0b80d3ed5f75a0a0ca425f212"
 
+# Gizem's key
+oh_key_gk <- "f5e0d9a3818409f1a676f4b1e15323e574ec337a760b79e97960dd270ddc6704"
 
 ## Test api pull
 # Run this on each new key to make sure it works
-library(httr)
-test_pull <- function(path, page_no, api_key){
-  info <- GET(sprintf('https://www.openhub.net%s.xml?%s&api_key=%s',
-                      path, #page URL
-                      page_no, #must be in form "page=n"
-                      api_key))
-  return(info)
-}
-
-blah <- test_pull("/projects/firefox", "", oh_key_cl)
+# library(httr)
+# test_pull <- function(path, page_no, api_key){
+#   info <- GET(sprintf('https://www.openhub.net%s.xml?%s&api_key=%s',
+#                       path, #page URL
+#                       page_no, #must be in form "page=n"
+#                       api_key))
+#   return(info)
+# }
+#
+# blah <- test_pull("/projects/firefox", "", oh_key_gk)
 
 
 
