@@ -1,6 +1,6 @@
 makenodeRow <- function(name){
-  i=16
-  name <- depsy_packages[i,1]
+  #i=16
+  #name <- depsy_packages[i,1]
   #link <- "http://depsy.org/api/package/cran/A3"
   url <- paste('http://depsy.org/api/package/cran/', name, sep='')
   document <- jsonlite::fromJSON(txt=url)
@@ -57,22 +57,23 @@ makenodeRow <- function(name){
   return(new_df)
 }
 
-makeedgeRow <- function(name){
-  name <- depsy_packages[5,1]
-  #link <- "http://depsy.org/api/package/cran/A3"
-  url <- paste('http://depsy.org/api/package/cran/', name, sep='')
-  document <- jsonlite::fromJSON(txt=url)
-  df <- c('name','neighbor')
-
-  new_df <- as.data.frame(t(df), stringsAsFactors = FALSE)
-  colnames(new_df) <- df
-  new_df <- new_df[-1, ]
-  oss_name <- document$name
-
-  contribs <- document$all_contribs$name
-  for(i in 1:length(document$all_contribs$name)){
-    contrib_name <- document$all_contribs$name[i]
-    new_row <- c(oss_name, contrib_name)
-    rbind(new_df, new_row)
-  }
-}
+# makeedgeRow <- function(name){
+#   name <- depsy_packages[5,1]
+#   #link <- "http://depsy.org/api/package/cran/A3"
+#   url <- paste('http://depsy.org/api/package/cran/', name, sep='')
+#   document <- jsonlite::fromJSON(txt=url)
+#   df <- c('name','neighbor')
+#
+#   new_df <- as.data.frame(t(df), stringsAsFactors = FALSE)
+#   colnames(new_df) <- df
+#   new_df <- new_df[-1, ]
+#   oss_name <- document$name
+#
+#   contribs <- document$all_contribs$name
+#   for(i in 1:length(document$all_contribs$name)){
+#     contrib_name <- document$all_contribs$name[i]
+#     new_row <- c(oss_name, contrib_name)
+#     rbind(new_df, new_row)
+#   }
+#   return(new_df)
+# }
