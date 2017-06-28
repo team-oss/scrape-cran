@@ -36,7 +36,6 @@ library(XML)
 # API keys
 source("~/git/oss/src/sphadke/00_ohloh_keys.R")
 
-
 # Function to create the correct path, get xml from it, and parse out the info
 api_q <- function(path, page_no, api_key){
   info <- #content(
@@ -91,7 +90,7 @@ for(i in 1:nrow(organization)){
   contents <- api_q(org_paths[i], "", oh_key)
 
   if(status_code(contents) == 200){
-    info <- content(contents)
+    info <- content(contents, as = "parsed")
 
     organization[i,1] <- org_ids[i]
     organization[i,2] <- xml_node(info, 'name') %>% html_text()
