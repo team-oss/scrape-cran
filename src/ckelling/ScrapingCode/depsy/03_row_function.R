@@ -1,8 +1,9 @@
-makeRow <- function(name){
-  name <- depsy_packages[5,1]
+makenodeRow <- function(name){
+  #i=1
+  #name <- depsy_packages[,1]
   #link <- "http://depsy.org/api/package/cran/A3"
   url <- paste('http://depsy.org/api/package/cran/', name, sep='')
-  document <- fromJSON(txt=url)
+  document <- jsonlite::fromJSON(txt=url)
   df <- c('name','citations_harv','citations_pmc', 'git_owner','git_repo_name','host', 'impact', 'impact_percentile', 'indegree', 'is_academic', 'language','neighborhood_size', 'num_authors', 'num_commits', 'num_committers', 'num_contribs', 'num_stars', 'num_downloads','perc_downloads',  'num_citations','perc_citations',  'num_deprank', 'perc_deprank', 'summary')
   contribs <- document$all_contribs$github_login
   #contribs
@@ -51,3 +52,17 @@ makeRow <- function(name){
   new_df[1, 'perc_deprank'] <- document$subscores[3, 5]
   return(new_df)
 }
+
+# makeedgeRow <- function(name){
+#   name <- depsy_packages[5,1]
+#   #link <- "http://depsy.org/api/package/cran/A3"
+#   url <- paste('http://depsy.org/api/package/cran/', name, sep='')
+#   document <- fromJSON(txt=url)
+#   df <- c('name','neighbor')
+#
+#   new_df <- as.data.frame(t(df), stringsAsFactors = FALSE)
+#   colnames(new_df) <- df
+#   new_df <- new_df[-1, ]
+#
+#
+# }

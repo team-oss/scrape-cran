@@ -1,5 +1,5 @@
-library('RJSONIO')
-library("rjson")
+#library('RJSONIO')
+#library("rjson")
 library(jsonlite)
 
 load(file = "~/git/oss/data/oss/original/depsy/error_vector.Rdata")
@@ -36,7 +36,7 @@ node_mat <- c()
 for(i in 1:nrow(depsy_packages)){
   #scrape details from API using rjson
   print(i)
-  new_row <- makeRow(depsy_packages[i,1])
+  new_row <- makenodeRow(depsy_packages[i,1])
   node_mat <- rbind(node_mat, new_row)
 }
 
