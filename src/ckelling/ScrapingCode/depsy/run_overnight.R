@@ -32,7 +32,7 @@ source(file = "~/git/oss/src/ckelling/ScrapingCode/depsy/03_row_function.R")
 node_mat <- c()
 #for(i in 1:length(depsy_packages)){
 
-for(i in 1:2){
+for(i in 1:length(depsy_packages)){
   #scrape details from API using rjson
   print(i)
   new_row <- makeRow(depsy_packages[i,1])
