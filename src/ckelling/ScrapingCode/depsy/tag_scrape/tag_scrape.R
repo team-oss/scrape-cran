@@ -1,5 +1,9 @@
 library(jsonlite)
 
+load(file = "~/git/oss/data/oss/original/depsy/error_vector.Rdata")
+load(file= '~/git/oss/data/oss/original/depsy/all_packages_cran.Rdata')
+depsy_packages <- all_packages[-error_vec,]
+
 maketagRow <- function(name){
   #name <- depsy_packages[1,1]
   #link <- "http://depsy.org/api/package/cran/A3"
