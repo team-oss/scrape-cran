@@ -57,23 +57,56 @@ makenodeRow <- function(name){
   return(new_df)
 }
 
-# makeedgeRow <- function(name){
-#   name <- depsy_packages[5,1]
-#   #link <- "http://depsy.org/api/package/cran/A3"
-#   url <- paste('http://depsy.org/api/package/cran/', name, sep='')
-#   document <- jsonlite::fromJSON(txt=url)
-#   df <- c('name','neighbor')
-#
-#   new_df <- as.data.frame(t(df), stringsAsFactors = FALSE)
-#   colnames(new_df) <- df
-#   new_df <- new_df[-1, ]
-#   oss_name <- document$name
-#
-#   contribs <- document$all_contribs$name
-#   for(i in 1:length(document$all_contribs$name)){
-#     contrib_name <- document$all_contribs$name[i]
-#     new_row <- c(oss_name, contrib_name)
-#     rbind(new_df, new_row)
-#   }
-#   return(new_df)
-# }
+
+makecontribRow <- function(name){
+  #name <- depsy_packages[5,1]
+  #link <- "http://depsy.org/api/package/cran/A3"
+  url <- paste('http://depsy.org/api/package/cran/', name, sep='')
+  document <- jsonlite::fromJSON(txt=url)
+  df <- c('name','contrib')
+  new_df <- c()
+
+  oss_name <- document$name
+  contribs <- document$all_contribs$name
+
+  for(i in 1:length(document$all_contribs$name)){
+    contrib_name <- contribs[i]
+    new_row <- c(oss_name, contrib_name)
+    new_df <- rbind(new_df, new_row)
+  }
+
+  colnames(new_df) <- df
+  return(new_df)
+}
+
+makeneighRow <- function(name){
+  #name <- depsy_packages[12,1]
+  #link <- "http://depsy.org/api/package/cran/A3"
+  url <- paste('http://depsy.org/api/package/cran/', name, sep='')
+  document <- jsonlite::fromJSON(txt=url)
+  df <- c('name','neighbor')
+  new_df <- c()
+
+  oss_name <- document$name
+  neighbs <- document$all_neighbor_ids
+  final_neighb <- c()
+  if(length(neighbs) != 0){
+    for(i in 1:length(neighbs)){
+      if(substr(neighbs[i], 1, 5) == "cran:"){
+        new_neighb <- neighbs[i]
+        final_neighb <- rbind(final_neighb, new_neighb)
+      }
+    }
+  }
+  if(length(final_neighb) > 0){
+    for(i in 1:length(final_neighb)){
+      neighb_name <- final_neighb[i]
+      new_row <- c(oss_name, neighb_name)
+      new_df <- rbind(new_df, new_row)
+      colnames(new_df) <- df
+    }
+  }
+  return(new_df)
+}
+
+
