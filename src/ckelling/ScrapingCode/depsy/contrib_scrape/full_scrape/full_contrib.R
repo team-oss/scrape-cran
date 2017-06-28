@@ -70,8 +70,7 @@ makecontribRow <- function(name){
 
 
 contrib_mat <- c()
-#for(i in 1:nrow(depsy_packages)){
-for(i in 1:20){
+for(i in 1:nrow(depsy_packages)){
   #scrape details from API using rjson
   print(i)
   new_rows <- makecontribRow(depsy_packages[i,1])
