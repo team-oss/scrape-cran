@@ -1,5 +1,5 @@
 makenodeRow <- function(name){
-  #i=16
+  #i=3458
   #name <- depsy_packages[i,1]
   #link <- "http://depsy.org/api/package/cran/A3"
   url <- paste('http://depsy.org/api/package/cran/', name, sep='')
