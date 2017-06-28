@@ -32,6 +32,8 @@ oh_key_lc <- "b1d57a7b8eee53271e35c5bfe6dc5c22238e8f0fed4b3543255c815e55db1014"
 # Simu's key
 oh_key_hs <- "8da56929b785b7a5035ed04472b05b94301c374da3cf98f3218b28acfe068f70"
 
+# Zarni's key
+oh_key_zh <- e3fcef6534731f1268be86d5e5f5bfaf54f870a426ce0346fd94ef261adbad45
 
 
 # Eirik's key
