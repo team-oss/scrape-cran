@@ -32,6 +32,12 @@ oh_key_kl <- "c35d07a8fdaf3d4e8e751c8bb6c4a83526d59a01b3bc8dddce86c79a385826d1"
 # Lori's key
 oh_key_lc <- "b1d57a7b8eee53271e35c5bfe6dc5c22238e8f0fed4b3543255c815e55db1014"
 
+# Simu's key
+oh_key_hs <- "8da56929b785b7a5035ed04472b05b94301c374da3cf98f3218b28acfe068f70"
+
+# Chanida's key
+oh_key_cl <- "5c32fe933ee240ff26192dd1c1e1eb6b5f44b6a0b80d3ed5f75a0a0ca425f212"
+
 
 ## Test api pull
 # Run this on each new key to make sure it works
@@ -44,7 +50,7 @@ test_pull <- function(path, page_no, api_key){
   return(info)
 }
 
-info <- test_pull("/projects/firefox", "", oh_key_lc)
+blah <- test_pull("/projects/firefox", "", oh_key_cl)
 
 
 
