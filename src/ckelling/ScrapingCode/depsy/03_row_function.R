@@ -1,5 +1,5 @@
 makeRow <- function(name){
-  #name <- depsy_packages[1,1]
+  name <- depsy_packages[5,1]
   #link <- "http://depsy.org/api/package/cran/A3"
   url <- paste('http://depsy.org/api/package/cran/', name, sep='')
   document <- fromJSON(txt=url)
@@ -17,7 +17,9 @@ makeRow <- function(name){
   if(is.null(document$github_repo_name) != TRUE){
     new_df[1, 'git_repo_name'] <- document$github_repo_name
   }
-  new_df[1, 'num_authors'] <- document$num_authors
+  if(is.null(document$num_authors) != TRUE){
+    new_df[1, 'num_authors'] <- document$num_authors
+  }
   new_df[1, 'is_academic'] <- document$is_academic
   new_df[1, 'language'] <- document$language
   #new_df[1, 'citations_dict'] <- document$citations_dict
