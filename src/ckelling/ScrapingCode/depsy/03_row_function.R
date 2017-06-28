@@ -1,6 +1,6 @@
 makenodeRow <- function(name){
-  #i=1
-  #name <- depsy_packages[,1]
+  i=16
+  name <- depsy_packages[i,1]
   #link <- "http://depsy.org/api/package/cran/A3"
   url <- paste('http://depsy.org/api/package/cran/', name, sep='')
   document <- jsonlite::fromJSON(txt=url)
@@ -24,7 +24,9 @@ makenodeRow <- function(name){
   new_df[1, 'is_academic'] <- document$is_academic
   new_df[1, 'language'] <- document$language
   #new_df[1, 'citations_dict'] <- document$citations_dict
-  new_df[1, 'indegree'] <- document$indegree
+  if(is.null(document$indegree) != TRUE){
+    new_df[1, 'indegree'] <- document$indegree
+  }
   new_df[1, 'name'] <- document$name
   new_df[1, 'impact'] <- document$impact
   if(is.null(document$num_commits) != TRUE){
@@ -36,7 +38,9 @@ makenodeRow <- function(name){
   if(is.null(document$num_committers) != TRUE){
     new_df[1, 'num_committers'] <- document$num_committers
   }
-  new_df[1, 'neighborhood_size'] <- document$neighborhood_size
+  if(is.null(document$neighborhood_size) != TRUE){
+    new_df[1, 'neighborhood_size'] <- document$neighborhood_size
+  }
   if(is.null(document$num_stars) != TRUE){
     new_df[1, 'num_stars'] <- document$num_stars
   }
@@ -53,16 +57,22 @@ makenodeRow <- function(name){
   return(new_df)
 }
 
-# makeedgeRow <- function(name){
-#   name <- depsy_packages[5,1]
-#   #link <- "http://depsy.org/api/package/cran/A3"
-#   url <- paste('http://depsy.org/api/package/cran/', name, sep='')
-#   document <- fromJSON(txt=url)
-#   df <- c('name','neighbor')
-#
-#   new_df <- as.data.frame(t(df), stringsAsFactors = FALSE)
-#   colnames(new_df) <- df
-#   new_df <- new_df[-1, ]
-#
-#
-# }
+makeedgeRow <- function(name){
+  name <- depsy_packages[5,1]
+  #link <- "http://depsy.org/api/package/cran/A3"
+  url <- paste('http://depsy.org/api/package/cran/', name, sep='')
+  document <- jsonlite::fromJSON(txt=url)
+  df <- c('name','neighbor')
+
+  new_df <- as.data.frame(t(df), stringsAsFactors = FALSE)
+  colnames(new_df) <- df
+  new_df <- new_df[-1, ]
+  oss_name <- document$name
+
+  contribs <- document$all_contribs$name
+  for(i in 1:length(document$all_contribs$name)){
+    contrib_name <- document$all_contribs$name[i]
+    new_row <- c(oss_name, contrib_name)
+    rbind(new_df, new_row)
+  }
+}
