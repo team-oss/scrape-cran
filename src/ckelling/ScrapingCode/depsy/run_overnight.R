@@ -48,3 +48,10 @@ for(i in 1:nrow(depsy_packages)){
 
 save(node_mat, file = "~/git/oss/data/oss/original/depsy/node_mat.Rdata")
 #save(edge_list, file = "~/git/oss/data/oss/original/depsy/edge_list.Rdata")
+
+
+#[1] 3458
+#Error in open.connection(con, "rb") : HTTP error 503.
+#Calls: makenodeRow ... fromJSON_string -> parseJSON -> parse_con -> open -> open.connection
+#Execution halted
+
