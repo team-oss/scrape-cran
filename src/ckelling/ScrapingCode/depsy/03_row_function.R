@@ -1,5 +1,5 @@
 makeRow <- function(name){
-  #name <- depsy_packages[1]
+  #name <- depsy_packages[1,1]
   #link <- "http://depsy.org/api/package/cran/A3"
   url <- paste('http://depsy.org/api/package/cran/', name, sep='')
   document <- fromJSON(txt=url)
