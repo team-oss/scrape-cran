@@ -35,4 +35,4 @@ for(i in 1:nrow(depsy_packages)){
   tag_mat <- rbind(tag_mat, new_rows)
 }
 
-
+save(tag_mat, file = "~/git/oss/data/oss/original/depsy/tag_mat.Rdata")
