@@ -5,7 +5,7 @@
 
 #### Created by: sphadke, benjs23
 #### Creted on: 06/15/2017
-#### Last edited on: 06/23/2017
+#### Last edited on: 06/27/2017
 
 
 ####################
@@ -34,14 +34,7 @@ library(XML)
 # All thanks to Daniel Chen, and help from https://github.com/r-lib/httr/blob/master/vignettes/api-packages.Rmd and http://bradleyboehmke.github.io/2016/01/scraping-via-apis.html#httr_api
 
 # API keys
-# Alex's key
-oh_key <- "d32768dd2ec65efd004d19a9f3c7262d7f30cd8959d9009ce4f9b8e7e19ff0ef&v=1"
-
-# Ben's key
-oh_key_bjs <- "ea13e69a9fe006292249cffce39e96a5781088724a61cda6dba72fd9e71ecc06"
-
-# Sayali's key
-oh_key_sp <- "f4b26446fe7946dc11e35e1e34e99aa9c2362b4294ce5d9799913fb6edcb7487"
+source("~/git/oss/src/sphadke/00_ohloh_keys.R")
 
 # Function to create the correct path, get xml from it, and parse out the info
 api_q <- function(path, page_no, api_key){
