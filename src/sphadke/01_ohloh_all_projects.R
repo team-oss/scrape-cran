@@ -73,7 +73,8 @@ api_q <- function(path, page_no, api_key){
 #
 # project_ids <- unique(project_ids)
 # save(project_ids, file = "~/git/oss/data/oss/original/openhub/all_project_ids_5.R")
-# load("~/git/oss/data/oss/original/openhub/all_project_ids_3.R")
+load("~/git/oss/data/oss/original/openhub/all_project_ids_15.R")
+head(project_ids)
 
 
 ####################
