@@ -19,24 +19,27 @@ load_stuff <- function(file_name) {
 fl <- lapply(X = fs, FUN = load_stuff)
 
 master_list_2 <- data.table::rbindlist(fl)
+save(master_list_2, '~/git/lab/oss/data/oss/original/sourceforge/master_list_2/master_list_2.RData')
+toc()
+
 
 
 
 #apply the function to the master list and store in a data frame
-New_SF <- data.frame()
-for(i in 1:nrow(master_list_2)){
-  new_data <- sf_scrape(master_list_2[i])
+#New_SF <- data.frame()
+#for(i in 1:nrow(master_list_2)){
+  #new_data <- sf_scrape(master_list_2[i])
 
   #Enterprise projects will usually return "Overview" for their descriptions. In that case, call the
   #enterprise_scrape function instead of the normal one.
-  if(new_data$Description == "Overview")
-  {
-    new_data <- enterprise_scrape(master_list_2[i])
-  }
+  #if(new_data$Description == "Overview")
+  #{
+    #new_data <- enterprise_scrape(master_list_2[i])
+  #}
 
   #New_SF<- rbind(New_SF, new_data)
-  Sys.sleep(runif(1, 0, 1) * 3)  ## randomly sleep the the system from 0 to 3 seconds
-  print(i)
-  save(new_data, file= sprintf('~/git/lab/oss/data/oss/original/sourceforge/new_data/SF_%06d.RData', i))
-}
-toc()
+  #Sys.sleep(runif(1, 0, 1) * 3)  ## randomly sleep the the system from 0 to 3 seconds
+  #print(i)
+  #save(new_data, file= sprintf('~/git/lab/oss/data/oss/original/sourceforge/new_data/SF_%06d.RData', i))
+#}
+#toc()
