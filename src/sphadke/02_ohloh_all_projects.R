@@ -84,6 +84,15 @@ for(i in 1:nrow(project)){
   print(i)
 }
 
+#created_at
+#updated_at
+#user_count
+#average_rating
+#rating_count
+#tags
+#language
+#project_activity_index
+
 
 # Save the table
 write.csv(as.data.frame(project), file = "~/git/oss/data/oss/original/openhub/all_projects_table.csv")
