@@ -19,7 +19,7 @@ load_stuff <- function(file_name) {
 fl <- lapply(X = fs, FUN = load_stuff)
 
 master_list_2 <- data.table::rbindlist(fl)
-save(master_list_2, '~/git/lab/oss/data/oss/original/sourceforge/master_list_2/master_list_2.RData')
+save(master_list_2, file = '~/git/lab/oss/data/oss/original/sourceforge/master_list_2/master_list_2.RData')
 toc()
 
 
