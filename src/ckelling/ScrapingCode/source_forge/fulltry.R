@@ -24,19 +24,27 @@ master_list_2 <- as.vector(master_list_2[,1])
 
 #apply the function to the master list and store in a data frame
 New_SF <- data.frame()
-for(i in 3908:length(master_list_2)){
-  new_data <- sf_scrape(master_list_2[i])
 
-  #Enterprise projects will usually return "Overview" for their descriptions. In that case, call the
-  #enterprise_scrape function instead of the normal one.
-  if(new_data$Description == "Overview")
-  {
-    new_data <- enterprise_scrape(master_list_2[i])
+# skip: 3907, 4250
+error_vec <- c(3907)
+
+for(i in 4249:length(master_list_2)){
+  new_data <- try(sf_scrape(master_list_2[i]))
+
+  if(substr(new_data[1],1,5) == "Error"){
+    error_vec <- rbind(error_vec, paste(i))
+  }else{
+    #Enterprise projects will usually return "Overview" for their descriptions. In that case, call the
+    #enterprise_scrape function instead of the normal one.
+    if(new_data$Description == "Overview")
+    {
+      new_data <- enterprise_scrape(master_list_2[i])
+    }
+    print(i)
+    New_SF<- rbind(New_SF, new_data)
+    Sys.sleep(runif(1, 0, 1) * 3)  ## randomly sleep the the system from 0 to 3 seconds
+    save(new_data, file= sprintf('~/git/oss/data/oss/original/sourceforge/new_data/SF_%06d.RData', i))
   }
-  print(i)
-  New_SF<- rbind(New_SF, new_data)
-  Sys.sleep(runif(1, 0, 1) * 3)  ## randomly sleep the the system from 0 to 3 seconds
-  save(new_data, file= sprintf('~/git/oss/data/oss/original/sourceforge/new_data/SF_%06d.RData', i))
 }
 
 full_SF <- New_SF
