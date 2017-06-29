@@ -50,7 +50,7 @@ api_q <- function(path, page_no, api_key){
 }
 
 # Get project IDs
-load("~/git/oss/data/oss/original/openhub/all_project_ids.R")
+load("~/git/oss/data/oss/original/openhub/projects/all_project_ids_1.R")
 
 
 ####################
@@ -58,13 +58,13 @@ load("~/git/oss/data/oss/original/openhub/all_project_ids.R")
 ####################
 
 # Choose which IDs, or how many of the IDs to use for the session
-project_ids <- ???
+project_ids <- "firefox"
 
 ## Table 'project': takes projects
 # Creating a path that can directly go into the API function
 project_paths <- paste("/", "projects", "/", project_ids, sep = "")
 
-project <- matrix(NA, NEED_TO_INPUT, 4)
+project <- matrix(NA, 1, 5)
 colnames(project) <- c("project_url_id", "project_name", "user_count", "average_rating", "tags")
 
 for(i in 1:nrow(project)){
