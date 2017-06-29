@@ -74,21 +74,23 @@ for(j in 1:length(all_keys))
   project <- matrix(NA, length(project_ids), 5)
   colnames(project) <- c("project_url_id", "project_name", "user_count", "average_rating", "tags")
   
-  for(i in 1:nrow(project)){
+
     contents <- api_q(project_paths, "", oh_key)
     
     if(status_code(contents) == 200){
       info <- content(contents)
       
-      project[i,1] <- project_ids[i]
-      project[i,2] <- xml_node(info, 'name') %>% html_text
-      project[i,3] <- xml_nodes(info, 'user_count') %>% html_text()
-      project[i,4] <- xml_nodes(info, 'average_rating') %>% html_text()
-      project[i,5] <- xml_nodes(info, 'tag') %>% html_text() %>% paste(collapse = ';')
+      project[k,1] <- project_ids[k]
+      project[k,2] <- xml_node(info, 'name') %>% html_text
+      project[k,3] <- xml_nodes(info, 'user_count') %>% html_text()
+      project[k,4] <- xml_nodes(info, 'average_rating') %>% html_text()
+      project[k,5] <- xml_nodes(info, 'tag') %>% html_text() %>% paste(collapse = ';')
     } else {
       project[i,1] <- project_ids[i]
     }
-    print(i)
+    print(k)
+  
   }
-  }
+  write(project, paste0("~/git/oss/data/oss/original/openhub/projects/project_info_tables/project_table_",j ,"_",Sys.Date()))
 }
+
