@@ -40,6 +40,8 @@ source("~/git/oss/src/sphadke/00_ohloh_keys.R")
 avail_keys <- length(grep("oh_key", ls()))
 avail_keys
 
+
+
 # Function to create the correct path, get xml from it
 api_q <- function(path, page_no, api_key){
   info <- GET(sprintf('https://www.openhub.net%s.xml?%s&api_key=%s',
@@ -58,18 +60,20 @@ api_q <- function(path, page_no, api_key){
 
 ## Organizations
 project_ids <- vector()
-k <- #number of pages possible on the given API key
-for (i in 1:k){
-  get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key_old)
+k <- 3400
+for (i in 2994:k){
+  get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key_ei)
   projects <- content(get_projects, as = "parsed")
   ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
   ids
   project_ids <- c(project_ids, ids)
+  print(i)
 }
 
 project_ids <- unique(project_ids)
-# save(org_ids, file = "~/git/oss/data/oss/original/openhub/all_project_ids.R")
-load("~/git/oss/data/oss/original/openhub/all_project_ids.R")
+save(project_ids, file = "~/git/oss/data/oss/original/openhub/all_project_ids_4.R")
+
+load("~/git/oss/data/oss/original/openhub/all_project_ids_ben.R")
 
 
 ####################
