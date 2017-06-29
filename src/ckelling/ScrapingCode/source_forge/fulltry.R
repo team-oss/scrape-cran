@@ -33,6 +33,7 @@ for(i in 4249:length(master_list_2)){
 
   if(substr(new_data[1],1,5) == "Error"){
     error_vec <- rbind(error_vec, paste(i))
+    save(error_vec, file = '~/git/oss/data/oss/original/sourceforge/errors.Rdata')
   }else{
     #Enterprise projects will usually return "Overview" for their descriptions. In that case, call the
     #enterprise_scrape function instead of the normal one.
@@ -46,7 +47,9 @@ for(i in 4249:length(master_list_2)){
     save(new_data, file= sprintf('~/git/oss/data/oss/original/sourceforge/new_data/SF_%06d.RData', i))
   }
 }
-
 full_SF <- New_SF
-
 save(full_SF, file = '~/git/oss/data/oss/original/sourceforge/full_SF.Rdata')
+
+fullerror_vec <- error_vec
+save(fullerror_vec, file = '~/git/oss/data/oss/original/sourceforge/fullerrors.Rdata')
+
