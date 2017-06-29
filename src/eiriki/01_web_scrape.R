@@ -75,6 +75,11 @@ sf_scrape <- function(link){
   #filter out for the date
   match <- grep(pattern = '[0-9]{4}-[0-9]{2}-[0-9]{2}', x = date_registered)
   date_registered <- date_registered[match]
+  #if the date is really new ex: "14 hours ago", then
+  if(length(match) == 0)
+  {
+    date_registered <- NA
+  }
   }
   else{
     date_registered <- NA
