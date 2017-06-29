@@ -77,4 +77,6 @@ for(i in 1:nrow(depsy_packages)){
   contrib_mat <- rbind(contrib_mat, new_rows)
 }
 
-save(contrib_mat, file = "~/git/oss/data/oss/original/depsy/contrib_mat.Rdata")
+fullcontrib_mat <- contrib_mat
+
+save(fullcontrib_mat, file = "~/git/oss/data/oss/original/depsy/fullcontrib_mat.Rdata")
