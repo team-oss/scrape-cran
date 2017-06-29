@@ -12,7 +12,7 @@ depsy_packages <- all_packages[-error_vec,] #these are the 9,810 R packages on D
 #source(file = "~/git/oss/src/ckelling/ScrapingCode/depsy/03_row_function.R")
 
 maketopneighbRow <- function(name){
-  name <- depsy_packages[1,1]
+  #name <- depsy_packages[80,1]
   #link <- "http://depsy.org/api/package/cran/A3"
   url <- paste('http://depsy.org/api/package/cran/', name, sep='')
   document <- jsonlite::fromJSON(txt=url)
@@ -20,10 +20,10 @@ maketopneighbRow <- function(name){
   new_df <- c()
 
   oss_name <- document$name
-  topneighbs <- document$top_neighbors
+  topneighbs <- document$top_neighbors$name
 
-  if(length(document$top_neighbs) > 0){
-    for(i in 1:length(top_neighbs)){
+  if(length(topneighbs) > 0){
+    for(i in 1:length(topneighbs)){
       topneighb <- topneighbs[i]
       new_row <- c(oss_name, topneighb)
       new_df <- rbind(new_df, new_row)
@@ -32,7 +32,6 @@ maketopneighbRow <- function(name){
   }
   return(new_df)
 }
-
 
 topneighb_mat <- c()
 for(i in 1:nrow(depsy_packages)){
