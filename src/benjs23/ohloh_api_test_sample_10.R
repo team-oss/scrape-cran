@@ -2,10 +2,12 @@
 ##### Code to pull info from OpenHub API: assumes known inputs for #####
 #### account_id, project_id, org_name, analysis_id, or org_url_name ####
 ########################################################################
+# This code setup the function and loops for pulling data from OpenHub
+# It saved sample tables in ~/git/oss/data/oss/original/openhub/sample_of_10/
 
 #### Created by: sphadke, benjs23
 #### Creted on: 06/15/2017
-#### Last edited on: 06/27/2017
+#### Last edited on: 06/29/2017
 
 
 ####################
