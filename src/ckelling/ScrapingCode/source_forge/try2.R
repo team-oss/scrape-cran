@@ -58,6 +58,8 @@ for(i in 1:length(master_list)){
   Sys.sleep(runif(1, 0, 1) * 3)  ## randomly sleep the the system from 0 to 3 seconds
 }
 
-orig_data2 <- New_SF
+#orig_data2 <- New_SF
 
-save(orig_data2, file = '~/git/oss/src/ckelling/ScrapingCode/source_forge/orig_SF2.Rdata')
+full_SF <- New_SF
+
+save(full_SF, file = '~/git/oss/src/ckelling/ScrapingCode/source_forge/full_SF.Rdata')

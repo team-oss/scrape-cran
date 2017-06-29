@@ -24,7 +24,7 @@ master_list_2 <- as.vector(master_list_2[,1])
 
 #apply the function to the master list and store in a data frame
 New_SF <- data.frame()
-for(i in 1:length(master_list_2)){
+for(i in 3908:length(master_list_2)){
   new_data <- sf_scrape(master_list_2[i])
 
   #Enterprise projects will usually return "Overview" for their descriptions. In that case, call the
@@ -36,10 +36,9 @@ for(i in 1:length(master_list_2)){
   print(i)
   New_SF<- rbind(New_SF, new_data)
   Sys.sleep(runif(1, 0, 1) * 3)  ## randomly sleep the the system from 0 to 3 seconds
+  save(new_data, file= sprintf('~/git/oss/data/oss/original/sourceforge/new_data/SF_%06d.RData', i))
 }
-
-#orig_data2 <- New_SF
 
 full_SF <- New_SF
 
-save(full_SF, file = '~/git/oss/src/ckelling/ScrapingCode/source_forge/full_SF.Rdata')
+save(full_SF, file = '~/git/oss/data/oss/original/sourceforge/full_SF.Rdata')
