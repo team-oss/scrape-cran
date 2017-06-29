@@ -91,6 +91,6 @@ for(j in 1:length(all_keys))
     print(k)
   
   }
-  write(project, paste0("~/git/oss/data/oss/original/openhub/projects/project_table_",j ,Sys.Date()))
+  write(project, paste0("~/git/oss/data/oss/original/openhub/projects/project_info_tables/project_table_",j ,"_",Sys.Date()))
 }
 
