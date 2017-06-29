@@ -1,7 +1,7 @@
-#####################
-#### OpenHub API ####
-#### project IDS ####
-#####################
+#######################
+##### OpenHub API #####
+#### projects info ####
+#######################
 
 #### Created by: sphadke
 #### Creted on: 06/27/2017
@@ -40,25 +40,45 @@ source("~/git/oss/src/sphadke/00_ohloh_keys.R")
 avail_keys <- length(grep("oh_key", ls()))
 avail_keys
 
+
+
 # Function to create the correct path, get xml from it
 api_q <- function(path, page_no, api_key){
   info <- GET(sprintf('https://www.openhub.net%s.xml?%s&api_key=%s',
-                      path, #page URL
-                      page_no, #must be in form "page=n"
-                      api_key))
+                path, #page URL
+                page_no, #must be in form "page=n"
+                api_key))
   return(info)
 }
 
-# Get project IDs
-load("~/git/oss/data/oss/original/openhub/all_project_ids.R")
+
+####################
+#### Pulling ids
+####################
+# We create IDs for as many projects as possible
+# They go into a path, which then feeds into the API call to then pull table
+
+## Organizations
+project_ids <- vector()
+k <- 3400
+for (i in 2994:k){
+  get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key_ei)
+  projects <- content(get_projects, as = "parsed")
+  ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+  ids
+  project_ids <- c(project_ids, ids)
+  print(i)
+}
+
+project_ids <- unique(project_ids)
+save(project_ids, file = "~/git/oss/data/oss/original/openhub/all_project_ids_4.R")
+
+load("~/git/oss/data/oss/original/openhub/all_project_ids_ben.R")
 
 
 ####################
 #### Pulling the table
 ####################
-
-# Choose which IDs, or how many of the IDs to use for the session
-project_ids <- ???
 
 ## Table 'project': takes projects
 # Creating a path that can directly go into the API function
@@ -83,15 +103,6 @@ for(i in 1:nrow(project)){
   }
   print(i)
 }
-
-#created_at
-#updated_at
-#user_count
-#average_rating
-#rating_count
-#tags
-#language
-#project_activity_index
 
 
 # Save the table

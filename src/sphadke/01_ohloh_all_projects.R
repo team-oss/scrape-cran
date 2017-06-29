@@ -43,6 +43,8 @@ avail_keys <- length(grep("oh_key", ls()))
 avail_keys
 api_keys <- grep("oh_key", ls(), value = TRUE)
 
+
+
 # Function to create the correct path, get xml from it
 api_q <- function(path, page_no, api_key){
   info <- GET(sprintf('https://www.openhub.net%s.xml?%s&api_key=%s',
@@ -59,11 +61,12 @@ api_q <- function(path, page_no, api_key){
 # We create IDs for as many projects as possible
 # They go into a path, which then feeds into the API call to then pull table
 
-## Organizations
+## Projects
 # project_ids <- vector()
-# k <- 4400#number of pages possible on the given API key
-# for (i in 3401:k){
-#   get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key_sep)
+# j <-  #number of the first page being pulled on this call
+# k <-  #number of the last page being pulled on this call
+# for (i in j:k){
+#   get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key_)
 #   projects <- content(get_projects, as = "parsed")
 #   ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
 #   ids
@@ -72,15 +75,113 @@ api_q <- function(path, page_no, api_key){
 # }
 #
 # project_ids <- unique(project_ids)
-# save(project_ids, file = "~/git/oss/data/oss/original/openhub/all_project_ids_5.R")
-load("~/git/oss/data/oss/original/openhub/all_project_ids_15.R")
-head(project_ids)
+# save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_5.R")
+# load("~/git/oss/data/oss/original/openhub/projects/all_project_ids_.R")
+# head(project_ids)
 
 
 ####################
-#### Temp code: this was the lazy code Sayali wrote to run org_ids pull in the background
-#### File needs to be cleaned to remove this
+## Lazy code Sayali wrote to run org_ids pull in the background.
+## Actual implementation was done using separate codefiles,
+## since there was no guarantee of finishing it before midnight,
+## which is when the keys (hopefully) replenish.
+## Those separate files have been deleted.
 ####################
+
+####
+#### Part 1
+####
+
+project_ids <- vector()
+k <- 1#number of pages possible on the given API key
+for (i in 999:k){
+  get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key_gk)
+  projects <- content(get_projects, as = "parsed")
+  ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+  ids
+  project_ids <- c(project_ids, ids)
+  print(i)
+}
+
+project_ids <- unique(project_ids)
+save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_1.R")
+
+
+####
+#### Part 2
+####
+
+project_ids <- vector()
+k <- 1994#number of pages possible on the given API key
+for (i in 1000:k){
+  get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key_cl)
+  projects <- content(get_projects, as = "parsed")
+  ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+  ids
+  project_ids <- c(project_ids, ids)
+  print(i)
+}
+
+project_ids <- unique(project_ids)
+save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_2.R")
+
+
+####
+#### Part 3
+####
+
+project_ids <- vector()
+k <- 2993#number of pages possible on the given API key
+for (i in 1995:k){
+  get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key_cm)
+  projects <- content(get_projects, as = "parsed")
+  ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+  ids
+  project_ids <- c(project_ids, ids)
+  print(i)
+}
+
+project_ids <- unique(project_ids)
+save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_3.R")
+
+
+####
+#### Part 4
+####
+
+project_ids <- vector()
+k <- 2994#number of pages possible on the given API key
+for (i in 3400:k){
+  get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key_ei)
+  projects <- content(get_projects, as = "parsed")
+  ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+  ids
+  project_ids <- c(project_ids, ids)
+  print(i)
+}
+
+project_ids <- unique(project_ids)
+save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_4.R")
+
+
+####
+#### Part 5
+####
+
+project_ids <- vector()
+k <- 4400#number of pages possible on the given API key
+for (i in 3401:k){
+  get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key_sep)
+  projects <- content(get_projects, as = "parsed")
+  ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+  ids
+  project_ids <- c(project_ids, ids)
+  print(i)
+}
+
+project_ids <- unique(project_ids)
+save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_5.R")
+
 
 ####
 #### Part 6
@@ -98,7 +199,7 @@ for (i in 4401:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/all_project_ids_6.R")
+save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_6.R")
 
 
 ####
@@ -117,7 +218,7 @@ for (i in 5396:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/all_project_ids_7.R")
+save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_7.R")
 
 
 ####
@@ -125,9 +226,12 @@ save(project_ids, file = "~/git/oss/data/oss/original/openhub/all_project_ids_7.
 ####
 
 project_ids <- vector()
+
+
 k <- 7385#number of pages possible on the given API key
 for (i in 6391:k){
   get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key_old)
+
   projects <- content(get_projects, as = "parsed")
   ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
   ids
@@ -136,8 +240,9 @@ for (i in 6391:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/all_project_ids_8.R")
 
+
+save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_8.R")
 
 ####
 #### Part 9
@@ -155,7 +260,7 @@ for (i in 7386:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/all_project_ids_9.R")
+save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_9.R")
 
 
 ####
@@ -174,7 +279,7 @@ for (i in 8381:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/all_project_ids_10.R")
+save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_10.R")
 
 
 ####
@@ -193,7 +298,7 @@ for (i in 9376:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/all_project_ids_11.R")
+save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_11.R")
 
 
 ####
@@ -212,7 +317,7 @@ for (i in 10371:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/all_project_ids_12.R")
+save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_12.R")
 
 
 ####
@@ -231,7 +336,7 @@ for (i in 11366:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/all_project_ids_13.R")
+save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_13.R")
 
 
 ####
@@ -250,7 +355,7 @@ for (i in 12361:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/all_project_ids_14.R")
+save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_14.R")
 
 
 ####
@@ -269,7 +374,7 @@ for (i in 13356:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/all_project_ids_15.R")
+save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_15.R")
 
 
 
