@@ -14,8 +14,9 @@ library(XML)
 library(rio)
 library(readr)
 
+rm(list=ls())
 
-
+#k <- write("k","~/git/oss/data/oss/original/openhub/projects/random/k_index.txt")
 
 k <- read_file("~/git/oss/data/oss/original/openhub/projects/random/k_index.txt")
 
@@ -43,7 +44,6 @@ for (key in key_names) {
   all_keys <- c(all_keys,get(key))
 }
 names(all_keys) <- key_names
-
 print(all_keys)
 
 
@@ -62,6 +62,14 @@ project_ids <- all_random_project_ids
 
 loopBreak = FALSE
 
+project <- matrix(NA, length(project_ids), 33)
+colnames(project) <- c("project_url_id", "project_name", "project_id", "created_at", "updated_at", "description", "homepage_url", "download_url", "url_name",
+                       "user_count", "average_rating", "rating_count", "review_count",
+                       "analysis_id", "analysis_url", "last_analysis_update", "last_source_code_access", "ohloh_first_month_of_analysis", "ohloh_latest_month_of_analysis",
+                       "twelve_month_contributor_count", "total_contributor_count", "twelve_month_commit_count", "total_commit_count", "total_code_lines", "main_language",
+                       "possible_urls", "ohloh_url", "factoids", "tags", "licenses",
+                       "languages", "language_percentages", "activity_index")
+
 #outer loop runs through the list of every API key
 for(j in 1:length(all_keys))
 {
@@ -78,7 +86,7 @@ for(j in 1:length(all_keys))
   k = (length(project_ids) - (length(project_ids)-k))
 
   #loops through the next 1000 project IDs (this is how many calls you're allowed per API key per day)
-  for(k in (k+1):k+1000)
+  for(k in ((k+1):(k+1000)))
 {
 
   ################################
@@ -101,27 +109,53 @@ for(j in 1:length(all_keys))
   project_paths <- paste("/", "projects", "/", project_id, sep = "")
 
 
-  project <- matrix(NA, length(project_ids), 5)
-  colnames(project) <- c("project_url_id", "project_name", "user_count", "average_rating", "tags")
-
-
     contents <- api_q(project_paths, "", oh_key)
 
     if(status_code(contents) == 200){
       info <- content(contents)
-
       project[k,1] <- project_ids[k]
       project[k,2] <- xml_node(info, 'name') %>% html_text
-      project[k,3] <- xml_nodes(info, 'user_count') %>% html_text()
-      project[k,4] <- xml_nodes(info, 'average_rating') %>% html_text()
-      project[k,5] <- xml_nodes(info, 'tag') %>% html_text() %>% paste(collapse = ';')
+      project[k,3] <- xml_node(info, 'id') %>% html_text() #unique ID for the project
+      project[k,4] <- xml_node(info, 'created_at') %>% html_text() #project created at
+      project[k,5] <- xml_node(info, 'updated_at') %>% html_text() #last updated at
+      project[k,6] <- xml_node(info, 'description') %>% html_text() #Project description
+      project[k,7] <- xml_node(info, 'homepage_url') %>% html_text() #homepage URL
+      project[k,8] <- xml_node(info, 'download_url') %>% html_text() #download URL
+      project[k,9] <- xml_node(info, 'url_name') %>% html_text() #URL name for ohloh URL
+      project[k,10] <- xml_node(info, 'user_count') %>% html_text() #i use this
+      project[k,11] <- xml_node(info, 'average_rating') %>% html_text()
+      project[k,12] <- xml_node(info, 'rating_count') %>% html_text()
+      project[k,13] <- xml_node(info, 'review_count') %>% html_text()
+      project[k,14] <- xml_node(info, 'analysis_id') %>% html_text()
+      project[k,15] <- (xml_contents(xml_node(info, 'analysis')) %>% html_text())[2] #url for analysis in XML
+      project[k,16] <- (xml_contents(xml_node(info, 'analysis')) %>% html_text())[4] #last update for analysis
+      project[k,17] <- (xml_contents(xml_node(info, 'analysis')) %>% html_text())[5] #last time SCS was accessed for analysis
+      project[k,18] <- (xml_contents(xml_node(info, 'analysis')) %>% html_text())[6] #first month for which ohloh has monthly historical stats
+      project[k,19] <- (xml_contents(xml_node(info, 'analysis')) %>% html_text())[7] #last month for which ohloh has monthly historical stats; mostly current month
+      project[k,20] <- (xml_contents(xml_node(info, 'analysis')) %>% html_text())[8] #twelve month contributor count
+      project[k,21] <- (xml_contents(xml_node(info, 'analysis')) %>% html_text())[9] #total contributor count
+      project[k,22] <- (xml_contents(xml_node(info, 'analysis')) %>% html_text())[10] #twelve month commit count
+      project[k,23] <- (xml_contents(xml_node(info, 'analysis')) %>% html_text())[11] #total month commit count
+      project[k,24] <- (xml_contents(xml_node(info, 'analysis')) %>% html_text())[12] #total code lines
+      project[k,25] <- (xml_contents(xml_node(info, 'analysis')) %>% html_text())[16] #main language
+      project[k,26] <- xml_nodes(info, 'url') %>% html_text() %>% paste(collapse = ";")
+      project[k,27] <- xml_node(info, 'html_url') %>% html_text()
+      project[k,28] <- paste((xml_nodes(info, 'factoid') %>% xml_attr('type')), collapse = ";") #factoid
+      project[k,29] <- xml_nodes(info, 'tag') %>% html_text() %>% paste(collapse = ';')
+      project[k,30] <- paste(unlist((xml_node(info, 'licenses') %>% html_text() %>% str_split(pattern = 'gpl'))), collapse = ";")
+      project[k,31] <- xml_children(xml_nodes(info, 'languages')) %>% html_text() %>% str_trim() %>% paste(collapse = ";")
+      project[k,32] <- xml_children(xml_nodes(info, 'languages')) %>% xml_attr('percentage') %>% paste(collapse = ';')
+      project[k,33] <- xml_node(info, 'project_activity_index') %>% html_text()
+
     } else {
-      project[i,1] <- project_ids[i]
+      project[k,1] <- project_ids[k]
     }
     print(k)
 
   }
-  write(project, paste0("~/git/oss/data/oss/original/openhub/projects/project_info_tables/project_table_",j ,"_",Sys.Date()))
+  sub<-apply(project,1,function(x){all(is.na(x))})
+  project1<-project[!sub,]
+  save(project1, file= paste0("~/git/oss/data/oss/original/openhub/projects/random/project_tables/project_table_",j ,"_",Sys.Date(),".RData"))
 }
 
 write(k,"~/git/oss/data/oss/original/openhub/projects/random/k_index.txt")

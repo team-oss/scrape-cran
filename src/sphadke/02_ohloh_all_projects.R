@@ -87,12 +87,12 @@ for(i in 1:nrow(project)){
     project[i,8] <- xml_node(info, 'download_url') %>% html_text() #download URL
     project[i,9] <- xml_node(info, 'url_name') %>% html_text() #URL name for ohloh URL
 
-    project[i,10] <- xml_nodes(info, 'user_count') %>% html_text() #i use this
-    project[i,11] <- xml_nodes(info, 'average_rating') %>% html_text()
-    project[i,12] <- xml_nodes(info, 'rating_count') %>% html_text()
-    project[i,13] <- xml_nodes(info, 'review_count') %>% html_text()
+    project[i,10] <- xml_node(info, 'user_count') %>% html_text() #i use this
+    project[i,11] <- xml_node(info, 'average_rating') %>% html_text()
+    project[i,12] <- xml_node(info, 'rating_count') %>% html_text()
+    project[i,13] <- xml_node(info, 'review_count') %>% html_text()
 
-    project[i,14] <- xml_nodes(info, 'analysis_id') %>% html_text()
+    project[i,14] <- xml_node(info, 'analysis_id') %>% html_text()
     project[i,15] <- (xml_contents(xml_node(info, 'analysis')) %>% html_text())[2] #url for analysis in XML
     project[i,16] <- (xml_contents(xml_node(info, 'analysis')) %>% html_text())[4] #last update for analysis
     project[i,17] <- (xml_contents(xml_node(info, 'analysis')) %>% html_text())[5] #last time SCS was accessed for analysis
