@@ -74,7 +74,7 @@ pulling_random_project_ids <- function(j, k, key){
 #### Part 3
 ####
 
-random_project_ids <- pulling_random_project_ids(1601, 2400, oh_key_md3)
+random_project_ids <- pulling_random_project_ids(1601, 2400, oh_key_km)
 random_project_ids <- unique(random_project_ids)
 save(random_project_ids, file = "~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_3.RData")
 
