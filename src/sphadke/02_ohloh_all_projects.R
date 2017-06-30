@@ -106,7 +106,7 @@ for(i in 1:nrow(project)){
     project[i,25] <- (xml_contents(xml_node(info, 'analysis')) %>% html_text())[16] #main language
 
     project[i,26] <- xml_nodes(info, 'url') %>% html_text() %>% paste(collapse = ";")
-    project[i,27] <- xml_nodes(info, 'html_url') %>% html_text()
+    project[i,27] <- xml_node(info, 'html_url') %>% html_text()
 
     project[i,28] <- paste((xml_nodes(info, 'factoid') %>% xml_attr('type')), collapse = ";") #factoid
 
@@ -120,7 +120,7 @@ for(i in 1:nrow(project)){
     project[i,31] <- xml_children(xml_nodes(info, 'languages')) %>% html_text() %>% str_trim() %>% paste(collapse = ";")
     project[i,32] <- xml_children(xml_nodes(info, 'languages')) %>% xml_attr('percentage') %>% paste(collapse = ';')
 
-    project[i,33] <- xml_nodes(info, 'project_activity_index') %>% html_text()
+    project[i,33] <- xml_node(info, 'project_activity_index') %>% html_text()
 
     # (xml_nodes(info, 'description') %>% html_text())[2] #project activity index description; comes with the index earlier
     # xml_nodes(info, 'links') %>% html_text()
