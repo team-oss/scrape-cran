@@ -1,5 +1,8 @@
 ### Created by: benjs23
 ### Date: 6/29/2017
+####
+#### THIS IS USED TO RUN THE CODE MANUALLY!
+####
 
 ####### This code automates the scraping from OpenHub. It loads a list of API keys
 ####### and takes a function name as input. It automatically runs through every API
@@ -16,7 +19,7 @@ library(readr)
 
 rm(list=ls())
 
-#k <- write("k","~/git/oss/data/oss/original/openhub/projects/random/k_index.txt")
+# k <- write("k","~/git/oss/data/oss/original/openhub/projects/random/k_index.txt")
 
 k <- read_file("~/git/oss/data/oss/original/openhub/projects/random/k_index.txt")
 
@@ -32,8 +35,6 @@ if(k == "k\n")
 # pulls in vector of API keys
 source("~/git/oss/src/sphadke/00_ohloh_keys.R")
 
-
-
 #puts API keys into a named vector
 curr_ls <- ls()
 pattern <- '^oh_key_'
@@ -48,11 +49,12 @@ match <- grep(pattern = pattern, x = ls())
 key_names <- curr_ls[match]
 all_keys <- c()
 
-for (key in key_names) {
-  all_keys <- c(all_keys,get(key))
-}
+for (key in key_names) {all_keys <- c(all_keys, get(key))}
 names(all_keys) <- key_names
 print(all_keys)
+
+all_keys <- all_keys[-(1:3)]
+all_keys <- all_keys[-c(4,15)]
 
 
 # Function to create the correct path and get xml format data from it
@@ -95,26 +97,26 @@ for(j in 1:length(all_keys))
 
   #loops through the next 1000 project IDs (this is how many calls you're allowed per API key per day)
   for(k in ((k+1):(k+1000)))
-{
-
-  ################################
-  #### Pulling the table from ohloh
-  ################################
-
-  #checks that index k has not exceeded the number of project IDs in the master list
-  if ( k <= length(project_ids))
   {
-  project_id <- project_ids[k] #sets current project ID to the next one from the master list
-  }
-  else
-  {
-    loopBreak = TRUE #sets outer loopBreak to true
-    break #breaks out of inner loop if there are no more entries in the master project ID list
-  }
 
-  ## Table 'project': takes projects
-  # Creating a path that can directly go into the API function with current project ID
-  project_paths <- paste("/", "projects", "/", project_id, sep = "")
+    ################################
+    #### Pulling the table from ohloh
+    ################################
+
+    #checks that index k has not exceeded the number of project IDs in the master list
+    if ( k <= length(project_ids))
+    {
+      project_id <- project_ids[k] #sets current project ID to the next one from the master list
+    }
+    else
+    {
+      loopBreak = TRUE #sets outer loopBreak to true
+      break #breaks out of inner loop if there are no more entries in the master project ID list
+    }
+
+    ## Table 'project': takes projects
+    # Creating a path that can directly go into the API function with current project ID
+    project_paths <- paste("/", "projects", "/", project_id, sep = "")
 
 
     contents <- api_q(project_paths, "", oh_key)
