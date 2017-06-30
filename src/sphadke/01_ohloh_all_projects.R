@@ -373,4 +373,43 @@ project_ids <- unique(project_ids)
 save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_15.R")
 
 
+################
+#### Putting the IDs together
+################
+
+load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_1.RData")
+one <- random_project_ids
+
+load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_2.RData")
+two <- random_project_ids
+
+load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_3.RData")
+three <- random_project_ids
+
+load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_4.RData")
+four <- random_project_ids
+
+load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_5.RData")
+five <- random_project_ids
+
+load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_6.RData")
+six <- random_project_ids
+
+load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_7.RData")
+seven <- random_project_ids
+
+load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_8.RData")
+eight <- random_project_ids
+
+load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_9.RData")
+nine <- random_project_ids
+
+load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_10.RData")
+ten <- random_project_ids
+
+all_random_project_ids <- c(one, two, three, four, five, six, seven, eight, nine, ten)
+save(all_random_project_ids, file = "~/git/oss/data/oss/original/openhub/projects/random/project_ids/all_random_project_ids.RData")
+
+
+
 
