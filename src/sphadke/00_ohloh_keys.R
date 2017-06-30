@@ -1,5 +1,5 @@
 ## File contains all API keys for OpenHub
-# Source it to
+# Source it to wherever you need keys
 
 # API keys
 # Sayali's key
