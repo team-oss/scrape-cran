@@ -63,7 +63,7 @@ project_ids <- all_random_project_ids[i]
 # Creating a path that can directly go into the API function
 project_paths <- paste("/", "projects", "/", project_ids, sep = "")
 
-project <- matrix(NA, 1, 33)
+project <- matrix(NA, *, 33)
 colnames(project) <- c("project_url_id", "project_name", "project_id", "created_at", "updated_at", "description", "homepage_url", "download_url", "url_name",
                        "user_count", "average_rating", "rating_count", "review_count",
                        "analysis_id", "analysis_url", "last_analysis_update", "last_source_code_access", "ohloh_first_month_of_analysis", "ohloh_latest_month_of_analysis",
