@@ -35,7 +35,6 @@ oh_key_hs <- "8da56929b785b7a5035ed04472b05b94301c374da3cf98f3218b28acfe068f70"
 # Zarni's key
 oh_key_zh <- "e3fcef6534731f1268be86d5e5f5bfaf54f870a426ce0346fd94ef261adbad45"
 
-
 # Eirik's key
 oh_key_ei <- "789849b1179587e1333f41990a1542f48ae139dd43c3cfbf414618278a247380"
 
@@ -51,6 +50,23 @@ oh_key_cm <- "94ad08fef0f6d41303d99d70a1c80cf96f539592262af8cd10011c6bba562236"
 # Sean's key
 oh_key_sep <- "44f8e85c82a77af8b28731b8ade12c6adc40b4ca6fd9a93c2e8b3f20d32af096"
 
+# Ronnie's key
+oh_key_rf <- "7ce2bd34d8e5426fd0e9cd828ac1b13e4ecfcfdf7d975d5fdd1f9ad879c4bc4d"
+
+# Maddie's key 1
+oh_key_ma1 <- "5a19c11b1e2698257900a213568fdde7a9d7bdda9e2cfa4ff245eb8ba06f6168"
+
+# Maddie's key 2
+oh_key_ma2 <- "5d21e94b455dcf2be1c4d007f3e23c47fb81e33b279626739208d0cd972cc3ad"
+
+# Maddie's key 3
+oh_key_ma3 <- "cdb55288a662d478dfde7b98c27cdfbe92ddca9511c52d084a84dd51331ef41b"
+
+# Daniel's key
+oh_key_dc <- "af70ae2a1ec5f8a79e2aa6a80835467fe4a383b4ebc22384914160934634f239"
+
+
+
 
 ## Test api pull
 # Run this on each new key to make sure it works
@@ -63,7 +79,7 @@ oh_key_sep <- "44f8e85c82a77af8b28731b8ade12c6adc40b4ca6fd9a93c2e8b3f20d32af096"
 #   return(info)
 # }
 #
-# blah <- test_pull("/projects/firefox", "", oh_key_gk)
+# blah <- test_pull("/projects/firefox", "", oh_key_ma1)
 
 
 

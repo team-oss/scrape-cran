@@ -1,7 +1,6 @@
-#####################
-#### OpenHub API ####
-#### project IDs ####
-#####################
+###############################################
+#### OpenHub API: Pull all (!) project IDs ####
+###############################################
 # Don't edit without checking-in with Sayali
 
 #### Created by: sphadke
@@ -35,14 +34,11 @@ library(XML)
 # Function to pull from openhub
 # All thanks to Daniel Chen, and help from https://github.com/r-lib/httr/blob/master/vignettes/api-packages.Rmd and http://bradleyboehmke.github.io/2016/01/scraping-via-apis.html#httr_api
 
-##
 ## API keys
-##
 source("~/git/oss/src/sphadke/00_ohloh_keys.R")
 avail_keys <- length(grep("oh_key", ls()))
 avail_keys
 api_keys <- grep("oh_key", ls(), value = TRUE)
-
 
 
 # Function to create the correct path, get xml from it
