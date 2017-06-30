@@ -65,6 +65,8 @@ oh_key_ma3 <- "cdb55288a662d478dfde7b98c27cdfbe92ddca9511c52d084a84dd51331ef41b"
 # Daniel's key
 oh_key_dc <- "af70ae2a1ec5f8a79e2aa6a80835467fe4a383b4ebc22384914160934634f239"
 
+# David H's key
+oh_key_dh <- "e155740ba9caa5ecbb43715c17b2f17392eb8bbf87bea522b40676f31b4815a2"
 
 
 
@@ -79,7 +81,7 @@ oh_key_dc <- "af70ae2a1ec5f8a79e2aa6a80835467fe4a383b4ebc22384914160934634f239"
 #   return(info)
 # }
 #
-# blah <- test_pull("/projects/firefox", "", oh_key_ma1)
+# blah <- test_pull("/projects/firefox", "", oh_key_dh)
 
 
 
