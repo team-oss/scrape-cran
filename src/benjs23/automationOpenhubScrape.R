@@ -14,6 +14,10 @@ library(XML)
 library(rio)
 library(readr)
 
+rm(list=ls())
+
+#k <- write("k","~/git/oss/data/oss/original/openhub/projects/random/k_index.txt")
+
 k <- read_file("~/git/oss/data/oss/original/openhub/projects/random/k_index.txt")
 
 if(k == "k\n")
@@ -40,7 +44,6 @@ for (key in key_names) {
   all_keys <- c(all_keys,get(key))
 }
 names(all_keys) <- key_names
-
 print(all_keys)
 
 
@@ -59,8 +62,16 @@ project_ids <- all_random_project_ids
 
 loopBreak = FALSE
 
+project <- matrix(NA, length(project_ids), 33)
+colnames(project) <- c("project_url_id", "project_name", "project_id", "created_at", "updated_at", "description", "homepage_url", "download_url", "url_name",
+                       "user_count", "average_rating", "rating_count", "review_count",
+                       "analysis_id", "analysis_url", "last_analysis_update", "last_source_code_access", "ohloh_first_month_of_analysis", "ohloh_latest_month_of_analysis",
+                       "twelve_month_contributor_count", "total_contributor_count", "twelve_month_commit_count", "total_commit_count", "total_code_lines", "main_language",
+                       "possible_urls", "ohloh_url", "factoids", "tags", "licenses",
+                       "languages", "language_percentages", "activity_index")
+
 #outer loop runs through the list of every API key
-for(j in 1:2)
+for(j in 1:length(all_keys))
 {
   #break out of loop if all of the keys have been used
   if(loopBreak == TRUE)
@@ -96,16 +107,6 @@ for(j in 1:2)
   ## Table 'project': takes projects
   # Creating a path that can directly go into the API function with current project ID
   project_paths <- paste("/", "projects", "/", project_id, sep = "")
-
-
-
-  project <- matrix(NA, length(project_ids), 33)
-  colnames(project) <- c("project_url_id", "project_name", "project_id", "created_at", "updated_at", "description", "homepage_url", "download_url", "url_name",
-                         "user_count", "average_rating", "rating_count", "review_count",
-                         "analysis_id", "analysis_url", "last_analysis_update", "last_source_code_access", "ohloh_first_month_of_analysis", "ohloh_latest_month_of_analysis",
-                         "twelve_month_contributor_count", "total_contributor_count", "twelve_month_commit_count", "total_commit_count", "total_code_lines", "main_language",
-                         "possible_urls", "ohloh_url", "factoids", "tags", "licenses",
-                         "languages", "language_percentages", "activity_index")
 
 
     contents <- api_q(project_paths, "", oh_key)
@@ -152,7 +153,9 @@ for(j in 1:2)
     print(k)
 
   }
-  write(project, paste0("~/git/oss/data/oss/original/openhub/projects/project_info_tables/project_table_",j ,"_",Sys.Date()))
+  sub<-apply(project,1,function(x){all(is.na(x))})
+  project1<-project[!sub,]
+  save(project1, file= paste0("~/git/oss/data/oss/original/openhub/projects/random/project_tables/project_table_",j ,"_",Sys.Date(),".RData"))
 }
 
 write(k,"~/git/oss/data/oss/original/openhub/projects/random/k_index.txt")
