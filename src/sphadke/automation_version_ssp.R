@@ -20,9 +20,9 @@ library(readr)
 
 rm(list=ls())
 
-# k <- write("k","~/git/oss/data/oss/original/openhub/projects/random/k_index.txt")
+# k <- write("k","./data/oss/original/openhub/projects/random/k_index.txt")
 
-k <- read_file("~/git/oss/data/oss/original/openhub/projects/random/k_index.txt")
+k <- read_file("./data/oss/original/openhub/projects/random/k_index.txt")
 
 if(k == "k\n")
 {
@@ -34,7 +34,7 @@ if(k == "k\n")
 
 
 # pulls in vector of API keys
-source("~/git/oss/src/sphadke/00_ohloh_keys.R")
+source("./src/sphadke/00_ohloh_keys.R")
 
 #puts API keys into a named vector
 curr_ls <- ls()
@@ -43,7 +43,7 @@ match <- grep(pattern = pattern, x = ls())
 key_names <- curr_ls[match]
 all_keys <- c()
 
-source("~/git/oss/src/sphadke/00_ohloh_keys.R")
+source("./src/sphadke/00_ohloh_keys.R")
 curr_ls <- ls()
 pattern <- '^oh_key_'
 match <- grep(pattern = pattern, x = ls())
@@ -65,7 +65,7 @@ api_q <- function(path, page_no, api_key){
 }
 
 # Get project IDs
-load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/all_random_project_ids.RData")
+load("./data/oss/original/openhub/projects/random/project_ids/all_random_project_ids.RData")
 project_ids <- all_random_project_ids
 
 loopBreak = FALSE
@@ -163,8 +163,8 @@ for(j in 2:18)
   }
   sub<-apply(project,1,function(x){all(is.na(x))})
   project1<-project[!sub,]
-  save(project1, file= paste0("~/git/oss/data/oss/original/openhub/projects/random/project_tables/project_table_",j ,"_",Sys.Date(),".RData"))
+  save(project1, file= paste0("./data/oss/original/openhub/projects/random/project_tables/project_table_",j ,"_",Sys.Date(),".RData"))
 }
 
-write(k,"~/git/oss/data/oss/original/openhub/projects/random/k_index.txt")
+write(k,"./data/oss/original/openhub/projects/random/k_index.txt")
 
