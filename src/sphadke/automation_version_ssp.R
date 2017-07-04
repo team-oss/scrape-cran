@@ -1,5 +1,6 @@
 ### Created by: benjs23
 ### Date: 6/29/2017
+## Last edited: 07/04/17
 ####
 #### THIS IS USED TO RUN THE CODE MANUALLY!
 ####
@@ -53,9 +54,6 @@ for (key in key_names) {all_keys <- c(all_keys, get(key))}
 names(all_keys) <- key_names
 print(all_keys)
 
-all_keys <- all_keys[-(1:3)]
-all_keys <- all_keys[-c(4,15)]
-
 
 # Function to create the correct path and get xml format data from it
 api_q <- function(path, page_no, api_key){
@@ -81,7 +79,7 @@ colnames(project) <- c("project_url_id", "project_name", "project_id", "created_
                        "languages", "language_percentages", "activity_index")
 
 #outer loop runs through the list of every API key
-for(j in 1:length(all_keys))
+for(j in 2:18)
 {
   #break out of loop if all of the keys have been used
   if(loopBreak == TRUE)
