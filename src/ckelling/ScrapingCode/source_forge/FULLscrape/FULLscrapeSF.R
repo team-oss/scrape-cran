@@ -63,11 +63,11 @@ for(i in 213295:length(master_list_2)){
     print(i)
     New_SF<- rbind(New_SF, new_data)
     Sys.sleep(runif(1, 0, 1) * 2)  ## randomly sleep the the system from 0 to 3 seconds
-    #save(new_data, file= sprintf('~/git/oss/data/oss/original/sourceforge/SF_scrape_FINAL/SF_%06d.RData', i))
+    save(new_data, file= sprintf('~/git/oss/data/oss/original/sourceforge/SF_scrape_FINAL/SF_%06d.RData', i))
   }
 }
 
-#load('~/git/oss/data/oss/original/sourceforge/SF_scrape_FINAL/SF_213295.RData')
+#load('~/git/oss/data/oss/original/sourceforge/SF_scrape_FINAL/SF_213296.RData')
 
 full_SF <- New_SF
 save(full_SF, file = '~/git/oss/data/oss/original/sourceforge/FINAL_full_data/full_SF.Rdata')
