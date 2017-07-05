@@ -3,6 +3,7 @@ library(RCurl)
 library(xml2)
 library(stringr)
 library(rvest)
+library(jsonlite)
 
 
 sf_scrape <- function(link){
@@ -27,14 +28,13 @@ sf_scrape <- function(link){
     html_node('div h2') %>%
     html_text() %>%
     str_trim()
-  #looking in another place for descriptions if it returns "Screenshots" (not real description)
-  if(desc == 'Screenshots'){
+  #looking in another place for descriptions if it returns something that isn't a real description
+  if(desc == 'Screenshots' | desc == 'Description'){
     desc <- SFLink %>%
       html_node('#description') %>%
       html_text() %>%
       str_trim()
     }
-
 
   #Get the Last update
   last_update <- SFLink %>%
@@ -48,11 +48,12 @@ sf_scrape <- function(link){
     html_text() %>%
     str_trim()
 
-  #Get weekly downloads
-  week_down <- SFLink %>%
-    html_node('#call-to-action-stats') %>%
-    html_text() %>%
-    str_trim()
+  #Get TOTAL DOWNLOADS from the Download statistics Sourceforge API
+  #7/5/2017 this code replaced weekly downloads
+  new_json_link <- paste0(new_link,'/files/stats/json?start_date=1970-01-01&end_date=2017-07-05')
+  total_down <- fromJSON(new_json_link, flatten = TRUE)
+  total_down <- total_down$total
+
 
   #Tell me that this page is NOT an enterprise page (if it is, it will change to a diff function: detect later)
   is_enterpise <- "Project"
@@ -139,7 +140,7 @@ sf_scrape <- function(link){
 
 
   v = list('OSS Title' = oss, 'Average Rating' = avg_rat, 'Description' = desc, 'Last Update' = last_update,
-           'Number of Ratings' = num_rat, 'Weekly Downloads' = week_down, 'Project Type' = is_enterpise,
+           'Number of Ratings' = num_rat, 'Total Downloads' = total_down, 'Project Type' = is_enterpise,
            'Category 1' = category[1],'Category 2' = category[2], 'Category 3' = category[3],
            'Date registered' = date_registered, 'Authors' = authors, 'Ease' = ease, 'features' = features,
            'design' = design, 'support' = support)

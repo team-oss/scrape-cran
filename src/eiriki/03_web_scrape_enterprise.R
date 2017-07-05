@@ -47,11 +47,11 @@ enterprise_scrape <- function(link){
     html_text() %>%
     str_trim()
 
-  #Get weekly downloads
-  week_down <- SFLink %>%
-    html_node('.data') %>%
-    html_text() %>%
-    str_trim()
+  #Get TOTAL DOWNLOADS from the Download statistics Sourceforge API
+  #7/5/2017 this code replaced weekly downloads
+  new_json_link <- paste0(new_link,'/files/stats/json?start_date=1970-01-01&end_date=2017-07-05')
+  total_down <- fromJSON(new_json_link, flatten = TRUE)
+  total_down <- total_down$total
 
   #Get the category
   category <- SFLink %>%
