@@ -9,7 +9,6 @@
 #Eirik and Dan's Code
 #Claire trying to customize
 #try to scrape for 488,907
-print("NOW WE ARE SCRAPING ALL OF THE VARIABLES INCLUDING TOTAL DOWNLOADS")
 
 library(RCurl)
 library(XML)
@@ -44,8 +43,8 @@ error_vec <- as.data.frame(error_vec)
 #error_vec[,1] <- as.character(error_vec[,1])
 class(error_vec)
 
-for(i in 225000:length(master_list_2)){
-#for(i in 213737:213739){
+for(i in 1:225000){
+  #for(i in 213737:213739){
   #i=213739
   new_data <- try(sf_scrape(master_list_2[i]))
 
@@ -53,7 +52,7 @@ for(i in 225000:length(master_list_2)){
     num = paste(i)
     num = as.character(num)
     error_vec <- rbind(error_vec, num)
-    save(error_vec, file = '~/git/oss/data/oss/original/sourceforge/final_with_downloads/errors.Rdata')
+    save(error_vec, file = '~/git/oss/data/oss/original/sourceforge/need_to_append/errors.Rdata')
   }else{
     #Enterprise projects will usually return "Overview" for their descriptions. In that case, call the
     #enterprise_scrape function instead of the normal one.
@@ -64,7 +63,7 @@ for(i in 225000:length(master_list_2)){
     print(i)
     New_SF<- rbind(New_SF, new_data)
     Sys.sleep(runif(1, 0, 1) * 2)  ## randomly sleep the the system from 0 to 2 seconds
-    save(new_data, file= sprintf('~/git/oss/data/oss/original/sourceforge/final_with_downloads/data/SF_%06d.RData', i))
+    save(new_data, file= sprintf('~/git/oss/data/oss/original/sourceforge/need_to_append/data/SF_%06d.RData', i))
   }
 }
 
