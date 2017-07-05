@@ -42,7 +42,6 @@ error_vec <- as.data.frame(error_vec)
 
 for(i in 213295:length(master_list_2)){
   new_data <- try(sf_scrape(master_list_2[i]))
-
   if(substr(new_data[1],1,5) == "Error"){
     error_vec <- rbind(error_vec, paste(i))
     save(error_vec, file = '~/git/oss/data/oss/original/sourceforge/errors.Rdata')
