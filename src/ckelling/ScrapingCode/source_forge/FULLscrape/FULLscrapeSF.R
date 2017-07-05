@@ -37,13 +37,21 @@ New_SF <- data.frame()
 error_vec <- c()
 load("~/git/oss/data/oss/original/sourceforge/errors.Rdata")
 #error_vec <- as.vector(error_vec[1,])
-#error_vec <- (error_vec[1:400])
+#error_vec <- (error_vec[1:400,])
 error_vec <- as.data.frame(error_vec)
+#error_vec <- as.vector(error_vec[,1])
+error_vec[,1] <- as.character(error_vec[,1])
+class(error_vec)
 
 for(i in 213295:length(master_list_2)){
+#for(i in 213737:213739){
+  #i=213739
   new_data <- try(sf_scrape(master_list_2[i]))
+
   if(substr(new_data[1],1,5) == "Error"){
-    error_vec <- rbind(error_vec, paste(i))
+    num = paste(i)
+    num = as.character(num)
+    error_vec <- rbind(error_vec, num)
     save(error_vec, file = '~/git/oss/data/oss/original/sourceforge/errors.Rdata')
   }else{
     #Enterprise projects will usually return "Overview" for their descriptions. In that case, call the
@@ -53,9 +61,9 @@ for(i in 213295:length(master_list_2)){
       new_data <- enterprise_scrape(master_list_2[i])
     }
     print(i)
-    #New_SF<- rbind(New_SF, new_data)
+    New_SF<- rbind(New_SF, new_data)
     Sys.sleep(runif(1, 0, 1) * 2)  ## randomly sleep the the system from 0 to 3 seconds
-    save(new_data, file= sprintf('~/git/oss/data/oss/original/sourceforge/SF_scrape_FINAL/SF_%06d.RData', i))
+    #save(new_data, file= sprintf('~/git/oss/data/oss/original/sourceforge/SF_scrape_FINAL/SF_%06d.RData', i))
   }
 }
 
