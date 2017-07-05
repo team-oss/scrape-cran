@@ -46,7 +46,11 @@ curr_ls <- ls()
 pattern <- '^oh_key_'
 match <- grep(pattern = pattern, x = ls())
 key_names <- curr_ls[match]
+
 all_keys <- c()
+
+
+
 
 for (key in key_names) {
   all_keys <- c(all_keys,get(key))
@@ -65,7 +69,8 @@ api_q <- function(path, page_no, api_key){
 }
 
 # Get project IDs
-load("./data/oss/original/openhub/projects/random/project_ids/all_random_project_ids.RData")
+#load("./data/oss/original/openhub/projects/random/project_ids/all_random_project_ids.RData") This pathway is project IDs from a random sample of all projects
+load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_15.RData") #This pathway is for the top 131,369 most relevant project IDs
 project_ids <- all_random_project_ids
 
 loopBreak = FALSE
@@ -163,7 +168,8 @@ for(j in 1:length(all_keys))
   }
   sub<-apply(project,1,function(x){all(is.na(x))})
   project1<-project[!sub,]
-  save(project1, file= paste0("./data/oss/original/openhub/projects/random/project_tables/project_table_",j ,"_",Sys.Date(),".RData"))
+  #save(project1, file= paste0("./data/oss/original/openhub/projects/random/project_tables/project_table_",Sys.Date(),"_",j,".RData")) For random projects
+  save(project1, file= paste0("./data/oss/original/openhub/projects/relevant/project_tables/project_table_",Sys.Date(),"_",j,".RData")) #For most relevant projects
 }
 
 write(k,"./data/oss/original/openhub/projects/random/k_index.txt")
