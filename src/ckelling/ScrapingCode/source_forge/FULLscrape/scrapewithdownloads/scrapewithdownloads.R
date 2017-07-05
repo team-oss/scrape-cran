@@ -14,8 +14,7 @@ library(RCurl)
 library(XML)
 library(stringr)
 library(rvest)
-source(file = "~/git/oss/src/eiriki/01_web_scrape.R")
-source(file = "~/git/oss/src/eiriki/03_web_scrape_enterprise.R")
+source(file = "~/git/oss/src/eiriki/06_replace_first_half.R")
 
 #Getting the 400,000+ pages
 load("~/git/oss/data/oss/original/sourceforge/master_list_FINAL/List_Titles_df.RData")
@@ -46,7 +45,7 @@ class(error_vec)
 for(i in 1:225000){
   #for(i in 213737:213739){
   #i=213739
-  new_data <- try(sf_scrape(master_list_2[i]))
+  new_data <- try(sf_scrape_only3(master_list_2[i]))
 
   if(substr(new_data[1],1,5) == "Error"){
     num = paste(i)
@@ -58,7 +57,7 @@ for(i in 1:225000){
     #enterprise_scrape function instead of the normal one.
     if(new_data$Description == "Overview")
     {
-      new_data <- enterprise_scrape(master_list_2[i])
+      new_data <- enterprise_scrape_only3(master_list_2[i])
     }
     print(i)
     New_SF<- rbind(New_SF, new_data)
