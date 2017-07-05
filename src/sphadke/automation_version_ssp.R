@@ -3,6 +3,7 @@
 ## Last edited: 07/04/17
 ####
 #### THIS IS USED TO RUN THE CODE MANUALLY!
+#### Some issues were detected. Don't run without running it by sphadke
 ####
 
 ####### This code automates the scraping from OpenHub. It loads a list of API keys
@@ -79,7 +80,7 @@ colnames(project) <- c("project_url_id", "project_name", "project_id", "created_
                        "languages", "language_percentages", "activity_index")
 
 #outer loop runs through the list of every API key
-for(j in 2:18)
+for(j in 20:20)
 {
   #break out of loop if all of the keys have been used
   if(loopBreak == TRUE)
@@ -94,7 +95,7 @@ for(j in 2:18)
   k = (length(project_ids) - (length(project_ids)-k))
 
   #loops through the next 1000 project IDs (this is how many calls you're allowed per API key per day)
-  for(k in ((k+1):(k+1000)))
+  for(k in ((k+1):(k+813)))
   {
 
     ################################

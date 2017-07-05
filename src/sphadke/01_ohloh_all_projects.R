@@ -35,7 +35,7 @@ library(XML)
 # All thanks to Daniel Chen, and help from https://github.com/r-lib/httr/blob/master/vignettes/api-packages.Rmd and http://bradleyboehmke.github.io/2016/01/scraping-via-apis.html#httr_api
 
 ## API keys
-source("~/git/oss/src/sphadke/00_ohloh_keys.R")
+source("./src/sphadke/00_ohloh_keys.RData")
 avail_keys <- length(grep("oh_key", ls()))
 avail_keys
 api_keys <- grep("oh_key", ls(), value = TRUE)
@@ -71,8 +71,8 @@ api_q <- function(path, page_no, api_key){
 # }
 #
 # project_ids <- unique(project_ids)
-# save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_5.R")
-# load("~/git/oss/data/oss/original/openhub/projects/all_project_ids_.R")
+# save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_5.RData")
+# load("./data/oss/original/openhub/projects/all_project_ids_.RData")
 # head(project_ids)
 
 
@@ -100,7 +100,7 @@ for (i in 999:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_1.R")
+save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_1.RData")
 
 
 ####
@@ -119,7 +119,7 @@ for (i in 1000:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_2.R")
+save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_2.RData")
 
 
 ####
@@ -138,7 +138,7 @@ for (i in 1995:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_3.R")
+save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_3.RData")
 
 
 ####
@@ -157,7 +157,7 @@ for (i in 3400:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_4.R")
+save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_4.RData")
 
 
 ####
@@ -176,7 +176,7 @@ for (i in 3401:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_5.R")
+save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_5.RData")
 
 
 ####
@@ -195,7 +195,7 @@ for (i in 4401:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_6.R")
+save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_6.RData")
 
 
 ####
@@ -214,7 +214,7 @@ for (i in 5396:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_7.R")
+save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_7.RData")
 
 
 ####
@@ -238,7 +238,7 @@ for (i in 6391:k){
 project_ids <- unique(project_ids)
 
 
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_8.R")
+save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_8.RData")
 
 ####
 #### Part 9
@@ -256,7 +256,7 @@ for (i in 7386:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_9.R")
+save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_9.RData")
 
 
 ####
@@ -275,7 +275,7 @@ for (i in 8381:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_10.R")
+save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_10.RData")
 
 
 ####
@@ -294,7 +294,7 @@ for (i in 9376:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_11.R")
+save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_11.RData")
 
 
 ####
@@ -313,7 +313,7 @@ for (i in 10371:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_12.R")
+save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_12.RData")
 
 
 ####
@@ -332,7 +332,7 @@ for (i in 11366:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_13.R")
+save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_13.RData")
 
 
 ####
@@ -351,7 +351,7 @@ for (i in 12361:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_14.R")
+save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_14.RData")
 
 
 ####
@@ -370,45 +370,65 @@ for (i in 13356:k){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "~/git/oss/data/oss/original/openhub/projects/all_project_ids_15.R")
+save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_15.RData")
 
 
 ################
 #### Putting the IDs together
 ################
 
-load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_1.RData")
-one <- random_project_ids
+load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_1.RData")
+one <- project_ids
 
-load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_2.RData")
-two <- random_project_ids
+load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_2.RData")
+two <- project_ids
 
-load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_3.RData")
-three <- random_project_ids
+load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_3.RData")
+three <- project_ids
 
-load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_4.RData")
-four <- random_project_ids
+load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_4.RData")
+four <- project_ids
 
-load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_5.RData")
-five <- random_project_ids
+load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_5.RData")
+five <- project_ids
 
-load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_6.RData")
-six <- random_project_ids
+load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_6.RData")
+six <- project_ids
 
-load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_7.RData")
-seven <- random_project_ids
+load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_7.RData")
+seven <- project_ids
 
-load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_8.RData")
-eight <- random_project_ids
+load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_8.RData")
+eight <- project_ids
 
-load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_9.RData")
-nine <- random_project_ids
+load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_9.RData")
+nine <- project_ids
 
-load("~/git/oss/data/oss/original/openhub/projects/random/project_ids/random_project_ids_10.RData")
-ten <- random_project_ids
+load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_10.RData")
+ten <- project_ids
 
-all_random_project_ids <- c(one, two, three, four, five, six, seven, eight, nine, ten)
-save(all_random_project_ids, file = "~/git/oss/data/oss/original/openhub/projects/random/project_ids/all_random_project_ids.RData")
+load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_11.RData")
+eleven <- project_ids
+
+
+load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_12.RData")
+twelve <- project_ids
+
+
+load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_13.RData")
+thirteen <- project_ids
+
+
+load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_14.RData")
+fourteen <- project_ids
+
+
+load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_15.RData")
+fifteen <- project_ids
+
+
+all_project_ids <- c(one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen)
+save(all_project_ids, file = "./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_15.RData")
 
 
 
