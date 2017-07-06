@@ -69,9 +69,16 @@ api_q <- function(path, page_no, api_key){
 }
 
 # Get project IDs
-#load("./data/oss/original/openhub/projects/random/project_ids/all_random_project_ids.RData") This pathway is project IDs from a random sample of all projects
+
+## This pathway is project IDs from a random sample of all projects
+#load("./data/oss/original/openhub/projects/random/project_ids/all_random_project_ids.RData")
+
 load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_15.RData") #This pathway is for the top 131,369 most relevant project IDs
-project_ids <- all_random_project_ids
+
+## This was for random projects
+# project_ids <- all_random_project_ids
+
+project_ids <- all_project_ids
 
 loopBreak = FALSE
 
@@ -84,7 +91,7 @@ colnames(project) <- c("project_url_id", "project_name", "project_id", "created_
                        "languages", "language_percentages", "activity_index")
 
 #outer loop runs through the list of every API key
-for(j in 1:length(all_keys))
+for(j in 1:12)
 {
   #break out of loop if all of the keys have been used
   if(loopBreak == TRUE)
@@ -166,9 +173,11 @@ for(j in 1:length(all_keys))
     print(k)
 
   }
-  sub<-apply(project,1,function(x){all(is.na(x))})
-  project1<-project[!sub,]
-  #save(project1, file= paste0("./data/oss/original/openhub/projects/random/project_tables/project_table_",Sys.Date(),"_",j,".RData")) For random projects
+  sub <- apply(project,1,function(x){all(is.na(x))})
+  project1 <- project[!sub,]
+
+   #save(project1, file= paste0("./data/oss/original/openhub/projects/random/project_tables/project_table_",Sys.Date(),"_",j,".RData")) For random projects
+
   save(project1, file= paste0("./data/oss/original/openhub/projects/relevant/project_tables/project_table_",Sys.Date(),"_",j,".RData")) #For most relevant projects
 }
 
