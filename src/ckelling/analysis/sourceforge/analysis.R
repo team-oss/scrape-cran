@@ -72,7 +72,7 @@ par(mfrow=c(3,3))
 
 #for tree diagram, must aggregate
 agg_dat1 <- count(cleaned_SF, c('Category.1', 'Category.2'))
-agg_dat <- count(cleaned_SF, c('Category.1', 'Category.2', 'Category.3'))
+agg_dat <- plyr::count(cleaned_SF, c('Category.1', 'Category.2', 'Category.3'))
 length(which(cleaned_SF$OSS.Title==""))
 #dput(agg_dat)
 
