@@ -82,9 +82,9 @@ I would like to look at some histograms of the quantitative variables.
 ```{r histograms, echo =FALSE}
 hist(as.numeric(cleaned_SF$Average.Rating))
 hist(as.numeric(cleaned_SF$Number.of.Ratings))
-hist(as.numeric(cleaned_SF$Number.of.Ratings[which(cleaned_SF$Number.of.Ratings != "0"),]))
+hist(as.numeric(cleaned_SF$Number.of.Ratings[which(as.numeric(cleaned_SF$Number.of.Ratings) > 5)]))
 hist(as.numeric(cleaned_SF$Weekly.Downloads))
-hist(as.numeric(cleaned_SF$Weekly.Downloads[which(cleaned_SF$Weekly.Downloads != "0"),]))
+hist(as.numeric(cleaned_SF$Weekly.Downloads[which(as.numeric(cleaned_SF$Weekly.Downloads) >5 & as.numeric(cleaned_SF$Weekly.Downloads) < 50000)]))
 hist(as.numeric(cleaned_SF$Ease))
 hist(as.numeric(cleaned_SF$features))
 hist(as.numeric(cleaned_SF$design))
