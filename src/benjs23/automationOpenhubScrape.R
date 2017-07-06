@@ -22,7 +22,6 @@ library(stringr)
 library(XML)
 library(rio)
 library(readr)
-library(sdalr)
 
 rm(list=ls())
 
