@@ -82,6 +82,7 @@ oh_key_dh <- "e155740ba9caa5ecbb43715c17b2f17392eb8bbf87bea522b40676f31b4815a2"
 # }
 #
 # blah <- test_pull("/projects/firefox", "", oh_key_dh)
+# check that blah has status code 200
 
 
 
