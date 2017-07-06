@@ -73,7 +73,8 @@ api_q <- function(path, page_no, api_key){
 ## This pathway is project IDs from a random sample of all projects
 #load("./data/oss/original/openhub/projects/random/project_ids/all_random_project_ids.RData")
 
-load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_15.RData") #This pathway is for the top 131,369 most relevant project IDs
+#This pathway is for the top 131,369 most relevant project IDs
+load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_15.RData")
 
 ## This was for random projects
 # project_ids <- all_random_project_ids
@@ -91,7 +92,7 @@ colnames(project) <- c("project_url_id", "project_name", "project_id", "created_
                        "languages", "language_percentages", "activity_index")
 
 #outer loop runs through the list of every API key
-for(j in 1:12)
+for(j in 13:22)
 {
   #break out of loop if all of the keys have been used
   if(loopBreak == TRUE)
