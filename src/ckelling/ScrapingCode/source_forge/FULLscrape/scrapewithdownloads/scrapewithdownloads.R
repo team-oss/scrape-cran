@@ -34,16 +34,17 @@ master_list_2 <- sapply(master_list_2, sf_newname)
 New_SF <- data.frame()
 
 error_vec <- c()
-#load("~/git/oss/data/oss/original/sourceforge/errors.Rdata")
+load("~/git/oss/data/oss/original/sourceforge/need_to_append/errors.Rdata")
 #error_vec <- as.vector(error_vec[1,])
 #error_vec <- (error_vec[1:400,])
-error_vec <- c(1294,1639)
+#error_vec <- c(1294,1639)
 error_vec <- as.data.frame(error_vec)
 #error_vec <- as.vector(error_vec[,1])
 error_vec[,1] <- as.character(error_vec[,1])
 class(error_vec)
 
-for(i in 3781:225000){
+#Last iteration: 60148
+for(i in 60148:225000){
   #for(i in 213737:213739){
   #i=213739
   new_data <- try(sf_scrape_only3(master_list_2[i]))
