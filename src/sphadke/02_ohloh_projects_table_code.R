@@ -58,6 +58,7 @@ load("~/git/oss/data/oss/original/openhub/projects/relevant/project_ids/all_proj
 
 # Choose which IDs, or how many of the IDs to use for the session
 project_ids <- all_random_project_ids[i]
+project_ids <- c("p_437000", "linux")
 
 ## Table 'project': takes projects
 # Creating a path that can directly go into the API function
