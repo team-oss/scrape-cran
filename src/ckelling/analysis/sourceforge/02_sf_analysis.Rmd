@@ -12,6 +12,10 @@ cleaned_SF <- as.data.frame(cleaned_SF)
 library(ggplot2)
 library(plyr)
 library(dplyr)
+library(DiagrammeRsvg)
+library(DiagrammeR)
+library(magrittr)
+library(rsvg)
 ```
 
 ## Analysis of Sourceforge Data
@@ -121,7 +125,8 @@ ggplot(summary, aes(x=date, y=freq))+
   #geom_point() +
   ggtitle("Last Update Over Time") +
   labs(x = "Date", y = "Total Update") +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5))+
+    scale_colour_discrete(name="Month")
 
 
 ggplot(summary, aes(month, freq)) +
@@ -129,7 +134,8 @@ ggplot(summary, aes(month, freq)) +
    geom_point() +
    ggtitle("Last Update Over Time") +
    labs(x = "Date", y = "Total update") +
-   theme(plot.title = element_text(hjust = 0.5))
+   theme(plot.title = element_text(hjust = 0.5))+ 
+    scale_colour_discrete(name="Month")
 ```
 
 Now, I would like to do the same for the date registered.
@@ -246,17 +252,16 @@ network_graph(sa_counts)
 na_val = print(agg_dat[which(is.na(agg_dat$Category.1)),][,4])
 paste("Number of NA values: ", na_val, ", which is ", round(na_val/sum(agg_dat$freq),3)*100, "%.", sep="")
 
-# #https://github.com/rich-iannone/DiagrammeR/issues/133
-# 
-# pdf_digraph <- function(filename, code){
-#   capture.output({
-#   g <- grViz(paste("digraph{", code, "}"))
-#   DiagrammeRsvg::export_svg(g) %>% charToRaw %>% rsvg::rsvg_pdf(filename)
-#   },  file='NUL')
-#   knitr::include_graphics(filename)
-# }
-# 
-# pdf_digraph("test",network_graph(sa_counts))
+# network_graph(se_counts) %>%
+#   export_svg %>% charToRaw %>% rsvg_pdf("~/git/oss/src/ckelling/images/graph.pdf")
+
+
+network_graph(se_counts) %>%
+  export_svg %>% charToRaw %>% rsvg_png("~/git/oss/src/ckelling/images/se_graph.pdf")
+
+network_graph(agg_dat) %>%
+  export_svg %>% charToRaw %>% rsvg_png("~/git/oss/src/ckelling/images/full_graph.pdf")
+
 
 ```
 
@@ -265,5 +270,53 @@ This provides an example of one of the networks. I have created networks for all
 ```{r net example, echo=FALSE, include= TRUE}
 se_counts = agg_dat[which(agg_dat$Category.1 == "Science & Engineering"),]
 network_graph(se_counts)
+```
+
+
+```{r}
+# source(file='~/git/comm_roanoke/src/ckelling/functions_and_inputs/sent_analysis_function.R')
+# source('~/git/comm_roanoke/src/ckelling/functions_and_inputs/text_mining_funs.R')
+# source('~/git/comm_roanoke/src/ckelling/functions_and_inputs/vectorurl_wordsfunction.R')
+# 
+# 
+# all_words <- as.data.frame(get_words(as.data.frame(cleaned_SF$Description)))
+# 
+# 
+# 
+# library(SnowballC)
+# library(stringr)
+# library(tm)
+# library(wordcloud)
+# 
+# ## Word cloud of dps descriptions
+# dps_chrg_corpus <- Corpus(VectorSource(cleaned_SF$Description))
+# #dps_chrg_corpus <- tm_map(dps_chrg_corpus, PlainTextDocument)
+# dps_chrg_corpus <- tm_map(dps_chrg_corpus, content_transformer(tolower))
+# 
+# dps_chrg_corpus <- tm_map(dps_chrg_corpus, removeWords, stopwords('english'))
+# dps_chrg_corpus <- tm_map(dps_chrg_corpus, removeNumbers)
+# dps_chrg_corpus <- tm_map(dps_chrg_corpus, removePunctuation)
+# 
+# dps_chrg_corpus <- tm_map(dps_chrg_corpus, stemDocument)
+# 
+# dps_temp_stemmed <- data.frame(text = sapply(dps_chrg_corpus, as.character), stringsAsFactors = FALSE)
+# 
+# dps_dtm <- TermDocumentMatrix(dps_chrg_corpus)
+# dps_m <- as.matrix(dps_dtm)
+# dps_v <- sort(rowSums(dps_m),decreasing=TRUE)
+# dps_d <- data.frame(word = names(dps_v),freq = dps_v)
+# View(dps_d)
+# 
+# 
+# png(filename="wordcloud_dps.png", 
+#     units="in", 
+#     width=10, 
+#     height=10, 
+#     #pointsize=12, 
+#     res=72
+# )
+# wordcloud(dps_d$word, dps_d$freq, min.freq = 1, random.order = FALSE, colors=brewer.pal(8, "Dark2"))
+# dev.off()
+
 ```
 
