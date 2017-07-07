@@ -11,6 +11,7 @@ load(file = '~/git/oss/data/oss/working/sourceforge/cleaned_SF.RData')
 cleaned_SF <- as.data.frame(cleaned_SF)
 library(ggplot2)
 library(plyr)
+library(dplyr)
 ```
 
 ## Analysis of Sourceforge Data
@@ -89,9 +90,86 @@ hist(as.numeric(cleaned_SF$Ease))
 hist(as.numeric(cleaned_SF$features))
 hist(as.numeric(cleaned_SF$design))
 hist(as.numeric(cleaned_SF$support))
+```
 
-#plot date registered and last updated over time!
+```{r last update, echo=FALSE, include=TRUE}
+#plot last updated over time!
+library(lubridate)
 
+## Change the column's class to be compatible with lubridate
+cleaned_SF$Last.Update <- as.POSIXct(as.character(cleaned_SF$Last.Update), format = "%Y-%m-%d")
+data <- cleaned_SF
+
+## Pull components of the date
+# data$min <- factor(min(cleaned_SF$Received_Date_Time))
+# data$hour <- factor(hour(cleaned_SF$Received_Date_Time))
+data$date <- factor(day(cleaned_SF$Last.Update))
+data$month <- factor(month(cleaned_SF$Last.Update))
+data$year <- factor(year(cleaned_SF$Last.Update))
+
+## Group it by date and hour
+summary <- data %>%
+  group_by(year, month) %>%
+  summarise(freq = length(OSS.Title))
+
+summary$date <- as.Date(paste0('01','/',as.character(summary$month), '/', as.character(summary$year)), "%d/%m/%Y")
+
+
+## Plot frequency lines
+ggplot(summary, aes(x=date, y=freq))+
+  geom_line(aes(group = 1,colour = substr(date,6,7))) +
+  #geom_point() +
+  ggtitle("Last Update Over Time") +
+  labs(x = "Date", y = "Total Update") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+ggplot(summary, aes(month, freq)) +
+   geom_line(aes(color = year, group = year)) +
+   geom_point() +
+   ggtitle("Last Update Over Time") +
+   labs(x = "Date", y = "Total update") +
+   theme(plot.title = element_text(hjust = 0.5))
+```
+
+Now, I would like to do the same for the date registered.
+```{r date reg, echo=FALSE, include=TRUE}
+#plot date registered over time!
+
+## Change the column's class to be compatible with lubridate
+cleaned_SF$Date.registered <- as.POSIXct(as.character(cleaned_SF$Date.registered), format = "%Y-%m-%d")
+data <- cleaned_SF
+
+## Pull components of the date
+# data$min <- factor(min(cleaned_SF$Received_Date_Time))
+# data$hour <- factor(hour(cleaned_SF$Received_Date_Time))
+data$date <- factor(day(cleaned_SF$Date.registered))
+data$month <- factor(month(cleaned_SF$Date.registered))
+data$year <- factor(year(cleaned_SF$Date.registered))
+
+## Group it by date and hour
+summary <- data %>%
+  group_by(year, month) %>%
+  summarise(freq = length(OSS.Title))
+
+summary$date <- as.Date(paste0('01','/',as.character(summary$month), '/', as.character(summary$year)), "%d/%m/%Y")
+
+
+## Plot frequency lines
+ggplot(summary, aes(x=date, y=freq))+
+  geom_line(aes(group = 1,colour = substr(date,6,7))) +
+  #geom_point() +
+  ggtitle("Date Registered Over Time") +
+  labs(x = "Date", y = "Total Update") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+ggplot(summary, aes(month, freq)) +
+   geom_line(aes(color = year, group = year)) +
+   geom_point() +
+   ggtitle("Date Registered Over Time") +
+   labs(x = "Date", y = "Total update") +
+   theme(plot.title = element_text(hjust = 0.5))
 ```
 
 
@@ -104,6 +182,7 @@ agg_dat1 <- plyr::count(cleaned_SF, c('Category.1', 'Category.2'))
 ggplot(agg_dat1)+ geom_bar(aes(x=Category.1, y=freq,fill = Category.2), stat= "identity")+ theme(legend.position="none",axis.text.x = element_text(angle = 90, hjust = 1)) + ggtitle("Categories and Subcategories")
 
 ```
+
 ```{r network images, message = FALSE, include = FALSE}
 library(dplyr)
 library(DiagrammeR)
@@ -116,7 +195,7 @@ agg_dat <- plyr::count(cleaned_SF, c('Category.1', 'Category.2', 'Category.3'))
 
 
 #Full network
-#network_graph(agg_dat)
+network_graph(agg_dat)
 
 #Audio and Video Graph
 av_counts = agg_dat[which(agg_dat$Category.1 == "Audio & Video"),]
@@ -166,6 +245,18 @@ network_graph(sa_counts)
 #network_graph(na_counts
 na_val = print(agg_dat[which(is.na(agg_dat$Category.1)),][,4])
 paste("Number of NA values: ", na_val, ", which is ", round(na_val/sum(agg_dat$freq),3)*100, "%.", sep="")
+
+# #https://github.com/rich-iannone/DiagrammeR/issues/133
+# 
+# pdf_digraph <- function(filename, code){
+#   capture.output({
+#   g <- grViz(paste("digraph{", code, "}"))
+#   DiagrammeRsvg::export_svg(g) %>% charToRaw %>% rsvg::rsvg_pdf(filename)
+#   },  file='NUL')
+#   knitr::include_graphics(filename)
+# }
+# 
+# pdf_digraph("test",network_graph(sa_counts))
 
 ```
 
