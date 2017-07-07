@@ -39,13 +39,14 @@ error_vec <- c()
 load("~/git/oss/data/oss/original/sourceforge/final_with_downloads/errors.Rdata")
 #error_vec <- as.vector(error_vec[1,])
 #error_vec <- (error_vec[1:400,])
-error_vec <- c(227209, 227203, 227143,226899,226736,226738,226649,226604, 226470,226337, 226131,225932,225597,225462, 225446, 225445,225202)
+#error_vec <- c(227209, 227203, 227143,226899,226736,226738,226649,226604, 226470,226337, 226131,225932,225597,225462, 225446, 225445,225202)
 error_vec <- as.data.frame(error_vec)
 #error_vec <- as.vector(error_vec[,1])
 error_vec[,1] <- as.character(error_vec[,1])
 class(error_vec)
 
-for(i in 227894:length(master_list_2)){
+#last iteration: 283285
+for(i in 283285:length(master_list_2)){
 #for(i in 213737:213739){
   #i=220706
   new_data <- try(sf_scrape(master_list_2[i]))
