@@ -1,10 +1,19 @@
+##################################################
+#### Automated scraping projects from OpenHub ####
+##################################################
+
 ### Created by: benjs23
-### Date: 6/29/2017
+### Created Date: 06/29/2017
+### Last edited date: 07/06/2017
 
 ####### This code automates the scraping from OpenHub. It loads a list of API keys
 ####### and takes a function name as input. It automatically runs through every API
 ####### key, pulls the user specified tables, and tracks what information has been
 ####### collected.
+
+##
+## Setup and clanup
+##
 
 library(httr)
 library(plyr)
@@ -18,7 +27,7 @@ rm(list=ls())
 
 #k <- write("k","~/git/oss/data/oss/original/openhub/projects/random/k_index.txt")
 
-k <- read_file("./data/oss/original/openhub/projects/random/k_index.txt")
+k <- read_file("~/git/oss/data/oss/original/openhub/projects/random/k_index.txt")
 
 if(k == "k\n")
 {
@@ -29,10 +38,12 @@ if(k == "k\n")
 }
 
 
+##
+## Setting up API keys
+##
+
 # pulls in vector of API keys
 source("./src/sphadke/00_ohloh_keys.R")
-
-
 
 #puts API keys into a named vector
 curr_ls <- ls()
@@ -49,9 +60,6 @@ key_names <- curr_ls[match]
 
 all_keys <- c()
 
-
-
-
 for (key in key_names) {
   all_keys <- c(all_keys,get(key))
 }
@@ -59,7 +67,9 @@ names(all_keys) <- key_names
 print(all_keys)
 
 
+##
 # Function to create the correct path and get xml format data from it
+##
 api_q <- function(path, page_no, api_key){
   info <- GET(sprintf('https://www.openhub.net%s.xml?%s&api_key=%s',
                       path, #page URL
@@ -68,7 +78,9 @@ api_q <- function(path, page_no, api_key){
   return(info)
 }
 
+##
 # Get project IDs
+##
 
 ## This pathway is project IDs from a random sample of all projects
 #load("./data/oss/original/openhub/projects/random/project_ids/all_random_project_ids.RData")
@@ -83,6 +95,11 @@ project_ids <- all_project_ids
 
 loopBreak = FALSE
 
+
+##
+## Setup an empty table
+##
+
 project <- matrix(NA, length(project_ids), 33)
 colnames(project) <- c("project_url_id", "project_name", "project_id", "created_at", "updated_at", "description", "homepage_url", "download_url", "url_name",
                        "user_count", "average_rating", "rating_count", "review_count",
@@ -91,8 +108,13 @@ colnames(project) <- c("project_url_id", "project_name", "project_id", "created_
                        "possible_urls", "ohloh_url", "factoids", "tags", "licenses",
                        "languages", "language_percentages", "activity_index")
 
+
+##
+## Looping through
+##
+
 #outer loop runs through the list of every API key
-for(j in 13:22)
+for(j in 18:22)
 {
   #break out of loop if all of the keys have been used
   if(loopBreak == TRUE)
@@ -103,6 +125,7 @@ for(j in 13:22)
 
   #sets current API key
   oh_key <- paste(all_keys[j])
+
   #creates inner loop index variable to be equal to the first number in the next set of 1000 project IDs
   k = (length(project_ids) - (length(project_ids)-k))
 
@@ -110,9 +133,7 @@ for(j in 13:22)
   for(k in ((k+1):(k+1000)))
 {
 
-  ################################
-  #### Pulling the table from ohloh
-  ################################
+  ## Pulling the table from ohloh
 
   #checks that index k has not exceeded the number of project IDs in the master list
   if ( k <= length(project_ids))
@@ -129,11 +150,11 @@ for(j in 13:22)
   # Creating a path that can directly go into the API function with current project ID
   project_paths <- paste("/", "projects", "/", project_id, sep = "")
 
-
     contents <- api_q(project_paths, "", oh_key)
 
     if(status_code(contents) == 200){
       info <- content(contents)
+
       project[k,1] <- project_ids[k]
       project[k,2] <- xml_node(info, 'name') %>% html_text
       project[k,3] <- xml_node(info, 'id') %>% html_text() #unique ID for the project
