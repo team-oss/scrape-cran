@@ -24,18 +24,21 @@ library(stringr)
 
 load("~/git/oss/data/oss/working/openhub/randomProjects/all_random_projects_table.RData")
 
+load("~/git/oss/data/oss/original/openhub/projects/relevant/project_tables/project_table_2017-07-06_12.RData")
 
 ####################
 #### Data quality check
+#### And cleanup
 ####################
 
-num_empty_rows <- abc
+## Converting blanks and "NA"s to NAs
+randomProjectTable[randomProjectTable == ""] <- NA
+randomProjectTable[randomProjectTable == "NA"] <- NA
 
-for(i in 1:ncol(incident_table)){
-  x <- incident_table[,i]
+num_empty_rows <- length(randomProjectTable$project_url_id[apply(randomProjectTable[,2:ncol(randomProjectTable)], 1, function(x){all(is.na(x))}) == TRUE])
 
-  # Make all blanks NAs
-  x[x == ""] <- NA
+for(i in 1:ncol(randomProjectTable)){
+  x <- randomProjectTable[,i]
 
   name <- colnames(incident_table)[i]
   class <- class(x)
