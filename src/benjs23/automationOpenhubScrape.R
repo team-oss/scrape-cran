@@ -27,7 +27,7 @@ rm(list=ls())
 
 #k <- write("k","~/git/oss/data/oss/original/openhub/projects/random/k_index.txt")
 
-k <- read_file("~/git/oss/data/oss/original/openhub/projects/random/k_index.txt")
+k <- read_file("./data/oss/original/openhub/projects/random/k_index.txt")
 
 if(k == "k\n")
 {
