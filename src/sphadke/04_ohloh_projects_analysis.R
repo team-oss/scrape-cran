@@ -130,7 +130,7 @@ dps_chrg_corpus <- tm_map(dps_chrg_corpus, PlainTextDocument)
 dps_chrg_corpus <- tm_map(dps_chrg_corpus, content_transformer(tolower))
 
 dps_chrg_corpus <- tm_map(dps_chrg_corpus, removeWords, stopwords('english'))
-dps_chrg_corpus <- tm_map(dps_chrg_corpus, removeWords, c("will","set","functions", "data", "package", "based", "can", "provides", "set", "used", "project", "using", "contains", "function"), c('project', 'code', 'can', 'use', 'using', 'via'))
+dps_chrg_corpus <- tm_map(dps_chrg_corpus, removeWords, c("will","set","functions", "data", "package", "based", "can", "provides", "set", "used", "project", "using", "contains", "function"))
 dps_chrg_corpus <- tm_map(dps_chrg_corpus, removeNumbers)
 dps_chrg_corpus <- tm_map(dps_chrg_corpus, removePunctuation)
 
@@ -138,7 +138,8 @@ dps_chrg_corpus <- tm_map(dps_chrg_corpus, stemDocument)
 
 dps_temp_stemmed <- data.frame(text = sapply(dps_chrg_corpus, as.character), stringsAsFactors = FALSE)
 
-dps_dtm <- TermDocumentMatrix(dps_chrg_corpus)
+oh_random_proj_desc_dtm <- TermDocumentMatrix(dps_chrg_corpus)
+save(oh_random_proj_desc_dtm, file = "~/git/oss/data/oss/working/openhub/randomProjects/oh_random_proj_desc_dtm.RData")
 dps_m <- as.matrix(dps_dtm)
 dps_m <- sort(rowSums(dps_m),decreasing=TRUE)
 dps_m <- data.frame(word = names(dps_m),freq = dps_m)
