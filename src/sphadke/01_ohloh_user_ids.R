@@ -1,6 +1,7 @@
 ##############################################
 #### Code for OpenHub API: users/accounts ####
 ##############################################
+## Total users as of 07/09/2017: 291906
 
 #### Created by: sphadke
 #### Creted on: 07/09/2017
@@ -55,10 +56,23 @@ api_q <- function(path, page_no, api_key){
 # They go into a path, which then feeds into the API call to then pull table
 
 # Run it once per key on 1000 pages
-oh_key <- oh_key_ssp
+oh_key <- oh_key_sp
 
 ##Accounts
 account_ids <- vector()
+for (i in 1:981){
+  get_orgs <- api_q("/accounts", paste("page=", i, sep = ""), oh_key)
+  orgs <- content(get_orgs, as = "parsed")
+  ids <- str_split((xml_nodes(orgs, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+  print(i)
+  account_ids <- c(account_ids, ids)
+}
+
+
+# Run it once per key on 1000 pages
+oh_key <- oh_key_ssp
+
+##Accounts
 for (i in 982:1981){
   get_orgs <- api_q("/accounts", paste("page=", i, sep = ""), oh_key)
   orgs <- content(get_orgs, as = "parsed")
@@ -67,27 +81,23 @@ for (i in 982:1981){
   account_ids <- c(account_ids, ids)
 }
 
-account_ids <- unique(account_ids)
-save(org_ids, file = "~/git/oss/data/oss/original/openhub/all_org_ids.R")
-load("~/git/oss/data/oss/original/openhub/all_org_ids.R")
 
+# Run it once per key on 1000 pages
+oh_key <- oh_key_zh
 
-
-
-project_ids <- vector()
-j <-  #number of the first page being pulled on this call
-k <-  #number of the last page being pulled on this call
-for (i in j:k){
-  get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key)
-  projects <- content(get_projects, as = "parsed")
-  ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
-  ids
-  project_ids <- c(project_ids, ids)
+##Accounts
+for (i in 1982:2981){
+  get_orgs <- api_q("/accounts", paste("page=", i, sep = ""), oh_key)
+  orgs <- content(get_orgs, as = "parsed")
+  ids <- str_split((xml_nodes(orgs, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
   print(i)
+  account_ids <- c(account_ids, ids)
 }
 
-project_ids <- unique(project_ids)
-save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_5.RData")
-load("./data/oss/original/openhub/projects/all_project_ids_.RData")
-head(project_ids)
+account_ids <- unique(account_ids)
+
+## Save the file
+save(account_ids, file = "~/git/oss/data/oss/original/openhub/users/29810_account_ids.R")
+
+
 
