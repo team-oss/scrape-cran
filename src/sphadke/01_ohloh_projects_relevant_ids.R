@@ -90,7 +90,7 @@ api_q <- function(path, page_no, api_key){
 
 project_ids <- vector()
 k <- 1#number of pages possible on the given API key
-for (i in 999:k){
+for (i in k:999){
   get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key_gk)
   projects <- content(get_projects, as = "parsed")
   ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]

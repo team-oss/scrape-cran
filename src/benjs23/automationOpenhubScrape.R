@@ -27,7 +27,7 @@ rm(list=ls())
 
 #k <- write("k","~/git/oss/data/oss/original/openhub/projects/random/k_index.txt")
 
-k <- read_file("~/git/oss/data/oss/original/openhub/projects/random/k_index.txt")
+k <- read_file("./data/oss/original/openhub/projects/random/k_index.txt")
 
 if(k == "k\n")
 {
@@ -114,7 +114,8 @@ colnames(project) <- c("project_url_id", "project_name", "project_id", "created_
 ##
 
 #outer loop runs through the list of every API key
-for(j in 1:length(all_keys))
+#for(j in 1:length(all_keys))
+  for(j in 1:17)
 {
   #break out of loop if all of the keys have been used
   if(loopBreak == TRUE)
