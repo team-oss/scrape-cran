@@ -81,6 +81,20 @@ rownames(profile_dat) <- c()
 profile_dat <- as.data.frame(profile_dat)
 
 print(profile_dat)
+
+library(gridExtra)
+#save this table
+# png(filename="~/git/oss/src/ckelling/images/profile_table.png",
+#     units="in",
+#     width=10,
+#     height=10,
+#     #pointsize=12,
+#     res=72
+# )
+# p<-tableGrob(profile_dat)
+# grid.arrange(p)
+# dev.off()
+
 ```
 
 I would like to look at some histograms of the quantitative variables.
@@ -261,7 +275,7 @@ network_graph(se_counts) %>%
   export_svg %>% charToRaw %>% rsvg_png("~/git/oss/src/ckelling/images/se_graph.pdf")
 
 network_graph(agg_dat) %>%
-  export_svg %>% charToRaw %>% rsvg_png("~/git/oss/src/ckelling/images/full_graph.pdf")
+  export_svg %>% charToRaw %>% rsvg_png("~/git/oss/src/ckelling/images/full_graph2.pdf")
 
 
 ```
