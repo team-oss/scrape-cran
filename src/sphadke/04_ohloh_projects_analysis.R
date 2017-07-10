@@ -98,9 +98,6 @@ for(i in 1:ncol(clean_data)){
 }
 
 
-
-
-
 ggplot(clean_data, aes(created_at, total_commit_count)) +
   geom_line() +
   scale_x_datetime(date_labels = "%Y-%b") #+ xlab("") + ylab("Daily Views")
@@ -123,4 +120,28 @@ png(filename="/wordcloud_dps.png",
 )
 wordcloud(dps_m$word, dps_m$freq, min.freq = 1, random.order = FALSE, colors=brewer.pal(8, "Dark2"))
 dev.off()
+
+
+
+
+
+dps_chrg_corpus <- Corpus(VectorSource(clean_data$description))
+dps_chrg_corpus <- tm_map(dps_chrg_corpus, PlainTextDocument)
+dps_chrg_corpus <- tm_map(dps_chrg_corpus, content_transformer(tolower))
+
+dps_chrg_corpus <- tm_map(dps_chrg_corpus, removeWords, stopwords('english'))
+dps_chrg_corpus <- tm_map(dps_chrg_corpus, removeWords, c("will","set","functions", "data", "package", "based", "can", "provides", "set", "used", "project", "using", "contains", "function"), c('project', 'code', 'can', 'use', 'using', 'via'))
+dps_chrg_corpus <- tm_map(dps_chrg_corpus, removeNumbers)
+dps_chrg_corpus <- tm_map(dps_chrg_corpus, removePunctuation)
+
+dps_chrg_corpus <- tm_map(dps_chrg_corpus, stemDocument)
+
+dps_temp_stemmed <- data.frame(text = sapply(dps_chrg_corpus, as.character), stringsAsFactors = FALSE)
+
+dps_dtm <- TermDocumentMatrix(dps_chrg_corpus)
+dps_m <- as.matrix(dps_dtm)
+dps_m <- sort(rowSums(dps_m),decreasing=TRUE)
+dps_m <- data.frame(word = names(dps_m),freq = dps_m)
+
+wordcloud(dps_m$word, dps_m$freq, min.freq = 20, random.order = FALSE, colors=brewer.pal(8, "Dark2"))
 
