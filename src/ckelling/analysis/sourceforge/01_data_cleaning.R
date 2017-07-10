@@ -9,24 +9,31 @@
 #load("~/git/oss/src/ckelling/ScrapingCode/source_forge/orig_SF.Rdata")
 library(tictoc)
 library(stringr)
+#
+# tic()
+# fs <- list.files('~/git/oss/data/oss/original/sourceforge/SF_scrape_FINAL', full.names = TRUE, pattern = '*.RData')
+#
+# load_stuff <- function(file_name) {
+#   load(file_name)
+#   return(data.frame(new_data, stringsAsFactors = F))
+# }
+#
+# fl <- lapply(X = fs, FUN = load_stuff)
+#
+# complete_SFdat <- data.table::rbindlist(fl)
+# toc()
+#
+# complete_SFdat <- complete_SFdat2
+# #this is the percent of errors, where we were unable to collect
+# 1- nrow(complete_SFdat)/225000
+#
+# #save(complete_SFdat, file = '~/git/oss/data/oss/working/sourceforge/complete_SFdat.RData')
+# save(complete_SFdat2, file = '~/git/oss/data/oss/working/sourceforge/complete_SFdat2.RData')
 
-tic()
-fs <- list.files('~/git/oss/data/oss/original/sourceforge/SF_scrape_FINAL', full.names = TRUE, pattern = '*.RData')
 
-load_stuff <- function(file_name) {
-  load(file_name)
-  return(data.frame(new_data, stringsAsFactors = F))
-}
+load(file = '~/git/oss/data/oss/working/sourceforge/DONE_SFunclean.RData')
 
-fl <- lapply(X = fs, FUN = load_stuff)
-
-complete_SFdat <- data.table::rbindlist(fl)
-toc()
-
-#save(complete_SFdat, file = '~/git/oss/data/oss/working/sourceforge/complete_SFdat.RData')
-save(complete_SFdat, file = '~/git/oss/data/oss/working/sourceforge/complete_SFdat.RData')
-
-New_SF <- complete_SFdat
+New_SF <- complete_data
 
 ###
 #data cleaning
@@ -134,8 +141,9 @@ New_SF$features = lapply(New_SF$features, FUN=rate_clean)
 New_SF$design = lapply(New_SF$design, FUN=rate_clean)
 New_SF$support = lapply(New_SF$support, FUN=rate_clean)
 
+New_SF$Total.Downloads = as.numeric(New_SF$Total.Downloads)
 
 cleaned_SF <- New_SF
 
 
-save(cleaned_SF, file = '~/git/oss/data/oss/working/sourceforge/cleaned_SF.RData')
+save(cleaned_SF, file = '~/git/oss/data/oss/working/sourceforge/DONE_SFunclean.RData')

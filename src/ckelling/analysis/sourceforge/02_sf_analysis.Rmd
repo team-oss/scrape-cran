@@ -94,6 +94,7 @@ hist(as.numeric(cleaned_SF$Ease))
 hist(as.numeric(cleaned_SF$features))
 hist(as.numeric(cleaned_SF$design))
 hist(as.numeric(cleaned_SF$support))
+hist(as.numeric(cleaned_SF$Total.Downloads[which(as.numeric(cleaned_SF$Total.Downloads) > 5)]))
 ```
 
 ```{r last update, echo=FALSE, include=TRUE}
@@ -273,50 +274,70 @@ network_graph(se_counts)
 ```
 
 
-```{r}
-# source(file='~/git/comm_roanoke/src/ckelling/functions_and_inputs/sent_analysis_function.R')
-# source('~/git/comm_roanoke/src/ckelling/functions_and_inputs/text_mining_funs.R')
-# source('~/git/comm_roanoke/src/ckelling/functions_and_inputs/vectorurl_wordsfunction.R')
-# 
-# 
-# all_words <- as.data.frame(get_words(as.data.frame(cleaned_SF$Description)))
-# 
-# 
-# 
-# library(SnowballC)
-# library(stringr)
-# library(tm)
-# library(wordcloud)
-# 
-# ## Word cloud of dps descriptions
-# dps_chrg_corpus <- Corpus(VectorSource(cleaned_SF$Description))
-# #dps_chrg_corpus <- tm_map(dps_chrg_corpus, PlainTextDocument)
-# dps_chrg_corpus <- tm_map(dps_chrg_corpus, content_transformer(tolower))
-# 
-# dps_chrg_corpus <- tm_map(dps_chrg_corpus, removeWords, stopwords('english'))
-# dps_chrg_corpus <- tm_map(dps_chrg_corpus, removeNumbers)
-# dps_chrg_corpus <- tm_map(dps_chrg_corpus, removePunctuation)
-# 
-# dps_chrg_corpus <- tm_map(dps_chrg_corpus, stemDocument)
-# 
-# dps_temp_stemmed <- data.frame(text = sapply(dps_chrg_corpus, as.character), stringsAsFactors = FALSE)
-# 
-# dps_dtm <- TermDocumentMatrix(dps_chrg_corpus)
-# dps_m <- as.matrix(dps_dtm)
-# dps_v <- sort(rowSums(dps_m),decreasing=TRUE)
-# dps_d <- data.frame(word = names(dps_v),freq = dps_v)
-# View(dps_d)
-# 
-# 
-# png(filename="wordcloud_dps.png", 
-#     units="in", 
-#     width=10, 
-#     height=10, 
-#     #pointsize=12, 
-#     res=72
-# )
-# wordcloud(dps_d$word, dps_d$freq, min.freq = 1, random.order = FALSE, colors=brewer.pal(8, "Dark2"))
-# dev.off()
+```{r word cloud}
+library(SnowballC)
+library(stringr)
+library(tm)
+library(wordcloud)
 
+load(file = '~/git/oss/data/oss/working/sourceforge/DONE_SFunclean.RData')
+
+## Word cloud of descriptions
+dps_chrg_corpus <- Corpus(VectorSource(complete_data$Description))
+#dps_chrg_corpus <- tm_map(dps_chrg_corpus, PlainTextDocument)
+dps_chrg_corpus <- tm_map(dps_chrg_corpus, content_transformer(tolower))
+dps_chrg_corpus <- tm_map(dps_chrg_corpus, removeWords, stopwords('english'))
+dps_chrg_corpus <- tm_map(dps_chrg_corpus, removeWords, c("will","set","functions", "data", "package", "based", "can", "provides", "set", "used", "project", "using", "contains", "function"))
+dps_chrg_corpus <- tm_map(dps_chrg_corpus, removeNumbers)
+dps_chrg_corpus <- tm_map(dps_chrg_corpus, removePunctuation)
+dps_chrg_corpus <- tm_map(dps_chrg_corpus, stemDocument)
+dps_temp_stemmed <- data.frame(text = sapply(dps_chrg_corpus, as.character), stringsAsFactors = FALSE)
+dps_tdm <- TermDocumentMatrix(dps_chrg_corpus)
+
+#need to subset my tdm
+load(file= "~/git/oss/data/oss/working/openhub/randomProjects/oh_random_proj_desc_dtm.RData")
+tdm <- dps_tdm# your term document matrix
+your_terms <- findFreqTerms(tdm, lowfreq = 1500)
+say_terms <- findFreqTerms(oh_random_proj_desc_dtm, lowfreq = 10)
+#try low freq of 100
+new_tdmc <- tdm[your_terms, ] 
+new_tdms <- oh_random_proj_desc_dtm[say_terms, ] 
+
+#create my tdm
+dps_m <- as.matrix(new_tdmc)
+dps_v <- sort(rowSums(dps_m),decreasing=TRUE)
+dps_d <- data.frame(word = names(dps_v),freq = dps_v)
+wordcloud(dps_d$word, dps_d$freq, min.freq = 1000,max.words = 500, random.order = FALSE, colors=brewer.pal(8, "Dark2"))
+
+#create Openhub tdm
+dps_ms <- as.matrix(new_tdms)
+dps_vs <- sort(rowSums(dps_ms),decreasing=TRUE)
+dps_ds <- data.frame(word = names(dps_vs),freq = dps_vs)
+
+# find the top 300 terms for each tdm
+dps_d <- dps_d[1:300,]
+dps_ds <- dps_ds[1:300,]
+
+#combine the datasets into a combined tdm
+test <- full_join(dps_d, dps_ds, by = c(word = "word"), suffix = c("SF", "OH"))
+test[is.na(test) == TRUE] <- 0
+rownames(test) <- test$word
+test <- test[,-1]
+
+#plot comparison and commonality clouds
+comparison.cloud(test, random.order=FALSE, colors = c("indianred3","steelblue3"),
+                 title.size=2.5, max.words=400)
+commonality.cloud(test, max.words = 400, random.order = FALSE, colors = brewer.pal(8, "Dark2"))
+
+png(filename="~/git/oss/src/ckelling/images/wordcloud_sf.png",
+    units="in",
+    width=10,
+    height=10,
+    #pointsize=12,
+    res=72
+)
+
+wordcloud(dps_d$word, dps_d$freq, min.freq = 1000,max.words = 500, random.order = FALSE, colors=brewer.pal(8, "Dark2"))
+
+dev.off()
 ```
-
