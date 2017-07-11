@@ -21,7 +21,9 @@ set.seed(312)
 #### R Setup
 ####################
 library(ggplot2)
+library(gtools)
 library(lubridate)
+library(network)
 library(scales)
 library(SnowballC)
 library(stringr)
@@ -33,6 +35,7 @@ library(wordcloud)
 load("~/git/oss/data/oss/working/openhub/randomProjects/all_random_projects_table.RData")
 
 data <- randomProjectTable
+rm(randomProjectTable)
 
 
 ####################
@@ -73,7 +76,7 @@ num_empty_rows <- length(data$licenses[apply(data[,2:ncol(data)], 1, function(x)
 ## Remove the fully empty rows
 ####
 clean_data <- data[!apply(data[2:33], 1, function(x){all(is.na(x))}), ]
-
+rm(data)
 
 ## Check data quality
 completeness <- matrix(NA, ncol(clean_data), 4)
@@ -97,12 +100,59 @@ for(i in 1:ncol(clean_data)){
   #print(c(name, class, miss, vals))
 }
 
-
-ggplot(clean_data, aes(created_at, total_commit_count)) +
-  geom_line() +
-  scale_x_datetime(date_labels = "%Y-%b") #+ xlab("") + ylab("Daily Views")
+cor(clean_data[, c('average_rating', 'user_count', 'rating_count', 'review_count', 'twelve_month_contributor_count', 'total_contributor_count', 'total_commit_count', 'total_code_lines', 'twelve_month_commit_count')])
 
 
+####
+#### Time plot of development
+####
+
+# ggplot(clean_data, aes(created_at, total_commit_count)) +
+#   geom_point() +
+#   scale_x_datetime(date_labels = "%Y-%b") #+ xlab("") + ylab("Daily Views")
+#
+# ggplot(clean_data, aes(created_at, total_contributor_count)) +
+#   geom_line() +
+#   scale_x_datetime(date_labels = "%Y-%b")
+
+
+
+
+####
+#### Network of tags
+####
+
+tags_df <- na.omit(clean_data$tags)
+
+tag_edgelist <- matrix(ncol = 2)
+
+for (i in 1:nrow(clean_data)){
+  num_tags <- length(unlist(str_split(tags_df[i], pattern = ";")))
+
+  if(num_tags > 1) {
+  val_tags <- unlist(str_split(tags_df[i], pattern = ";"))
+
+
+  combinations <- combinations(n = num_tags, r = 2, val_tags, repeats.allowed = FALSE, set = TRUE)
+
+  tag_edgelist <- rbind(tag_edgelist, combinations)
+  }
+
+  print(i)
+}
+
+tag_edgelist <- na.omit(tag_edgelist)
+tag_net <- network(as.data.frame(tag_edgelist), directed = FALSE, matrix.type = "edgelist")
+
+plot(tag_net, displaylabels = F,
+     #label = get.vertex.attribute(contact.net, "female"),
+     vertex.cex = 1)#, vertex.col = c("Blue", "Red"))
+
+
+####
+#### Wordclouds
+####
+## Main development language
 
 language_corpus <- Corpus(VectorSource(clean_data$main_language))
 language_dtm <- TermDocumentMatrix(language_corpus)
@@ -122,9 +172,7 @@ wordcloud(dps_m$word, dps_m$freq, min.freq = 1, random.order = FALSE, colors=bre
 dev.off()
 
 
-
-
-
+## Description
 dps_chrg_corpus <- Corpus(VectorSource(clean_data$description))
 dps_chrg_corpus <- tm_map(dps_chrg_corpus, PlainTextDocument)
 dps_chrg_corpus <- tm_map(dps_chrg_corpus, content_transformer(tolower))
