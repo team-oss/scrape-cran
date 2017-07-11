@@ -293,6 +293,8 @@ library(SnowballC)
 library(stringr)
 library(tm)
 library(wordcloud)
+library(plyr)
+library(dplyr)
 
 load(file = '~/git/oss/data/oss/working/sourceforge/DONE_SFunclean.RData')
 
@@ -321,7 +323,7 @@ new_tdms <- oh_random_proj_desc_dtm[say_terms, ]
 dps_m <- as.matrix(new_tdmc)
 dps_v <- sort(rowSums(dps_m),decreasing=TRUE)
 dps_d <- data.frame(word = names(dps_v),freq = dps_v)
-wordcloud(dps_d$word, dps_d$freq, min.freq = 1000,max.words = 500, random.order = FALSE, colors=brewer.pal(8, "Dark2"))
+#wordcloud(dps_d$word, dps_d$freq, min.freq = 1000,max.words = 500, random.order = FALSE, colors=brewer.pal(8, "Dark2"))
 
 #create Openhub tdm
 dps_ms <- as.matrix(new_tdms)
@@ -335,13 +337,32 @@ dps_ds <- dps_ds[1:300,]
 #combine the datasets into a combined tdm
 test <- full_join(dps_d, dps_ds, by = c(word = "word"), suffix = c("SF", "OH"))
 test[is.na(test) == TRUE] <- 0
+
+
+test_compar <- c()
+i <- c()
+new_row <- c()
+
+for(i in 1:nrow(test)){
+  #i=303
+  if(test$freqSF[i] == 0 | test$freqOH[i] == 0){
+    new_row <- test[i,]
+    test_compar <- rbind(test_compar, new_row)
+  }
+  #rownames(test_compar) <- c()
+}
+
 rownames(test) <- test$word
 test <- test[,-1]
+rownames(test_compar) <- test_compar$word
+test_compar <- test_compar[,-1]
 
 #plot comparison and commonality clouds
-comparison.cloud(test, random.order=FALSE, colors = c("indianred3","steelblue3"),
-                 title.size=2.5, max.words=400)
 commonality.cloud(test, max.words = 400, random.order = FALSE, colors = brewer.pal(8, "Dark2"))
+
+
+comparison.cloud(test_compar, random.order=FALSE, colors = c("indianred3","steelblue3"),
+                 title.size=2.5, max.words=400)
 
 png(filename="~/git/oss/src/ckelling/images/wordcloud_sf.png",
     units="in",

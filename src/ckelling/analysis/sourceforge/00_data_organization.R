@@ -9,6 +9,7 @@ tic()
 fs <- list.files('~/git/oss/data/oss/original/sourceforge/final_with_downloads/data', full.names = TRUE, pattern = '*.RData')
 tail(fs)
 #7:30am: 464,675
+#9am: 467841
 load_stuff <- function(file_name) {
   load(file_name)
   return(data.frame(new_data, stringsAsFactors = F))
