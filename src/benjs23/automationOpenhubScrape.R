@@ -114,8 +114,7 @@ colnames(project) <- c("project_url_id", "project_name", "project_id", "created_
 ##
 
 #outer loop runs through the list of every API key
-#for(j in 1:length(all_keys))
-  for(j in 1:17)
+for(j in 1:length(all_keys))
 {
   #break out of loop if all of the keys have been used
   if(loopBreak == TRUE)
