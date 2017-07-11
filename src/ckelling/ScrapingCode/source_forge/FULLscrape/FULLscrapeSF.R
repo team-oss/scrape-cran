@@ -46,7 +46,7 @@ error_vec[,1] <- as.character(error_vec[,1])
 class(error_vec)
 
 #last iteration: 283285
-for(i in 283285:length(master_list_2)){
+for(i in 442415:length(master_list_2)){
 #for(i in 213737:213739){
   #i=220706
   new_data <- try(sf_scrape(master_list_2[i]))
