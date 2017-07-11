@@ -2,8 +2,8 @@
 library(dplyr)
 library(tictoc)
 #data <- full_join(all_ranks, id2s, by= c(GEOID2 = "Index_Data.Id2"))
-library(splines)
-?bs
+#library(splines)
+#?bs
 
 #data for the last 200,000+ rows, that should include all of the information for these software
 tic()
@@ -16,6 +16,8 @@ tail(fs)
 #2:30pm:  479,145
 #3:30pm:  481,251
 #4:30pm:  483,232
+#5:30pm:  485,687
+#6:12pm:  486,532
 load_stuff <- function(file_name) {
   load(file_name)
   return(data.frame(new_data, stringsAsFactors = F))
