@@ -7,6 +7,8 @@ library(tictoc)
 #data for the last 200,000+ rows, that should include all of the information for these software
 tic()
 fs <- list.files('~/git/oss/data/oss/original/sourceforge/final_with_downloads/data', full.names = TRUE, pattern = '*.RData')
+tail(fs)
+#7:30am: 464,675
 load_stuff <- function(file_name) {
   load(file_name)
   return(data.frame(new_data, stringsAsFactors = F))
@@ -16,10 +18,18 @@ fl <- lapply(X = fs, FUN = load_stuff)
 completedown_SF <- data.table::rbindlist(fl)
 toc()
 
+fs <- list.files('~/git/oss/data/oss/original/sourceforge/SF_scrape_FINAL', full.names = TRUE, pattern = '*.RData')
+load_stuff <- function(file_name) {
+  load(file_name)
+  return(data.frame(new_data, stringsAsFactors = F))
+}
+fl <- lapply(X = fs, FUN = load_stuff)
+complete_SFdat <- data.table::rbindlist(fl)
+
 
 # data for the first 250,000 rows
-load(file = '~/git/oss/data/oss/working/sourceforge/complete_SFdat2.RData')
-complete_SFdat <- complete_SFdat2
+#load(file = '~/git/oss/data/oss/working/sourceforge/complete_SFdat2.RData')
+#complete_SFdat <- complete_SFdat2
 #data that needs to be appended to the first 250,000 rows
 tic()
 fs <- list.files('~/git/oss/data/oss/original/sourceforge/need_to_append/data', full.names = TRUE, pattern = '*.RData')
@@ -32,7 +42,6 @@ completeapp_SF <- data.table::rbindlist(fl)
 toc()
 complete_SFdat$OSS.Title <- trimws(complete_SFdat$OSS.Title)
 completeapp_SF$OSS.Title <- trimws(completeapp_SF$OSS.Title)
-
 
 #First, I will consider the data that does not include Total Downloads
 #full complete_SFdat: 224,679 rows
