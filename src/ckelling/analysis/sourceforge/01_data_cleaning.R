@@ -61,10 +61,12 @@ avgrate_clean=function(data){
 
 New_SF$Average.Rating = lapply(New_SF$Average.Rating, FUN=avgrate_clean)
 
-
+View(head(complete_data))
 #cleaning Description
 desc_clean=function(data){
-  if(data == "Description"){
+  if(is.na(data)==TRUE){
+    return(NA)
+  }else if(data == "Description"){
     return(NA)
   }else{
     return(data)
@@ -144,6 +146,8 @@ New_SF$support = lapply(New_SF$support, FUN=rate_clean)
 New_SF$Total.Downloads = as.numeric(New_SF$Total.Downloads)
 
 cleaned_SF <- New_SF
+
+View(head(cleaned_SF, n=50))
 
 
 save(cleaned_SF, file = '~/git/oss/data/oss/working/sourceforge/DONE_SFclean.RData')
