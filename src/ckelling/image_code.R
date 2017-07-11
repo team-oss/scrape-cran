@@ -31,11 +31,12 @@ ggplot(summary, aes(x=date, y=freq))+
   scale_colour_discrete(name="Month")
 
 #profile_table.png
+library(gridExtra)
 png(filename="~/git/oss/src/ckelling/images/profile_table.png",
     units="in",
     width=10,
     height=10,
-    #pointsize=12,
+    #pointsize=20,
     res=72
 )
 p<-tableGrob(profile_dat)
@@ -56,3 +57,16 @@ commonality.cloud(test, max.words = 400, random.order = FALSE, colors = brewer.p
 #worldcloud_compar, must run after common
 comparison.cloud(test_compar, random.order=FALSE, colors = c("indianred3","steelblue3"),
                  title.size=2.5, max.words=400)
+
+
+library(gridExtra)
+png(filename="~/git/oss/src/ckelling/images/top_cat.png",
+    units="in",
+    width=10,
+    height=10,
+    #pointsize=20,
+    res=72
+)
+p<-tableGrob(top_cat)
+grid.arrange(p)
+dev.off()

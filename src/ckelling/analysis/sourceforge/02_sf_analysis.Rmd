@@ -8,6 +8,8 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 load(file = '~/git/oss/data/oss/working/sourceforge/cleaned_SF.RData')
+uncomp_SF <- cleaned_SF
+load(file = '~/git/oss/data/oss/working/sourceforge/DONE_SFclean.RData')
 cleaned_SF <- as.data.frame(cleaned_SF)
 library(ggplot2)
 library(plyr)
@@ -16,6 +18,7 @@ library(DiagrammeRsvg)
 library(DiagrammeR)
 library(magrittr)
 library(rsvg)
+library(data.table)
 ```
 
 ## Analysis of Sourceforge Data
@@ -144,13 +147,13 @@ ggplot(summary, aes(x=date, y=freq))+
     scale_colour_discrete(name="Month")
 
 
-ggplot(summary, aes(month, freq)) +
-   geom_line(aes(color = year, group = year)) +
-   geom_point() +
-   ggtitle("Last Update Over Time") +
-   labs(x = "Date", y = "Total update") +
-   theme(plot.title = element_text(hjust = 0.5))+ 
-    scale_colour_discrete(name="Month")
+# ggplot(summary, aes(month, freq)) +
+#    geom_line(aes(color = year, group = year)) +
+#    geom_point() +
+#    ggtitle("Last Update Over Time") +
+#    labs(x = "Date", y = "Total update") +
+#    theme(plot.title = element_text(hjust = 0.5))+ 
+#     scale_colour_discrete(name="Month")
 ```
 
 Now, I would like to do the same for the date registered.
@@ -185,12 +188,12 @@ ggplot(summary, aes(x=date, y=freq))+
   theme(plot.title = element_text(hjust = 0.5))
 
 
-ggplot(summary, aes(month, freq)) +
-   geom_line(aes(color = year, group = year)) +
-   geom_point() +
-   ggtitle("Date Registered Over Time") +
-   labs(x = "Date", y = "Total update") +
-   theme(plot.title = element_text(hjust = 0.5))
+# ggplot(summary, aes(month, freq)) +
+#    geom_line(aes(color = year, group = year)) +
+#    geom_point() +
+#    ggtitle("Date Registered Over Time") +
+#    labs(x = "Date", y = "Total update") +
+#    theme(plot.title = element_text(hjust = 0.5))
 ```
 
 
@@ -198,9 +201,23 @@ ggplot(summary, aes(month, freq)) +
 Now, I would like to assess the universe by looking at categories.
 ```{r plot of categories}
 agg_dat <- plyr::count(cleaned_SF, c('Category.1', 'Category.2', 'Category.3'))
-agg_dat1 <- plyr::count(cleaned_SF, c('Category.1', 'Category.2'))
+#agg_dat1 <- plyr::count(cleaned_SF, c('Category.1', 'Category.2'))
 
 ggplot(agg_dat1)+ geom_bar(aes(x=Category.1, y=freq,fill = Category.2), stat= "identity")+ theme(legend.position="none",axis.text.x = element_text(angle = 90, hjust = 1)) + ggtitle("Categories and Subcategories")
+
+for(i in 1:nrow(agg_dat)){
+  if(agg_dat$Category.1[i]=="Graphics" & is.na(agg_dat$Category.1[i]) == FALSE){
+    agg_dat$Category.2[i] <- agg_dat$Category.3[i]
+    agg_dat$Category.3[i] <- NA
+  }
+}
+agg_dat1 <- plyr::count(agg_dat, c('Category.1', 'Category.2'))
+
+top_cat  <- data.table(agg_dat1, key="Category.1")
+top_cat <- top_cat[order(Category.1, -freq),]
+top_cat <- top_cat[, head(.SD, 2), by=Category.1]
+#taking out the NA row
+top_cat <- top_cat[-nrow(top_cat),]
 
 ```
 
@@ -211,9 +228,8 @@ library(plyr)
 
 source("~/git/oss/src/ckelling/analysis/sourceforge/dan_functions.R")
 load(file = '~/git/oss/data/oss/working/sourceforge/cleaned_SF.RData')
-cleaned_SF <- as.data.frame(cleaned_SF)
-agg_dat <- plyr::count(cleaned_SF, c('Category.1', 'Category.2', 'Category.3'))
-
+#cleaned_SF <- as.data.frame(cleaned_SF)
+#agg_dat <- plyr::count(cleaned_SF, c('Category.1', 'Category.2', 'Category.3'))
 
 #Full network
 network_graph(agg_dat)
@@ -236,12 +252,6 @@ network_graph(dev_counts)
 
 #Games and Graphics Graph
 #need to edit graphics a bit
-for(i in 1:nrow(agg_dat)){
-  if(agg_dat$Category.1[i]=="Graphics" & is.na(agg_dat$Category.1[i]) == FALSE){
-    agg_dat$Category.2[i] <- agg_dat$Category.3[i]
-    agg_dat$Category.3[i] <- NA
-  }
-}
 gg_counts = agg_dat[which(agg_dat$Category.1 == "Graphics" | agg_dat$Category.1 == "Games"),]
 network_graph(gg_counts)
 
