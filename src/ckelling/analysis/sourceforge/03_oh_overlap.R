@@ -46,6 +46,6 @@ full <- c(title, title2)
 View(as.data.frame(title))
 View(as.data.frame(title2))
 
-
+#11,077 repeated with full SF data
 length(full)-length(unique(full))
 table(duplicated(full))
