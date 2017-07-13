@@ -8,6 +8,8 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 load(file = '~/git/oss/data/oss/working/sourceforge/cleaned_SF.RData')
+uncomp_SF <- cleaned_SF
+load(file = '~/git/oss/data/oss/working/sourceforge/DONE_SFclean.RData')
 cleaned_SF <- as.data.frame(cleaned_SF)
 library(ggplot2)
 library(plyr)
@@ -16,71 +18,75 @@ library(DiagrammeRsvg)
 library(DiagrammeR)
 library(magrittr)
 library(rsvg)
+library(data.table)
 ```
 
 ## Analysis of Sourceforge Data
 
 First, I will assess the completeness of the 16/17 variables.
 ```{r completeness, echo=FALSE,include= TRUE}
-# profile_dat <- c()
-# for(i in 1:ncol(cleaned_SF)){
-#   print(i)
-#   if(i == 12){
-#     x <- cleaned_SF[,i]
-# 
-#     # Make all blanks NAs
-#     x[x == ""] <- NA
-# 
-#     name <- colnames(cleaned_SF)[i]
-#     class <- class(x)
-# 
-#     # Proportion of missing values
-#     miss <- round(sum(is.na(x))*100/nrow(cleaned_SF), digits = 2)
-# 
-#     # How many unique values to the variable?
-#     auth <- c()
-#     for(j in 1:length(x)){
-#       print(j)
-#       new_auth <- trimws(unlist(str_split(x[j], ",")))
-#       auth <- c(auth, new_auth)
-#     }
-# 
-#     vals <- length(unique(auth))
-#     # summary <- summary(x)
-#     #if(vals <= 10){
-#     #  tab <- table(x)
-#     #  print(tab)
-#     #}
-#   }else{
-#     x <- cleaned_SF[,i]
-# 
-#     # Make all blanks NAs
-#     x[x == ""] <- NA
-# 
-#     name <- colnames(cleaned_SF)[i]
-#     class <- class(x)
-# 
-#     # Proportion of missing values
-#     miss <- round(sum(is.na(x))*100/nrow(cleaned_SF), digits = 2)
-# 
-#     # How many unique values to the variable?
-#     vals <- length(unique(x))
-#     # summary <- summary(x)
-#     #if(vals <= 10){
-#     #  tab <- table(x)
-#     #  print(tab)
-#     #}
-#   }
-#   new_row <- c(name, class, miss, vals)
-#   profile_dat <- rbind(profile_dat, new_row)
-# }
-# colnames(profile_dat) <- c("Column Name", "Class", "% Missing" , "Unique Values")
-load( file = '~/git/oss/data/oss/working/sourceforge/profile_dat.RData')
+profile_dat <- c()
+for(i in 1:ncol(cleaned_SF)){
+  print(i)
+  if(i == 12){
+    x <- cleaned_SF[,i]
+
+    # Make all blanks NAs
+    x[x == ""] <- NA
+
+    name <- colnames(cleaned_SF)[i]
+    class <- class(x)
+
+    # Proportion of missing values
+    miss <- round(sum(is.na(x))*100/nrow(cleaned_SF), digits = 2)
+
+    # How many unique values to the variable?
+    auth <- c()
+    for(j in 1:length(x)){
+      print(j)
+      new_auth <- trimws(unlist(str_split(x[j], ",")))
+      auth <- c(auth, new_auth)
+    }
+
+    vals <- length(unique(auth))
+    # summary <- summary(x)
+    #if(vals <= 10){
+    #  tab <- table(x)
+    #  print(tab)
+    #}
+  }else{
+    x <- cleaned_SF[,i]
+
+    # Make all blanks NAs
+    x[x == ""] <- NA
+
+    name <- colnames(cleaned_SF)[i]
+    class <- class(x)
+
+    # Proportion of missing values
+    miss <- round(sum(is.na(x))*100/nrow(cleaned_SF), digits = 2)
+
+    # How many unique values to the variable?
+    vals <- length(unique(x))
+    # summary <- summary(x)
+    #if(vals <= 10){
+    #  tab <- table(x)
+    #  print(tab)
+    #}
+  }
+  new_row <- c(name, class, miss, vals)
+  profile_dat <- rbind(profile_dat, new_row)
+}
+save(auth, file = '~/git/oss/data/oss/working/sourceforge/auth_list.RData')
+
 colnames(profile_dat) <- c("Column Name", "Class", "% Missing" , "Unique Values")
+
+#save(profile_dat, file = '~/git/oss/data/oss/working/sourceforge/profile_dat.RData')
+#colnames(profile_dat) <- c("Column Name", "Class", "% Missing" , "Unique Values")
 rownames(profile_dat) <- c()
 profile_dat <- as.data.frame(profile_dat)
-
-print(profile_dat)
+View(profile_dat)
+save(profile_dat, file = '~/git/oss/data/oss/working/sourceforge/profile_dat.RData')
 
 library(gridExtra)
 #save this table
@@ -108,7 +114,7 @@ hist(as.numeric(cleaned_SF$Ease))
 hist(as.numeric(cleaned_SF$features))
 hist(as.numeric(cleaned_SF$design))
 hist(as.numeric(cleaned_SF$support))
-hist(as.numeric(cleaned_SF$Total.Downloads[which(as.numeric(cleaned_SF$Total.Downloads) > 5)]))
+hist(as.numeric(cleaned_SF$Total.Downloads[which(as.numeric(cleaned_SF$Total.Downloads) > 1000 & as.numeric(cleaned_SF$Total.Downloads) < 30000)]))
 ```
 
 ```{r last update, echo=FALSE, include=TRUE}
@@ -122,14 +128,18 @@ data <- cleaned_SF
 ## Pull components of the date
 # data$min <- factor(min(cleaned_SF$Received_Date_Time))
 # data$hour <- factor(hour(cleaned_SF$Received_Date_Time))
-data$date <- factor(day(cleaned_SF$Last.Update))
-data$month <- factor(month(cleaned_SF$Last.Update))
-data$year <- factor(year(cleaned_SF$Last.Update))
+data <- data[-which(is.na(data$Last.Update)),]
+data$date <- factor(day(data$Last.Update))
+data$month <- factor(month(data$Last.Update))
+data$year <- factor(year(data$Last.Update))
+#head(data)
+
 
 ## Group it by date and hour
 summary <- data %>%
   group_by(year, month) %>%
-  summarise(freq = length(OSS.Title))
+  dplyr::summarise(freq = length(OSS.Title))
+
 
 summary$date <- as.Date(paste0('01','/',as.character(summary$month), '/', as.character(summary$year)), "%d/%m/%Y")
 
@@ -144,13 +154,13 @@ ggplot(summary, aes(x=date, y=freq))+
     scale_colour_discrete(name="Month")
 
 
-ggplot(summary, aes(month, freq)) +
-   geom_line(aes(color = year, group = year)) +
-   geom_point() +
-   ggtitle("Last Update Over Time") +
-   labs(x = "Date", y = "Total update") +
-   theme(plot.title = element_text(hjust = 0.5))+ 
-    scale_colour_discrete(name="Month")
+# ggplot(summary, aes(month, freq)) +
+#    geom_line(aes(color = year, group = year)) +
+#    geom_point() +
+#    ggtitle("Last Update Over Time") +
+#    labs(x = "Date", y = "Total update") +
+#    theme(plot.title = element_text(hjust = 0.5))+ 
+#     scale_colour_discrete(name="Month")
 ```
 
 Now, I would like to do the same for the date registered.
@@ -171,10 +181,10 @@ data$year <- factor(year(cleaned_SF$Date.registered))
 ## Group it by date and hour
 summary <- data %>%
   group_by(year, month) %>%
-  summarise(freq = length(OSS.Title))
+  dplyr::summarise(freq = length(OSS.Title))
 
 summary$date <- as.Date(paste0('01','/',as.character(summary$month), '/', as.character(summary$year)), "%d/%m/%Y")
-
+summary<- summary[-1,]
 
 ## Plot frequency lines
 ggplot(summary, aes(x=date, y=freq))+
@@ -185,12 +195,12 @@ ggplot(summary, aes(x=date, y=freq))+
   theme(plot.title = element_text(hjust = 0.5))
 
 
-ggplot(summary, aes(month, freq)) +
-   geom_line(aes(color = year, group = year)) +
-   geom_point() +
-   ggtitle("Date Registered Over Time") +
-   labs(x = "Date", y = "Total update") +
-   theme(plot.title = element_text(hjust = 0.5))
+# ggplot(summary, aes(month, freq)) +
+#    geom_line(aes(color = year, group = year)) +
+#    geom_point() +
+#    ggtitle("Date Registered Over Time") +
+#    labs(x = "Date", y = "Total update") +
+#    theme(plot.title = element_text(hjust = 0.5))
 ```
 
 
@@ -198,9 +208,26 @@ ggplot(summary, aes(month, freq)) +
 Now, I would like to assess the universe by looking at categories.
 ```{r plot of categories}
 agg_dat <- plyr::count(cleaned_SF, c('Category.1', 'Category.2', 'Category.3'))
-agg_dat1 <- plyr::count(cleaned_SF, c('Category.1', 'Category.2'))
+#agg_dat1 <- plyr::count(cleaned_SF, c('Category.1', 'Category.2'))
 
 ggplot(agg_dat1)+ geom_bar(aes(x=Category.1, y=freq,fill = Category.2), stat= "identity")+ theme(legend.position="none",axis.text.x = element_text(angle = 90, hjust = 1)) + ggtitle("Categories and Subcategories")
+
+for(i in 1:nrow(agg_dat)){
+  if(agg_dat$Category.1[i]=="Graphics" & is.na(agg_dat$Category.1[i]) == FALSE){
+    agg_dat$Category.2[i] <- agg_dat$Category.3[i]
+    agg_dat$Category.3[i] <- NA
+  }
+}
+agg_dat1 <- plyr::count(agg_dat, c('Category.1', 'Category.2'))
+agg_dat1 <- agg_dat1[-nrow(agg_dat1),]
+agg_dat <- agg_dat[-nrow(agg_dat),]
+
+top_cat  <- data.table(agg_dat1, key="Category.1")
+top_cat <- top_cat[order(Category.1, -freq),]
+top_cat <- top_cat[, head(.SD, 2), by=Category.1]
+#taking out the NA row
+top_cat <- top_cat[-nrow(top_cat),]
+View(top_cat)
 
 ```
 
@@ -210,10 +237,9 @@ library(DiagrammeR)
 library(plyr)
 
 source("~/git/oss/src/ckelling/analysis/sourceforge/dan_functions.R")
-load(file = '~/git/oss/data/oss/working/sourceforge/cleaned_SF.RData')
-cleaned_SF <- as.data.frame(cleaned_SF)
-agg_dat <- plyr::count(cleaned_SF, c('Category.1', 'Category.2', 'Category.3'))
-
+#load(file = '~/git/oss/data/oss/working/sourceforge/cleaned_SF.RData')
+#cleaned_SF <- as.data.frame(cleaned_SF)
+#agg_dat <- plyr::count(cleaned_SF, c('Category.1', 'Category.2', 'Category.3'))
 
 #Full network
 network_graph(agg_dat)
@@ -236,12 +262,6 @@ network_graph(dev_counts)
 
 #Games and Graphics Graph
 #need to edit graphics a bit
-for(i in 1:nrow(agg_dat)){
-  if(agg_dat$Category.1[i]=="Graphics" & is.na(agg_dat$Category.1[i]) == FALSE){
-    agg_dat$Category.2[i] <- agg_dat$Category.3[i]
-    agg_dat$Category.3[i] <- NA
-  }
-}
 gg_counts = agg_dat[which(agg_dat$Category.1 == "Graphics" | agg_dat$Category.1 == "Games"),]
 network_graph(gg_counts)
 
@@ -297,6 +317,7 @@ library(plyr)
 library(dplyr)
 
 load(file = '~/git/oss/data/oss/working/sourceforge/DONE_SFunclean.RData')
+complete_data <- cleaned_SF
 
 ## Word cloud of descriptions
 dps_chrg_corpus <- Corpus(VectorSource(complete_data$Description))
@@ -360,11 +381,10 @@ test_compar <- test_compar[,-1]
 #plot comparison and commonality clouds
 commonality.cloud(test, max.words = 400, random.order = FALSE, colors = brewer.pal(8, "Dark2"))
 
-
 comparison.cloud(test_compar, random.order=FALSE, colors = c("indianred3","steelblue3"),
                  title.size=2.5, max.words=400)
 
-png(filename="~/git/oss/src/ckelling/images/wordcloud_sf.png",
+png(filename="~/git/oss/src/ckelling/images/new_images/wordcloud_common.png",
     units="in",
     width=10,
     height=10,
@@ -372,7 +392,8 @@ png(filename="~/git/oss/src/ckelling/images/wordcloud_sf.png",
     res=72
 )
 
-wordcloud(dps_d$word, dps_d$freq, min.freq = 1000,max.words = 500, random.order = FALSE, colors=brewer.pal(8, "Dark2"))
+commonality.cloud(test, max.words = 400, random.order = FALSE, colors = brewer.pal(8, "Dark2"))
+
 
 dev.off()
 ```

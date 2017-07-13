@@ -62,14 +62,13 @@ network_graph <- function(counts){#, title){
 
 
   c1_counts <- counts %>% group_by(Category.1) %>%
-    summarize(count = sum(freq))
+    dplyr::summarize(count = sum(freq))
 
   c2_counts <- counts %>% group_by(Category.1, Category.2) %>%
-    summarize(count = sum(freq))
+    dplyr::summarize(count = sum(freq))
 
   c3_counts <- counts %>% group_by(Category.1, Category.2, Category.3) %>%
-    summarize(count = sum(freq))
-
+    dplyr::summarize(count = sum(freq))
 
   c1_labels <- tibble::data_frame(
     'node' = c1_counts$Category.1,

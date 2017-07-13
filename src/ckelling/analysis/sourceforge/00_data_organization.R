@@ -2,14 +2,22 @@
 library(dplyr)
 library(tictoc)
 #data <- full_join(all_ranks, id2s, by= c(GEOID2 = "Index_Data.Id2"))
-
+#library(splines)
+#?bs
 
 #data for the last 200,000+ rows, that should include all of the information for these software
 tic()
 fs <- list.files('~/git/oss/data/oss/original/sourceforge/final_with_downloads/data', full.names = TRUE, pattern = '*.RData')
 tail(fs)
-#7:30am: 464,675
-#9am: 467841
+#7:30am:  464,675
+#9am:     467,841
+#11:30am: 473,000
+#1:30pm:  477,408
+#2:30pm:  479,145
+#3:30pm:  481,251
+#4:30pm:  483,232
+#5:30pm:  485,687
+#6:12pm:  486,532
 load_stuff <- function(file_name) {
   load(file_name)
   return(data.frame(new_data, stringsAsFactors = F))

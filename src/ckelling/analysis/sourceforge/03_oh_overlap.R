@@ -2,14 +2,20 @@ library("animation")
 ani.options(outdir = getwd())
 
 
-im.convert("~/git/oss/src/ckelling/images/se_graph.pdf", output = "se.png")
+#im.convert("~/git/oss/src/ckelling/images/se_graph.pdf", output = "se.png")
+
+
+
+load("~/git/oss/data/oss/working/openhub/randomProjects/all_random_projects_table.RData")
+load("~/git/oss/data/oss/working/openhub/relevantProjects/projectRelevantMaster.RData")
+load('~/git/oss/data/oss/working/sourceforge/DONE_SFunclean.RData')
+
+randomProjectTable <- projectRelevantMaster
 
 
 title <- unique(complete_data$OSS.Title)
-load("~/git/oss/data/oss/working/openhub/randomProjects/all_random_projects_table.RData")
-
 title2 <- unique(randomProjectTable$project_name)
-View(head(as.data.frame(title2)))
+#View(head(as.data.frame(title2)))
 
 # full <- c(title, title2)
 # head(full)
@@ -23,7 +29,7 @@ title <- str_replace_all(title,"[[:punct:]]","")
 #title <- tm_map(title, removePunctuation)
 
 
-?wordStem
+#?wordStem
 
 title2 <- na.omit(title2)
 title2 <- tolower(title2)
@@ -37,6 +43,9 @@ title2 <- unique(title2)
 
 full <- c(title, title2)
 
+View(as.data.frame(title))
+View(as.data.frame(title2))
 
+#11,077 repeated with full SF data
 length(full)-length(unique(full))
 table(duplicated(full))
