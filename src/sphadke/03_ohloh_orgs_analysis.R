@@ -36,14 +36,25 @@ load("~/git/oss/data/oss/final/openhub/organizations/all_orgs_table_final.RData"
 #colors <- c("blue", "red", "dodgerblue4", "green")
 
 ## The main orgs plot
-p0 <- ggplot(data = organization, aes(type, fill = type)) +
+png(filename = "./output/openhub/graphics/org_by_type.png",
+    units = "in",
+    width = 8, height = 10,
+    res = 200, bg = "transparent"
+)
+ggplot(data = organization, aes(type, fill = type)) +
   geom_bar() +
   # scale_fill_manual(values = cols) +
   theme_minimal() +
   theme(legend.position="none") +
-  ggtitle(paste("Organizations on OpenHub: Total=698")) +
+  #ggtitle(paste("Organizations on OpenHub: Total=698")) +
   labs(x = "Organization type", y = "Count") +
-  theme(plot.title = element_text(hjust = 0.5))
+  #theme(plot.title = element_text(hjust = 0.5)) +
+  theme(text=element_text(size=20),
+        axis.text=element_text(size=16),
+        axis.title=element_text(size=20)#,
+        #axis.text.x=element_text(angle=90,hjust=1)
+)
+dev.off()
 
 
 ## Affiliated contributors
@@ -53,7 +64,13 @@ p1 <- ggplot(data = organization, aes(x = type, y = affiliators, fill = type)) +
   theme(legend.position="none") +
   ggtitle(paste0("Affiliators: Total=", sum(organization$affiliators))) +
   labs(x = "Organization type", y = "Affiliated contributors") +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(text=element_text(size=20),
+        axis.text=element_text(size=16),
+        axis.title=element_text(size=20)#,
+        #axis.text.x=element_text(angle=90,hjust=1)
+  )
+
 
 
 # ## Outside projects
@@ -75,7 +92,13 @@ p3 <- ggplot(data = organization, aes(x = type, y = portfolio_projects_count, fi
   ggtitle(paste0("Portfolio projects: Total=",
                  sum(organization$portfolio_projects_count))) +
   labs(x = "Organization type", y = "Portflio projects") +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(text=element_text(size=20),
+        axis.text=element_text(size=16),
+        axis.title=element_text(size=20)#,
+        #axis.text.x=element_text(angle=90,hjust=1)
+  )
+
 
 
 # ## Outside contributors
@@ -99,7 +122,13 @@ p5 <- ggplot(data = committer_df, aes(x = type, y = value, fill = ContributorTyp
   theme_minimal() +
   ggtitle(paste0("Committers to portfolio projects")) +
   labs(x = "Organization type", y = "Contributors") +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(text=element_text(size=20),
+        axis.text=element_text(size=12),
+        axis.title=element_text(size=20)#,
+        #axis.text.x=element_text(angle=90,hjust=1)
+  )
+
 
 
 # All projects for affiliators
@@ -113,15 +142,34 @@ p6 <- ggplot(data = project_df, aes(x = type, y = value, fill = ProjectType)) +
   theme_minimal() +
   ggtitle(paste0("Project contributions by affiliators")) +
   labs(x = "Organization type", y = "Projects") +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(text=element_text(size=20),
+        axis.text=element_text(size=12),
+        axis.title=element_text(size=20)#,
+        #axis.text.x=element_text(angle=90,hjust=1)
+  )
+
 
 
 ##
 # Plot it!!!
 ##
-p0
-multiplot(p1, p6, p3, p5, cols=2)
+# Portfolio projects
+png(filename = "./output/openhub/graphics/orgs_portfolio.png",
+    units = "in", width = 15, height = 8,
+    res = 200, bg = "transparent"
+)
+multiplot(p1, p6, cols=2)
+dev.off()
 
+
+# Affiliators
+png(filename = "./output/openhub/graphics/orgs_affiliator.png",
+    units = "in", width = 15, height = 8,
+    res = 200, bg = "transparent"
+)
+multiplot(p3, p5, cols=2)
+dev.off()
 
 
 

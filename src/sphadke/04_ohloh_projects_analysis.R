@@ -32,10 +32,16 @@ library(wordcloud)
 
 
 ## Data import and rename
+# random projects
 load("~/git/oss/data/oss/working/openhub/randomProjects/all_random_projects_table.RData")
 
+# relevant projects
+load("~/git/oss/data/oss/working/openhub/relevantProjects/projectRelevantMaster.RData")
+
 data <- randomProjectTable
+data <- projectRelevantMaster
 rm(randomProjectTable)
+rm(projectRelevantMaster)
 
 
 ####################
