@@ -33,7 +33,7 @@ library(wordcloud)
 
 ## Data import and rename
 # random projects
-load("~/git/oss/data/oss/working/openhub/randomProjects/all_random_projects_table.RData")
+# load("~/git/oss/data/oss/working/openhub/randomProjects/all_random_projects_table.RData")
 
 # relevant projects
 load("~/git/oss/data/oss/working/openhub/relevantProjects/projectRelevantMaster.RData")
@@ -137,7 +137,6 @@ for (i in 1:nrow(clean_data)){
 
   if(num_tags > 1) {
   val_tags <- unlist(str_split(tags_df[i], pattern = ";"))
-
 
   combinations <- combinations(n = num_tags, r = 2, val_tags, repeats.allowed = FALSE, set = TRUE)
 
