@@ -97,7 +97,7 @@ for (i in 1982:2981){
 account_ids <- unique(account_ids)
 
 ## Save the file
-save(account_ids, file = "~/git/oss/data/oss/original/openhub/users/29810_account_ids.R")
+save(account_ids, file = "~/git/oss/data/oss/original/openhub/users/29810_account_ids.RData")
 
 
 
