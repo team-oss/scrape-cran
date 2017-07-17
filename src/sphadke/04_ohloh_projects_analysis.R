@@ -38,9 +38,9 @@ library(wordcloud)
 # relevant projects
 load("~/git/oss/data/oss/working/openhub/relevantProjects/projectRelevantMaster.RData")
 
-data <- randomProjectTable
+#data <- randomProjectTable
 data <- projectRelevantMaster
-rm(randomProjectTable)
+#rm(randomProjectTable)
 rm(projectRelevantMaster)
 
 
@@ -72,6 +72,29 @@ data$total_contributor_count <- as.numeric(data$total_contributor_count)
 data$twelve_month_commit_count <- as.numeric(data$twelve_month_commit_count)
 data$total_commit_count <- as.numeric(data$total_commit_count)
 data$total_code_lines <- as.numeric(data$total_code_lines)
+
+# Separating out the factoid columns
+data$age <- NA
+data$team_size <- NA
+data$activity <- NA
+data$comments <- NA
+
+for(i in 1:nrow(data)){
+  if(is.na(data$factoids[i]) == FALSE){
+    data$age[i] <- unlist(str_split(grep("Age", unlist(str_split(data$factoids[i], ";")), value = TRUE), "Age"))[2]
+    data$team_size[i] <- unlist(str_split(grep("Team", unlist(str_split(data$factoids[i], ";")), value = TRUE), "Size"))[2]
+    data$activity[i] <- unlist(str_split(grep("Activity", unlist(str_split(data$factoids[i], ";")), value = TRUE), "Activity"))[2]
+    data$comments[i] <- unlist(str_split(grep("Comments", unlist(str_split(data$factoids[i], ";")), value = TRUE), "Comments"))[2]
+  } else {
+    data$age[i] <- NA
+    data$team_size[i] <- NA
+    data$activity[i] <- NA
+    data$comments[i] <- NA
+  }
+  print(i)
+}
+
+
 
 
 ## Completely empty rows
