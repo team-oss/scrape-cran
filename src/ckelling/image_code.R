@@ -67,8 +67,7 @@ png(filename="~/git/oss/src/ckelling/images/new_images/top_cat.png",
     #pointsize=20,
     res=72
 )
-p<-tableGrob(top_cat)
-grid.arrange(p)
+ggplot(agg_dat1)+ geom_bar(aes(x=Category.1, y=freq,fill = Category.1), stat= "identity")+ theme(legend.position="none",axis.text.x = element_text(angle = 90, hjust = 1)) + ggtitle("Categories and Subcategories")
 dev.off()
 
 View(head(fullcontrib_mat, n=10))

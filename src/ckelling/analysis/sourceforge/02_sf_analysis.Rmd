@@ -25,68 +25,68 @@ library(data.table)
 
 First, I will assess the completeness of the 16/17 variables.
 ```{r completeness, echo=FALSE,include= TRUE}
-profile_dat <- c()
-for(i in 1:ncol(cleaned_SF)){
-  print(i)
-  if(i == 12){
-    x <- cleaned_SF[,i]
-
-    # Make all blanks NAs
-    x[x == ""] <- NA
-
-    name <- colnames(cleaned_SF)[i]
-    class <- class(x)
-
-    # Proportion of missing values
-    miss <- round(sum(is.na(x))*100/nrow(cleaned_SF), digits = 2)
-
-    # How many unique values to the variable?
-    auth <- c()
-    for(j in 1:length(x)){
-      print(j)
-      new_auth <- trimws(unlist(str_split(x[j], ",")))
-      auth <- c(auth, new_auth)
-    }
-
-    vals <- length(unique(auth))
-    # summary <- summary(x)
-    #if(vals <= 10){
-    #  tab <- table(x)
-    #  print(tab)
-    #}
-  }else{
-    x <- cleaned_SF[,i]
-
-    # Make all blanks NAs
-    x[x == ""] <- NA
-
-    name <- colnames(cleaned_SF)[i]
-    class <- class(x)
-
-    # Proportion of missing values
-    miss <- round(sum(is.na(x))*100/nrow(cleaned_SF), digits = 2)
-
-    # How many unique values to the variable?
-    vals <- length(unique(x))
-    # summary <- summary(x)
-    #if(vals <= 10){
-    #  tab <- table(x)
-    #  print(tab)
-    #}
-  }
-  new_row <- c(name, class, miss, vals)
-  profile_dat <- rbind(profile_dat, new_row)
-}
-save(auth, file = '~/git/oss/data/oss/working/sourceforge/auth_list.RData')
+# profile_dat <- c()
+# for(i in 1:ncol(cleaned_SF)){
+#   print(i)
+#   if(i == 12){
+#     x <- cleaned_SF[,i]
+# 
+#     # Make all blanks NAs
+#     x[x == ""] <- NA
+# 
+#     name <- colnames(cleaned_SF)[i]
+#     class <- class(x)
+# 
+#     # Proportion of missing values
+#     miss <- round(sum(is.na(x))*100/nrow(cleaned_SF), digits = 2)
+# 
+#     # How many unique values to the variable?
+#     auth <- c()
+#     for(j in 1:length(x)){
+#       print(j)
+#       new_auth <- trimws(unlist(str_split(x[j], ",")))
+#       auth <- c(auth, new_auth)
+#     }
+# 
+#     vals <- length(unique(auth))
+#     # summary <- summary(x)
+#     #if(vals <= 10){
+#     #  tab <- table(x)
+#     #  print(tab)
+#     #}
+#   }else{
+#     x <- cleaned_SF[,i]
+# 
+#     # Make all blanks NAs
+#     x[x == ""] <- NA
+# 
+#     name <- colnames(cleaned_SF)[i]
+#     class <- class(x)
+# 
+#     # Proportion of missing values
+#     miss <- round(sum(is.na(x))*100/nrow(cleaned_SF), digits = 2)
+# 
+#     # How many unique values to the variable?
+#     vals <- length(unique(x))
+#     # summary <- summary(x)
+#     #if(vals <= 10){
+#     #  tab <- table(x)
+#     #  print(tab)
+#     #}
+#   }
+#   new_row <- c(name, class, miss, vals)
+#   profile_dat <- rbind(profile_dat, new_row)
+# }
+#save(auth, file = '~/git/oss/data/oss/working/sourceforge/auth_list.RData')
 
 colnames(profile_dat) <- c("Column Name", "Class", "% Missing" , "Unique Values")
 
 #save(profile_dat, file = '~/git/oss/data/oss/working/sourceforge/profile_dat.RData')
 #colnames(profile_dat) <- c("Column Name", "Class", "% Missing" , "Unique Values")
-rownames(profile_dat) <- c()
-profile_dat <- as.data.frame(profile_dat)
-View(profile_dat)
-save(profile_dat, file = '~/git/oss/data/oss/working/sourceforge/profile_dat.RData')
+#rownames(profile_dat) <- c()
+#profile_dat <- as.data.frame(profile_dat)
+#View(profile_dat)
+load(file = '~/git/oss/data/oss/working/sourceforge/profile_dat.RData')
 
 library(gridExtra)
 #save this table
@@ -109,7 +109,7 @@ hist(as.numeric(cleaned_SF$Average.Rating))
 hist(as.numeric(cleaned_SF$Number.of.Ratings))
 hist(as.numeric(cleaned_SF$Number.of.Ratings[which(as.numeric(cleaned_SF$Number.of.Ratings) > 5)]))
 hist(as.numeric(cleaned_SF$Weekly.Downloads))
-hist(as.numeric(cleaned_SF$Weekly.Downloads[which(as.numeric(cleaned_SF$Weekly.Downloads) >5 & as.numeric(cleaned_SF$Weekly.Downloads) < 50000)]))
+hist(as.numeric(cleaned_SF$Weekly.Downloads[which(as.numeric(cleaned_SF$Weekly.Downloads) >0 & as.numeric(cleaned_SF$Weekly.Downloads) < 100)]))
 hist(as.numeric(cleaned_SF$Ease))
 hist(as.numeric(cleaned_SF$features))
 hist(as.numeric(cleaned_SF$design))
@@ -210,7 +210,7 @@ Now, I would like to assess the universe by looking at categories.
 agg_dat <- plyr::count(cleaned_SF, c('Category.1', 'Category.2', 'Category.3'))
 #agg_dat1 <- plyr::count(cleaned_SF, c('Category.1', 'Category.2'))
 
-ggplot(agg_dat1)+ geom_bar(aes(x=Category.1, y=freq,fill = Category.2), stat= "identity")+ theme(legend.position="none",axis.text.x = element_text(angle = 90, hjust = 1)) + ggtitle("Categories and Subcategories")
+ggplot(agg_dat1)+ geom_bar(aes(x=Category.1, y=freq,fill = Category.1), stat= "identity")+ theme(legend.position="none",axis.text.x = element_text(angle = 90, hjust = 1)) + ggtitle("Categories and Subcategories")
 
 for(i in 1:nrow(agg_dat)){
   if(agg_dat$Category.1[i]=="Graphics" & is.na(agg_dat$Category.1[i]) == FALSE){
