@@ -108,7 +108,7 @@ for(i in 1:nrow(clean_data)){
   }
 
   if(length(grep("Comments", unlist(str_split(clean_data$factoids[i], ";")), value = TRUE)) > 0){
-  clean_data$comments[i] <- unlist(str_split(grep("Comments", unlist(str_split(clean_data$factoids[i], ";")), value = TRUE), "Comments"))[2]
+    clean_data$comments[i] <- unlist(str_split(grep("Comments", unlist(str_split(clean_data$factoids[i], ";")), value = TRUE), "Comments"))[2]
   }
 
   print(i)
@@ -123,95 +123,6 @@ clean_data$age <- as.factor(clean_data$age)
 clean_data$activity <- as.factor(clean_data$activity)
 clean_data$team_size <- as.factor(clean_data$team_size)
 clean_data$comments <- as.factor(clean_data$comments)
-
-
-
-## Check data quality
-completeness <- matrix(NA, ncol(clean_data), 4)
-
-for(i in 1:ncol(clean_data)){
-  x <- clean_data[,i]
-
-  completeness[i,1] <- colnames(clean_data)[i]
-  completeness[i,2] <- class(x)[1]
-
-  # Proportion of missing values
-  completeness[i,3] <- round(sum(is.na(x))*100/nrow(clean_data), digits = 2)
-
-  # How many unique values to the variable?
-  completeness[i,4] <- length(unique(x))
-  # summary <- summary(x)
-  # if(vals <= 10){
-  #   tab <- table(x)
-  #   print(tab)
-  # }
-  #print(c(name, class, miss, vals))
-}
-
-# View(completeness)
-
-
-####
-#### See if things are correlated
-####
-
-# cor(clean_data[, c('average_rating', 'user_count', 'rating_count', 'review_count', 'twelve_month_contributor_count', 'total_contributor_count', 'total_commit_count', 'total_code_lines', 'twelve_month_commit_count')])
-
-
-####
-#### Time plot of development
-####
-
-# ggplot(clean_data, aes(created_at, total_commit_count)) +
-#   geom_point() +
-#   scale_x_datetime(date_labels = "%Y-%b") #+ xlab("") + ylab("Daily Views")
-#
-# ggplot(clean_data, aes(created_at, total_contributor_count)) +
-#   geom_line() +
-#   scale_x_datetime(date_labels = "%Y-%b")
-
-
-
-
-####
-#### Wordclouds
-####
-## Main development language
-
-language_corpus <- Corpus(VectorSource(clean_data$main_language))
-language_dtm <- TermDocumentMatrix(language_corpus)
-dps_m <- as.matrix(language_dtm)
-dps_m <- sort(rowSums(dps_m),decreasing=TRUE)
-dps_m <- data.frame(word = names(dps_m),freq = dps_m)
-
-# png(filename="/wordcloud_dps.png",
-#     units="in",
-#     width=10,
-#     height=10,
-#     #pointsize=12,
-#     res=72
-# )
-
-ggplot(data = clean_data, aes(x = main_language)) +
-  geom_bar()
-
-wordcloud(dps_m$word, dps_m$freq, min.freq = 1, random.order = FALSE, colors=brewer.pal(8, "Dark2"))
-# dev.off()
-
-
-## Top 3 languages
-all_languages <- c(unlist(str_split(clean_data$languages, ";")))
-all_languages <- all_languages[str_detect(all_languages, "other") == FALSE]
-language_corpus <- Corpus(VectorSource(all_languages))
-language_corpus <- tm_map(language_corpus, removeNumbers)
-language_corpus <- tm_map(language_corpus, removeWords, c("other", "Other"))
-language_dtm <- TermDocumentMatrix(language_corpus)
-dps_m <- as.matrix(language_dtm)
-dps_m <- sort(rowSums(dps_m),decreasing=TRUE)
-dps_m <- data.frame(word = names(dps_m),freq = dps_m)
-
-wordcloud(dps_m$word, dps_m$freq, min.freq = 1, random.order = FALSE, colors=brewer.pal(8, "Dark2"))
-
 
 
 ####
@@ -235,63 +146,5 @@ ggplot(data = activity_df, aes(x = activity, y = value, fill = activity)) +
         axis.text=element_text(size=16),
         axis.title=element_text(size=20)#,
         #axis.text.x=element_text(angle=90,hjust=1)
-        )
+  )
 
-
-
-
-####
-## Later
-####
-## Description
-dps_chrg_corpus <- Corpus(VectorSource(clean_data$description))
-dps_chrg_corpus <- tm_map(dps_chrg_corpus, PlainTextDocument)
-dps_chrg_corpus <- tm_map(dps_chrg_corpus, content_transformer(tolower))
-
-dps_chrg_corpus <- tm_map(dps_chrg_corpus, removeWords, stopwords('english'))
-dps_chrg_corpus <- tm_map(dps_chrg_corpus, removeWords, c("will","set","functions", "data", "package", "based", "can", "provides", "set", "used", "project", "using", "contains", "function"))
-dps_chrg_corpus <- tm_map(dps_chrg_corpus, removeNumbers)
-dps_chrg_corpus <- tm_map(dps_chrg_corpus, removePunctuation)
-
-dps_chrg_corpus <- tm_map(dps_chrg_corpus, stemDocument)
-
-dps_temp_stemmed <- data.frame(text = sapply(dps_chrg_corpus, as.character), stringsAsFactors = FALSE)
-
-oh_random_proj_desc_dtm <- TermDocumentMatrix(dps_chrg_corpus)
-save(oh_random_proj_desc_dtm, file = "~/git/oss/data/oss/working/openhub/randomProjects/oh_random_proj_desc_dtm.RData")
-dps_m <- as.matrix(dps_dtm)
-dps_m <- sort(rowSums(dps_m),decreasing=TRUE)
-dps_m <- data.frame(word = names(dps_m),freq = dps_m)
-
-wordcloud(dps_m$word, dps_m$freq, min.freq = 20, random.order = FALSE, colors=brewer.pal(8, "Dark2"))
-
-
-
-####
-#### Network of tags
-####
-
-tags_df <- na.omit(clean_data$tags)
-
-tag_edgelist <- matrix(ncol = 2)
-
-for (i in 1:nrow(clean_data)){
-  num_tags <- length(unlist(str_split(tags_df[i], pattern = ";")))
-
-  if(num_tags > 1) {
-    val_tags <- unlist(str_split(tags_df[i], pattern = ";"))
-
-    combinations <- combinations(n = num_tags, r = 2, val_tags, repeats.allowed = FALSE, set = TRUE)
-
-    tag_edgelist <- rbind(tag_edgelist, combinations)
-  }
-
-  print(i)
-}
-
-tag_edgelist <- na.omit(tag_edgelist)
-tag_net <- network(as.data.frame(tag_edgelist), directed = FALSE, matrix.type = "edgelist")
-
-plot(tag_net, displaylabels = F,
-     #label = get.vertex.attribute(contact.net, "female"),
-     vertex.cex = 1)#, vertex.col = c("Blue", "Red"))
