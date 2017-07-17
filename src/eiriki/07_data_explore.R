@@ -92,3 +92,24 @@ fixed_plot <- ggplot(temp2)+ geom_bar(aes(x=Category.1, fill =Category.1, y= avg
 top_down <- subset(cleaned_SF, Total.Downloads > 100000000)
 top_down <- top_down[,c(1,3,17)]
 new_top_down <- top_down[order(top_down$Total.Downloads, decreasing = TRUE),]
+
+#use this to save
+png(filename="~/git/oss/src/ckelling/images/new_images/new_cat_bar.png",
+units="in",
+width=10,
+height=10,
+pointsize=12,
+res=72,
+bg = "transparent"
+ )
+ ggplot(temp2)+ geom_bar(aes(x=Category.1, fill =Category.1, y= avg ), stat= "identity")+
+xlab('Category') +
+  theme(legend.position="none",axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_y_continuous(name = "Average Downloads per project", labels = comma) +
+  ggtitle("Average Downloads per project by Category")
+
++
+  theme(axis.text.x = element_text(size = 15, angle = 90, hjust = 1))+
+  theme(text = element_text(size=25))+theme(axis.text.x=element_text(size=20))
+
+dev.off()
