@@ -72,7 +72,6 @@ model.01 <- ergm(depsy.net ~ edges + nodematch("tags") +
                    nodeicov("num_citations") + nodeocov("num_citations")+
                    nodeicov("num_contribs") + nodeocov("num_contribs") +
                    nodeicov("num_commits") + nodeocov("num_commits")+
-                   nodeicov("num_downloads") + nodeocov("num_downloads")+
                    absdiff("num_citations") + absdiff("num_contribs") + absdiff("num_commits")+absdiff("num_downloads")+
                    gwesp(0.5, fixed = T),
                  maxNumDyads = network.size(depsy.net),
