@@ -91,6 +91,35 @@ clean_rel_data <- rel_data[!apply(rel_data[2:33], 1, function(x){all(is.na(x))})
 rm(rel_data)
 
 
+
+## Modify the below code for final poster plot
+activity_ran_df <- melt(data = clean_ran_data, id.vars = c('project_name'), measure.vars = c('total_code_lines'))
+activity_ran_df$data <- "Random projects"
+activity_rel_df <- melt(data = clean_rel_data, id.vars = c('project_name'), measure.vars = c('total_code_lines'))
+activity_rel_df$data <- "Relevant projects"
+activity_df <- rbind(activity_ran_df, activity_rel_df)
+
+code_lines_1 <- ggplot(data = activity_df, aes(x = data, y = value, fill = data)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(legend.position="none") +
+  ggtitle("Total code lines by projects") +
+  labs(y = "Total code lines") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(text=element_text(size=20),
+        axis.text=element_text(size=16),
+        axis.title=element_text(size=20)#,
+        #axis.text.x=element_text(angle=90,hjust=1)
+  )
+
+code_lines_1
+
+
+
+
+
+####
+#### Section below had ggplots based on factoids
 # Separating out the factoid columns
 clean_ran_data$age <- NA
 clean_ran_data$team_size <- NA
