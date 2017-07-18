@@ -246,6 +246,7 @@ summary(fit4)
 res=fit4$resid
 hist(res,breaks=15)
 qqnorm(res)
+abline(0,0.01)
 qqline(res)
 yhat=fit4$fitted.values
 plot(yhat,res)

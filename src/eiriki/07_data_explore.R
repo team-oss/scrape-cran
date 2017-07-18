@@ -47,16 +47,67 @@ ggplot(d)+ geom_bar(aes(x=Category.1, fill = Category.2, y=s), stat= "identity")
   scale_y_continuous(name = "Total Downloads", labels = comma) +
   ggtitle("Total Downloads by Category")
 
+#same but with boxplots
+ggplot(cleaned_SF[which(cleaned_SF$Total.Downloads < 100000 & cleaned_SF$Total.Downloads > 100),])+
+  geom_boxplot(aes(x=Category.1, y = Total.Downloads))+
+  xlab('Category') +
+  theme(legend.position="none",axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_y_continuous(name = "Total Downloads", labels = comma) +
+  ggtitle("Total Downloads by Category")
+
+
 #make a table to compare total downloads and rank of agg data
 agg_dat
 agg_dat_2_table <- cbind(agg_dat, d$s)
 #remove the na row
 agg_dat_2_table <- agg_dat_2_table[-nrow(agg_dat_2_table),]
 
-#second plot that plots subcategories
+#scatterplot that plots subcategories
 ggplot(agg_dat_2_table)+
   geom_point(aes(x=freq, fill = Category.1, y= `d$s`), stat= "identity")+
   xlab('Projects per category') +
   theme(legend.position="none",axis.text.x = element_text(angle = 45, hjust = 1)) +
   scale_y_continuous(name = "Total Downloads", labels = comma) +
   ggtitle("Total Downloads by Projects per Category")
+
+
+
+
+
+
+temp1 <- plyr::count(cleaned_SF, c('Category.1'))
+# the letter s is total downloads
+d2 <- temp1 %>% dplyr::group_by(Category.1) %>%
+  dplyr::summarise(s = sum(Total.Downloads, na.rm = TRUE))
+temp2 <- cbind(temp1, d2$s)
+temp2$avg <- temp2$`d2$s` / temp2$freq
+#fixed plot
+fixed_plot <- ggplot(temp2)+ geom_bar(aes(x=Category.1, fill =Category.1, y= avg ), stat= "identity")+
+  xlab('Category') +
+  theme(legend.position="none",axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_y_continuous(name = "Average Downloads per project", labels = comma) +
+  ggtitle("Average Downloads per project by Category")
+
+#top downloaded projects
+top_down <- subset(cleaned_SF, Total.Downloads > 100000000)
+top_down <- top_down[,c(1,3,17)]
+new_top_down <- top_down[order(top_down$Total.Downloads, decreasing = TRUE),]
+
+#use this to save
+# png(filename="src/eiriki/avg_down_categories.png",
+# units="in",
+# width=10,
+# height=10,
+# pointsize=12,
+# res=72,
+# bg = "transparent"
+#  )
+#  ggplot(temp2)+ geom_bar(aes(x=Category.1, fill =Category.1, y= avg ), stat= "identity")+
+# xlab('Category') +
+#   theme(legend.position="none",axis.text.x = element_text(angle = 45, hjust = 1)) +
+#   scale_y_continuous(name = "Average Downloads per project", labels = comma) +
+#   ggtitle("Average Downloads per project by Category")+
+#   theme(axis.text.x = element_text(size = 15, angle = 90, hjust = 1))+
+#   theme(text = element_text(size=25))+theme(axis.text.x=element_text(size=20))
+#
+# dev.off()
