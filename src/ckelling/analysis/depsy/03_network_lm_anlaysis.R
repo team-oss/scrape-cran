@@ -16,7 +16,6 @@ node_mat$num_contribs <- as.numeric(node_mat$num_contribs)
 full_data <- left_join(depsy_net_nodes[,c(1,4:18)], node_mat[,c(1,13:18,20)], by = c(id = "name"))
 full_data <- full_data[,-1]
 
-domv_dat[is.na(domv_dat)] <- 0
 
 fit1 <- lm(num_downloads ~ ., data = full_data)
 summary(fit1)
@@ -44,6 +43,8 @@ AIC(fit4)
 boxcox(fit4)
 bc=boxcox(fit4)
 bc$x[which.max(bc$y)]
+
+hist(full_data$num_stars[which(full_data$num_stars < 100)])
 
 
 fit5 <- lm(I(num_downloads^(-0.25)) ~ ., data = full_data)
