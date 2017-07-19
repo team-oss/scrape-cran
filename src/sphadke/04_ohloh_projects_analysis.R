@@ -213,33 +213,6 @@ dps_m <- data.frame(word = names(dps_m),freq = dps_m)
 wordcloud(dps_m$word, dps_m$freq, min.freq = 1, random.order = FALSE, colors=brewer.pal(8, "Dark2"))
 
 
-
-####
-## Let's try some ggplots with factoids
-####
-#ggplot(aes(y = boxthis, x = f2, fill = f1), data = df) + geom_boxplot()
-
-activity_df <- melt(data = clean_data, id.vars = c('project_name', 'activity'), measure.vars = c('total_code_lines'))
-
-colnames(activity_df)[3] <- "total_code_lines"
-#levels(activity_df$activity) <- c("Affiliated", "Outside")
-
-ggplot(data = activity_df, aes(x = activity, y = value, fill = activity)) +
-  geom_boxplot() +
-  theme_minimal() +
-  theme(legend.position="none") +
-  #ggtitle(paste0("Affiliators: Total=", sum(organization$affiliators))) +
-  labs(x = "Activity level", y = "Total code lines") +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  theme(text=element_text(size=20),
-        axis.text=element_text(size=16),
-        axis.title=element_text(size=20)#,
-        #axis.text.x=element_text(angle=90,hjust=1)
-        )
-
-
-
-
 ####
 ## Later
 ####
