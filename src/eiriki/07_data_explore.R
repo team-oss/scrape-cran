@@ -25,6 +25,7 @@ agg_dat1 <- agg_dat1[-nrow(agg_dat1),]
 
 ggplot(agg_dat1)+ geom_bar(aes(x=Category.1, y=freq,fill = Category.2), stat= "identity")+ theme(legend.position="none",axis.text.x = element_text(angle = 90, hjust = 1)) + ggtitle("Categories and Subcategories")
 
+#this code chunk will move the graphics subcategrory to the 2nd level of category instead of 3rd.
 for(i in 1:nrow(agg_dat)){
   if(agg_dat$Category.1[i]=="Graphics" & is.na(agg_dat$Category.1[i]) == FALSE){
     agg_dat$Category.2[i] <- agg_dat$Category.3[i]
