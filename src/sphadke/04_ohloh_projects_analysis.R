@@ -34,14 +34,14 @@ library(wordcloud)
 
 ## Data import and rename
 # random projects
-# load("~/git/oss/data/oss/working/openhub/randomProjects/all_random_projects_table.RData")
+load("~/git/oss/data/oss/working/openhub/randomProjects/all_random_projects_table.RData")
 
 # relevant projects
 load("~/git/oss/data/oss/working/openhub/relevantProjects/projectRelevantMaster.RData")
 
-#data <- randomProjectTable
-data <- projectRelevantMaster
-#rm(randomProjectTable)
+ran_data <- randomProjectTable
+rel_data <- projectRelevantMaster
+rm(randomProjectTable)
 rm(projectRelevantMaster)
 
 
@@ -51,78 +51,100 @@ rm(projectRelevantMaster)
 ####################
 
 ## Convert blanks and "NA"s to NAs
-data[data == ""] <- NA
-data[data == "\n  "] <- NA
-data[data == "NA"] <- NA
+ran_data[ran_data == ""] <- NA
+ran_data[ran_data == "\n  "] <- NA
+ran_data[ran_data == "NA"] <- NA
 
-
-## Make all date columns lubridate compatible
-data$created_at <- as.POSIXct(data$created_at, format = '%Y-%m-%dT%H:%M:%SZ')
-data$updated_at <- as.POSIXct(data$updated_at, format = '%Y-%m-%dT%H:%M:%SZ')
-data$last_analysis_update <- as.POSIXct(data$last_analysis_update, format = '%Y-%m-%dT%H:%M:%SZ')
-data$last_source_code_access <- as.POSIXct(data$last_source_code_access, format = '%Y-%m-%dT%H:%M:%SZ')
+rel_data[rel_data == ""] <- NA
+rel_data[rel_data == "\n  "] <- NA
+rel_data[rel_data == "NA"] <- NA
 
 
 ## Make relevant columns numeric
-data$user_count <- as.numeric(data$user_count)
-data$average_rating <- as.numeric(data$average_rating)
-data$rating_count <- as.numeric(data$rating_count)
-data$review_count <- as.numeric(data$review_count)
-data$twelve_month_contributor_count <- as.numeric(data$twelve_month_contributor_count)
-data$total_contributor_count <- as.numeric(data$total_contributor_count)
-data$twelve_month_commit_count <- as.numeric(data$twelve_month_commit_count)
-data$total_commit_count <- as.numeric(data$total_commit_count)
-data$total_code_lines <- as.numeric(data$total_code_lines)
+ran_data$user_count <- as.numeric(ran_data$user_count)
+ran_data$average_rating <- as.numeric(ran_data$average_rating)
+ran_data$rating_count <- as.numeric(ran_data$rating_count)
+ran_data$review_count <- as.numeric(ran_data$review_count)
+ran_data$twelve_month_contributor_count <- as.numeric(ran_data$twelve_month_contributor_count)
+ran_data$total_contributor_count <- as.numeric(ran_data$total_contributor_count)
+ran_data$twelve_month_commit_count <- as.numeric(ran_data$twelve_month_commit_count)
+ran_data$total_commit_count <- as.numeric(ran_data$total_commit_count)
+ran_data$total_code_lines <- as.numeric(ran_data$total_code_lines)
 
 
-## Completely empty rows
-num_empty_rows <- length(data$licenses[apply(data[,2:ncol(data)], 1, function(x){all(is.na(x))}) == TRUE])
-rm(num_empty_rows)
-
+rel_data$user_count <- as.numeric(rel_data$user_count)
+rel_data$average_rating <- as.numeric(rel_data$average_rating)
+rel_data$rating_count <- as.numeric(rel_data$rating_count)
+rel_data$review_count <- as.numeric(rel_data$review_count)
+rel_data$twelve_month_contributor_count <- as.numeric(rel_data$twelve_month_contributor_count)
+rel_data$total_contributor_count <- as.numeric(rel_data$total_contributor_count)
+rel_data$twelve_month_commit_count <- as.numeric(rel_data$twelve_month_commit_count)
+rel_data$total_commit_count <- as.numeric(rel_data$total_commit_count)
+rel_data$total_code_lines <- as.numeric(rel_data$total_code_lines)
 
 ####
 ## Remove the fully empty rows
 ####
-clean_data <- data[!apply(data[2:33], 1, function(x){all(is.na(x))}), ]
-rm(data)
+clean_ran_data <- ran_data[!apply(ran_data[2:33], 1, function(x){all(is.na(x))}), ]
+rm(ran_data)
+
+clean_rel_data <- rel_data[!apply(rel_data[2:33], 1, function(x){all(is.na(x))}), ]
+rm(rel_data)
+
+# ## Completely empty rows
+# num_empty_rows <- length(data$licenses[apply(data[,2:ncol(data)], 1, function(x){all(is.na(x))}) == TRUE])
+# rm(num_empty_rows)
 
 
-# Separating out the factoid columns
-clean_data$age <- NA
-clean_data$team_size <- NA
-clean_data$activity <- NA
-clean_data$comments <- NA
+####
+#### Plot of languages
+####
+ran_language_freq <- as.data.frame(table(clean_ran_data$main_language))
+ran_lang_to_plot <- head(ran_language_freq[order(ran_language_freq$Freq, decreasing= T),], n = 10)
+ran_lang_to_plot <- clean_ran_data[(clean_ran_data$main_language %in% ran_lang_to_plot$Var1) == TRUE, 'main_language']
+ran_lang_to_plot <- as.data.frame(ran_lang_to_plot)
 
-for(i in 1:nrow(clean_data)){
 
-  if(length(grep("Age", unlist(str_split(clean_data$factoids[i], ";")), value = TRUE)) > 0){
-    clean_data$age[i] <- unlist(str_split(grep("Age", unlist(str_split(clean_data$factoids[i], ";")), value = TRUE), "Age"))[2]
-  }
+random_lang <- ggplot(data = ran_lang_to_plot, aes(x = ran_lang_to_plot, fill = ran_lang_to_plot)) +
+  geom_bar() +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  ggtitle("Ten main languages: Random projects") +
+  labs(y = "Frequency", x = "") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(text=element_text(size=20),
+        axis.text=element_text(size=16),
+        axis.title=element_text(size=20))
 
-  if(length(grep("Team", unlist(str_split(clean_data$factoids[i], ";")), value = TRUE)) > 0){
-    clean_data$team_size[i] <- unlist(str_split(grep("Team", unlist(str_split(clean_data$factoids[i], ";")), value = TRUE), "Size"))[2]
-  }
+png(filename = "./output/openhub/graphics/poster/random_main_lang.png",
+    units = "in", width = 8, height = 15,
+    res = 72, bg = "transparent")
+random_lang
+dev.off()
 
-  if(length(grep("Activity", unlist(str_split(clean_data$factoids[i], ";")), value = TRUE)) > 0){
-    clean_data$activity[i] <- unlist(str_split(grep("Activity", unlist(str_split(clean_data$factoids[i], ";")), value = TRUE), "Activity"))[2]
-  }
 
-  if(length(grep("Comments", unlist(str_split(clean_data$factoids[i], ";")), value = TRUE)) > 0){
-  clean_data$comments[i] <- unlist(str_split(grep("Comments", unlist(str_split(clean_data$factoids[i], ";")), value = TRUE), "Comments"))[2]
-  }
+rel_language_freq <- as.data.frame(table(clean_rel_data$main_language))
+rel_lang_to_plot <- head(rel_language_freq[order(rel_language_freq$Freq, decreasing= T),], n = 10)
+rel_lang_to_plot <- clean_rel_data[(clean_rel_data$main_language %in% rel_lang_to_plot$Var1) == TRUE, 'main_language']
+rel_lang_to_plot <- as.data.frame(rel_lang_to_plot)
 
-  print(i)
-}
+rel_lang <- ggplot(data = rel_lang_to_plot, aes(x = rel_lang_to_plot, fill = rel_lang_to_plot)) +
+  geom_bar() +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  ggtitle("Ten main languages: Relevant projects") +
+  labs(y = "Frequency", x = "") +
+  theme(axis.text.x = element_text(size = 24, angle = 45, hjust = 1),
+        axis.text.y = element_text(size = 24),
+        title = element_text(size = 24),
+        axis.title = element_text(size = 20)) +
+  theme(plot.title = element_text(hjust = 0.5))
 
-table(clean_data$age)
-table(clean_data$team_size)
-table(clean_data$activity)
-table(clean_data$comments)
-
-clean_data$age <- as.factor(clean_data$age)
-clean_data$activity <- as.factor(clean_data$activity)
-clean_data$team_size <- as.factor(clean_data$team_size)
-clean_data$comments <- as.factor(clean_data$comments)
+png(filename = "./output/openhub/graphics/poster/rel_main_lang.png",
+    units = "in", width = 8, height = 15,
+    res = 72, bg = "transparent")
+rel_lang
+dev.off()
 
 
 
@@ -149,6 +171,46 @@ for(i in 1:ncol(clean_data)){
 }
 
 # View(completeness)
+
+
+
+
+# Separating out the factoid columns
+clean_data$age <- NA
+clean_data$team_size <- NA
+clean_data$activity <- NA
+clean_data$comments <- NA
+
+for(i in 1:nrow(clean_data)){
+
+  if(length(grep("Age", unlist(str_split(clean_data$factoids[i], ";")), value = TRUE)) > 0){
+    clean_data$age[i] <- unlist(str_split(grep("Age", unlist(str_split(clean_data$factoids[i], ";")), value = TRUE), "Age"))[2]
+  }
+
+  if(length(grep("Team", unlist(str_split(clean_data$factoids[i], ";")), value = TRUE)) > 0){
+    clean_data$team_size[i] <- unlist(str_split(grep("Team", unlist(str_split(clean_data$factoids[i], ";")), value = TRUE), "Size"))[2]
+  }
+
+  if(length(grep("Activity", unlist(str_split(clean_data$factoids[i], ";")), value = TRUE)) > 0){
+    clean_data$activity[i] <- unlist(str_split(grep("Activity", unlist(str_split(clean_data$factoids[i], ";")), value = TRUE), "Activity"))[2]
+  }
+
+  if(length(grep("Comments", unlist(str_split(clean_data$factoids[i], ";")), value = TRUE)) > 0){
+    clean_data$comments[i] <- unlist(str_split(grep("Comments", unlist(str_split(clean_data$factoids[i], ";")), value = TRUE), "Comments"))[2]
+  }
+
+  print(i)
+}
+
+table(clean_data$age)
+table(clean_data$team_size)
+table(clean_data$activity)
+table(clean_data$comments)
+
+clean_data$age <- as.factor(clean_data$age)
+clean_data$activity <- as.factor(clean_data$activity)
+clean_data$team_size <- as.factor(clean_data$team_size)
+clean_data$comments <- as.factor(clean_data$comments)
 
 
 ####
