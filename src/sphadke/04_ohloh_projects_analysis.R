@@ -130,6 +130,7 @@ rel_lang_to_plot <- as.data.frame(rel_lang_to_plot)
 
 rel_lang <- ggplot(data = rel_lang_to_plot, aes(x = rel_lang_to_plot, fill = rel_lang_to_plot)) +
   geom_bar() +
+  scale_fill_brewer(palette = "Spectral") +
   theme_minimal() +
   theme(legend.position = "none") +
   ggtitle("Ten main languages: Relevant projects") +
