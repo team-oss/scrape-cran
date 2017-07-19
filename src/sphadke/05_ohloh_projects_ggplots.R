@@ -92,34 +92,119 @@ rm(rel_data)
 
 
 
-## Modify the below code for final poster plot
-activity_ran_df <- melt(data = clean_ran_data, id.vars = c('project_name'), measure.vars = c('total_code_lines'))
-activity_ran_df$data <- "Random projects"
-activity_rel_df <- melt(data = clean_rel_data, id.vars = c('project_name'), measure.vars = c('total_code_lines'))
-activity_rel_df$data <- "Relevant projects"
-activity_df <- rbind(activity_ran_df, activity_rel_df)
 
-code_lines_1 <- ggplot(data = activity_df, aes(x = data, y = value, fill = data)) +
+####
+#### Plots for poster
+####
+
+## Total code lines
+code_ran_df <- melt(data = clean_ran_data, id.vars = c('project_name'), measure.vars = c('total_code_lines'))
+code_ran_df$data <- "Random projects"
+code_rel_df <- melt(data = clean_rel_data, id.vars = c('project_name'), measure.vars = c('total_code_lines'))
+code_rel_df$data <- "Relevant projects"
+code_df <- rbind(code_ran_df, code_rel_df)
+
+code_lines <- ggplot(data = code_df, aes(x = data, y = value, fill = data)) +
   geom_boxplot() +
   theme_minimal() +
   theme(legend.position="none") +
   ggtitle("Total code lines by projects") +
-  labs(y = "Total code lines") +
+  labs(x = "", y = "Total code lines") +
+  theme(axis.text.x = element_text(size = 24),
+        axis.text.y = element_text(size = 24),
+        title = element_text(size = 24),
+        axis.title = element_text(size = 20)) +
+  theme(plot.title = element_text(hjust = 0.5))
+
+png(filename = "./output/openhub/graphics/poster/code_lines.png",
+    units = "in", width = 8, height = 8,
+    res = 72, bg = "transparent")
+code_lines
+dev.off()
+
+
+## Total contributors
+contrib_ran_df <- melt(data = clean_ran_data, id.vars = c('project_name'), measure.vars = c('total_contributor_count'))
+contrib_ran_df$data <- "Random projects"
+contrib_rel_df <- melt(data = clean_rel_data, id.vars = c('project_name'), measure.vars = c('total_contributor_count'))
+contrib_rel_df$data <- "Relevant projects"
+contrib_df <- rbind(contrib_ran_df, contrib_rel_df)
+
+contrib <- ggplot(data = contrib_df, aes(x = data, y = value, fill = data)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(legend.position="none") +
+  ggtitle("Total contributors by projects") +
+  labs(x = "", y = "Total contributors") +
+  theme(axis.text.x = element_text(size = 24),
+        axis.text.y = element_text(size = 24),
+        title = element_text(size = 24),
+        axis.title = element_text(size = 20)) +
+  theme(plot.title = element_text(hjust = 0.5))
+
+png(filename = "./output/openhub/graphics/poster/contribs.png",
+    units = "in", width = 8, height = 8,
+    res = 72, bg = "transparent")
+contrib
+dev.off()
+
+
+## Total contributors
+commit_ran_df <- melt(data = clean_ran_data, id.vars = c('project_name'), measure.vars = c('total_commit_count'))
+commit_ran_df$data <- "Random projects"
+commit_rel_df <- melt(data = clean_rel_data, id.vars = c('project_name'), measure.vars = c('total_commit_count'))
+commit_rel_df$data <- "Relevant projects"
+commit_df <- rbind(commit_ran_df, commit_rel_df)
+
+commit <- ggplot(data = commit_df, aes(x = data, y = value, fill = data)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(legend.position="none") +
+  ggtitle("Total commit count by projects") +
+  labs(x = "", y = "Total commits") +
+  theme(axis.text.x = element_text(size = 24),
+        axis.text.y = element_text(size = 24),
+        title = element_text(size = 24),
+        axis.title = element_text(size = 20)) +
+  theme(plot.title = element_text(hjust = 0.5))
+
+png(filename = "./output/openhub/graphics/poster/commits.png",
+    units = "in", width = 8, height = 8,
+    res = 72, bg = "transparent")
+commit
+dev.off()
+
+
+## Users
+user_ran_df <- melt(data = clean_ran_data, id.vars = c('project_name'), measure.vars = c('user_count'))
+user_ran_df$data <- "Random projects"
+user_rel_df <- melt(data = clean_rel_data, id.vars = c('project_name'), measure.vars = c('user_count'))
+user_rel_df$data <- "Relevant projects"
+user_df <- rbind(user_ran_df, user_rel_df)
+
+user <- ggplot(data = user_df, aes(x = data, y = value, fill = data)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(legend.position="none") +
+  ggtitle("Total OpenHub users") +
+  labs(x = "Project set", y = "OpenHub users") +
   theme(plot.title = element_text(hjust = 0.5)) +
   theme(text=element_text(size=20),
         axis.text=element_text(size=16),
-        axis.title=element_text(size=20)#,
-        #axis.text.x=element_text(angle=90,hjust=1)
-  )
+        axis.title=element_text(size=20))
 
-code_lines_1
-
+png(filename = "./output/openhub/graphics/poster/users.png",
+    units = "in", width = 8, height = 8,
+    res = 72, bg = "transparent")
+user
+dev.off()
 
 
 
 
 ####
 #### Section below had ggplots based on factoids
+####
 # Separating out the factoid columns
 clean_ran_data$age <- NA
 clean_ran_data$team_size <- NA
