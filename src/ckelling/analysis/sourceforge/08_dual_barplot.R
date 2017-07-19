@@ -1,5 +1,6 @@
 # double bar plot
 library(gridExtra)
+library(ggplot2)
 load(file = '~/git/oss/data/oss/working/sourceforge/DONE_SFclean.RData')
 agg_dat <- plyr::count(cleaned_SF, c('Category.1'))
 agg_dat1 <- agg_dat1[-nrow(agg_dat1),]
@@ -39,7 +40,7 @@ g1 <- ggplot(data = agg_dat3, aes(x = Category.1, y = freq)) +
         axis.ticks.y = element_blank(),
         plot.margin = unit(c(1,-1,1,0), "mm")) +
   scale_y_reverse() + coord_flip()+theme(legend.position="none")+
-  theme(text = element_text(size=20))+theme(axis.text.x=element_text(size=15))
+  theme(text = element_text(size=15))+theme(axis.text.x=element_text(size=15))
 
 
 
@@ -47,12 +48,12 @@ g2 <- ggplot(data = agg_dat3, aes(x = Category.1, y = average)) +xlab(NULL)+
   geom_bar(stat = "identity", aes(fill = Category.1)) + ggtitle("Average Downloads per Project") +
   theme(axis.title.x = element_blank(), axis.title.y = element_blank(),
         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        plot.margin = unit(c(1,0,1,-1), "mm")) +  coord_flip()+
-  theme(text = element_text(size=20))+theme(axis.text.x=element_text(size=15))
+        plot.margin = unit(c(1,0,1,-1), "mm")) +  coord_flip()+theme(legend.position="none")+
+  theme(text = element_text(size=15))+theme(axis.text.x=element_text(size=15))
 
 
 gg1 <- ggplot_gtable(ggplot_build(g1))
 gg2 <- ggplot_gtable(ggplot_build(g2))
 gg.mid <- ggplot_gtable(ggplot_build(g.mid))
 
-grid.arrange(gg1,gg.mid,gg2,ncol=3,widths=c(3/10,3/10,4/10))
+grid.arrange(gg1,gg.mid,gg2,ncol=3,widths=c(3.5/10,3/10,3.5/10))
