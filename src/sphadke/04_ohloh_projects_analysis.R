@@ -99,28 +99,28 @@ rm(rel_data)
 ####
 #### Plot of languages
 ####
-ran_language_freq <- as.data.frame(table(clean_ran_data$main_language))
-ran_lang_to_plot <- head(ran_language_freq[order(ran_language_freq$Freq, decreasing= T),], n = 10)
-ran_lang_to_plot <- clean_ran_data[(clean_ran_data$main_language %in% ran_lang_to_plot$Var1) == TRUE, 'main_language']
-ran_lang_to_plot <- as.data.frame(ran_lang_to_plot)
-
-
-random_lang <- ggplot(data = ran_lang_to_plot, aes(x = ran_lang_to_plot, fill = ran_lang_to_plot)) +
-  geom_bar() +
-  theme_minimal() +
-  theme(legend.position = "none") +
-  ggtitle("Ten main languages: Random projects") +
-  labs(y = "Frequency", x = "") +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  theme(text=element_text(size=20),
-        axis.text=element_text(size=16),
-        axis.title=element_text(size=20))
-
-png(filename = "./output/openhub/graphics/poster/random_main_lang.png",
-    units = "in", width = 8, height = 15,
-    res = 72, bg = "transparent")
-random_lang
-dev.off()
+# ran_language_freq <- as.data.frame(table(clean_ran_data$main_language))
+# ran_lang_to_plot <- head(ran_language_freq[order(ran_language_freq$Freq, decreasing= T),], n = 10)
+# ran_lang_to_plot <- clean_ran_data[(clean_ran_data$main_language %in% ran_lang_to_plot$Var1) == TRUE, 'main_language']
+# ran_lang_to_plot <- as.data.frame(ran_lang_to_plot)
+#
+#
+# random_lang <- ggplot(data = ran_lang_to_plot, aes(x = ran_lang_to_plot, fill = ran_lang_to_plot)) +
+#   geom_bar() +
+#   theme_minimal() +
+#   theme(legend.position = "none") +
+#   ggtitle("Ten main languages: Random projects") +
+#   labs(y = "Frequency", x = "") +
+#   theme(plot.title = element_text(hjust = 0.5)) +
+#   theme(text=element_text(size=20),
+#         axis.text=element_text(size=16),
+#         axis.title=element_text(size=20))
+#
+# png(filename = "./output/openhub/graphics/poster/random_main_lang.png",
+#     units = "in", width = 8, height = 15,
+#     res = 72, bg = "transparent")
+# random_lang
+# dev.off()
 
 
 rel_language_freq <- as.data.frame(table(clean_rel_data$main_language))
