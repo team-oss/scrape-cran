@@ -18,6 +18,10 @@ full_data <- full_data[,-1]
 
 full_data[is.na(full_data)] <- 0
 
+mean(full_data$num_citations)
+mean(full_data$num_downloads)
+class(full_data)
+
 plot(full_data$num_citations, full_data$num_downloads)
 
 fit1 <- lm(num_citations ~ ., data = full_data)

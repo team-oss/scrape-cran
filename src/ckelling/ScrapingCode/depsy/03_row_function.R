@@ -1,3 +1,6 @@
+#this creates functions to scrape all information from Depsy
+
+
 makenodeRow <- function(name){
   #i=3458
   #name <- depsy_packages[i,1]

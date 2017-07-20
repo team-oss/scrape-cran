@@ -11,6 +11,8 @@ load(file = '~/git/oss/data/oss/working/sourceforge/cleaned_SF.RData')
 uncomp_SF <- cleaned_SF
 load(file = '~/git/oss/data/oss/working/sourceforge/DONE_SFclean.RData')
 cleaned_SF <- as.data.frame(cleaned_SF)
+length(unique(c(cleaned_SF$Category.1, cleaned_SF$Category.2, cleaned_SF$Category.3)))
+
 library(ggplot2)
 library(plyr)
 library(dplyr)
