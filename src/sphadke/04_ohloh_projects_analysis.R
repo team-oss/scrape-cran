@@ -91,9 +91,34 @@ rm(ran_data)
 clean_rel_data <- rel_data[!apply(rel_data[2:33], 1, function(x){all(is.na(x))}), ]
 rm(rel_data)
 
-# ## Completely empty rows
+# ## Number of completely empty rows
 # num_empty_rows <- length(data$licenses[apply(data[,2:ncol(data)], 1, function(x){all(is.na(x))}) == TRUE])
 # rm(num_empty_rows)
+
+
+## Check data quality
+completeness <- matrix(NA, ncol(clean_data), 4)
+
+for(i in 1:ncol(clean_data)){
+  x <- clean_data[,i]
+
+  completeness[i,1] <- colnames(clean_data)[i]
+  completeness[i,2] <- class(x)[1]
+
+  # Proportion of missing values
+  completeness[i,3] <- round(sum(is.na(x))*100/nrow(clean_data), digits = 2)
+
+  # How many unique values to the variable?
+  completeness[i,4] <- length(unique(x))
+  # summary <- summary(x)
+  # if(vals <= 10){
+  #   tab <- table(x)
+  #   print(tab)
+  # }
+  #print(c(name, class, miss, vals))
+}
+
+# View(completeness)
 
 
 ####
@@ -123,6 +148,7 @@ rm(rel_data)
 # dev.off()
 
 
+## Barplot of main languages
 rel_language_freq <- as.data.frame(table(clean_rel_data$main_language))
 rel_lang_to_plot <- head(rel_language_freq[order(rel_language_freq$Freq, decreasing= T),], n = 10)
 rel_lang_to_plot <- clean_rel_data[(clean_rel_data$main_language %in% rel_lang_to_plot$Var1) == TRUE, 'main_language']
@@ -146,32 +172,6 @@ png(filename = "./output/openhub/graphics/poster/rel_main_lang.png",
     res = 72, bg = "transparent")
 rel_lang
 dev.off()
-
-
-
-## Check data quality
-completeness <- matrix(NA, ncol(clean_data), 4)
-
-for(i in 1:ncol(clean_data)){
-  x <- clean_data[,i]
-
-  completeness[i,1] <- colnames(clean_data)[i]
-  completeness[i,2] <- class(x)[1]
-
-  # Proportion of missing values
-  completeness[i,3] <- round(sum(is.na(x))*100/nrow(clean_data), digits = 2)
-
-  # How many unique values to the variable?
-  completeness[i,4] <- length(unique(x))
-  # summary <- summary(x)
-  # if(vals <= 10){
-  #   tab <- table(x)
-  #   print(tab)
-  # }
-  #print(c(name, class, miss, vals))
-}
-
-# View(completeness)
 
 
 
