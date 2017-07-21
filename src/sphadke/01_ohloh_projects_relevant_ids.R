@@ -23,6 +23,7 @@ set.seed(312)
 library(httr)
 library(plyr)
 library(rvest)
+library(sdalr)
 library(stringr)
 library(XML)
 
