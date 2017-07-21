@@ -36,10 +36,13 @@ library(XML)
 # All thanks to Daniel Chen, and help from https://github.com/r-lib/httr/blob/master/vignettes/api-packages.Rmd and http://bradleyboehmke.github.io/2016/01/scraping-via-apis.html#httr_api
 
 ## API keys
-source("./src/sphadke/00_ohloh_keys.R")
-avail_keys <- length(grep("oh_key", ls()))
-avail_keys
-api_keys <- grep("oh_key", ls(), value = TRUE)
+## We no more get keys in this way; Daniel has setup a function in
+# sdalr package to pull them
+## But this is backup; in case the csv he's setup fails
+# source("./src/sphadke/00_ohloh_keys.R")
+# avail_keys <- length(grep("oh_key", ls()))
+# avail_keys
+# api_keys <- grep("oh_key", ls(), value = TRUE)
 
 
 # Function to create the correct path, get xml from it
@@ -445,21 +448,21 @@ project_ids <- all_project_ids
 
 ## Go through seven keys to pull from 7000 pages
 ## This will be the last set of keys pulled by DSPG'17 students
-for (i in 14351:15340){
-  oh_key <- get_openhub_key(key_index = 16, file = '~/ohloh_keys.csv')
-  get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key)
-  projects <- content(get_projects, as = "parsed")
-  ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
-  ids
-  project_ids <- c(project_ids, ids)
-  print(i)
-}
+# for (i in 14351:15340){
+#   oh_key <- get_openhub_key(key_index = 16, file = '~/ohloh_keys.csv')
+#   get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key)
+#   projects <- content(get_projects, as = "parsed")
+#   ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+#   ids
+#   project_ids <- c(project_ids, ids)
+#   print(i)
+# }
+#
+# project_ids <- unique(project_ids)
+# save(project_ids, file = "./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_16.RData")
 
-project_ids <- unique(project_ids)
-save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_16.RData")
 
-
-for (i in 15341:16340){
+for (i in 15341:16230){
   oh_key <- get_openhub_key(key_index = 17, file = '~/ohloh_keys.csv')
   get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key)
   projects <- content(get_projects, as = "parsed")
@@ -470,10 +473,10 @@ for (i in 15341:16340){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_17.RData")
+save(project_ids, file = "./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_17.RData")
 
 
-for (i in 16341:17340){
+for (i in 16231:17230){
   oh_key <- get_openhub_key(key_index = 18, file = '~/ohloh_keys.csv')
   get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key)
   projects <- content(get_projects, as = "parsed")
@@ -484,10 +487,10 @@ for (i in 16341:17340){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_18.RData")
+save(project_ids, file = "./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_18.RData")
 
 
-for (i in 17341:18340){
+for (i in 17231:18230){
   oh_key <- get_openhub_key(key_index = 19, file = '~/ohloh_keys.csv')
   get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key)
   projects <- content(get_projects, as = "parsed")
@@ -498,10 +501,10 @@ for (i in 17341:18340){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_19.RData")
+save(project_ids, file = "./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_19.RData")
 
 
-for (i in 18341:19340){
+for (i in 18231:19230){
   oh_key <- get_openhub_key(key_index = 20, file = '~/ohloh_keys.csv')
   get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key)
   projects <- content(get_projects, as = "parsed")
@@ -512,10 +515,10 @@ for (i in 18341:19340){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_20.RData")
+save(project_ids, file = "./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_20.RData")
 
 
-for (i in 19341:20340){
+for (i in 19231:20230){
   oh_key <- get_openhub_key(key_index = 21, file = '~/ohloh_keys.csv')
   get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key)
   projects <- content(get_projects, as = "parsed")
@@ -526,10 +529,10 @@ for (i in 19341:20340){
 }
 
 project_ids <- unique(project_ids)
-save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_21.RData")
+save(project_ids, file = "./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_21.RData")
 
 
-for (i in 20341:21340){
+for (i in 20231:21230){
   oh_key <- get_openhub_key(key_index = 22, file = '~/ohloh_keys.csv')
   get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key)
   projects <- content(get_projects, as = "parsed")
@@ -541,7 +544,7 @@ for (i in 20341:21340){
 
 project_ids <- unique(project_ids)
 all_project_ids <- project_ids
-save(all_project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_22.RData")
+save(all_project_ids, file = "./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_22.RData")
 
 ####
 #### Depending on what this final number is,
