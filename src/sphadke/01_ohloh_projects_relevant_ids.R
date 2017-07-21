@@ -446,7 +446,7 @@ project_ids <- all_project_ids
 ## This will be the last set of keys pulled by DSPG'17 students
 for (i in 14351:15350){
   oh_key <- api_keys[16]
-  get_projects <- api_q("/projects", paste("page=", i, sep = ""), api_key)
+  get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key)
   projects <- content(get_projects, as = "parsed")
   ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
   ids
@@ -460,7 +460,7 @@ save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_1
 
 for (i in 15351:16350){
   oh_key <- api_keys[17]
-  get_projects <- api_q("/projects", paste("page=", i, sep = ""), api_key)
+  get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key)
   projects <- content(get_projects, as = "parsed")
   ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
   ids
@@ -474,7 +474,7 @@ save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_1
 
 for (i in 16351:17350){
   oh_key <- api_keys[18]
-  get_projects <- api_q("/projects", paste("page=", i, sep = ""), api_key)
+  get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key)
   projects <- content(get_projects, as = "parsed")
   ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
   ids
@@ -488,7 +488,7 @@ save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_1
 
 for (i in 17351:18350){
   oh_key <- api_keys[19]
-  get_projects <- api_q("/projects", paste("page=", i, sep = ""), api_keys)
+  get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key)
   projects <- content(get_projects, as = "parsed")
   ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
   ids
@@ -502,7 +502,7 @@ save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_1
 
 for (i in 18351:19350){
   oh_key <- api_keys[20]
-  get_projects <- api_q("/projects", paste("page=", i, sep = ""), api_keys)
+  get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key)
   projects <- content(get_projects, as = "parsed")
   ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
   ids
@@ -516,7 +516,7 @@ save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_2
 
 for (i in 19351:20350){
   oh_key <- api_keys[21]
-  get_projects <- api_q("/projects", paste("page=", i, sep = ""), api_keys)
+  get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key)
   projects <- content(get_projects, as = "parsed")
   ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
   ids
@@ -530,7 +530,7 @@ save(project_ids, file = "./data/oss/original/openhub/projects/all_project_ids_2
 
 for (i in 20351:21350){
   oh_key <- api_keys[22]
-  get_projects <- api_q("/projects", paste("page=", i, sep = ""), api_keys)
+  get_projects <- api_q("/projects", paste("page=", i, sep = ""), oh_key)
   projects <- content(get_projects, as = "parsed")
   ids <- str_split((xml_nodes(projects, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
   ids
