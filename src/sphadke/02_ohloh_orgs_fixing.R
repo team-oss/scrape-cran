@@ -230,3 +230,7 @@ organization[27, 8:17] <- c(26, 9, 128181, 10, 25, 97837, 11, 164, 72193, 25)
 organization[21, 3] <- "Debian"
 organization[21, 5] <- "Non-Profit"
 organization[21, 8:17] <- c(43, 38, 116759, 19, 528, 714145, 29, 1085, 223844, 43)
+
+save(organization, file = "~/git/oss/data/oss/final/openhub/organizations/all_orgs_table_final.RData")
+
+
