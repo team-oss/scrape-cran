@@ -87,7 +87,7 @@ api_q <- function(path, page_no, api_key){
 ##
 
 #This pathway is for the top 29810 most relevant account IDs
-load("./data/oss/original/openhub/users/29810_account_ids.RData")
+load("./data/oss/original/openhub/users/29810_to_79810_account_ids.RData")
 
 loopBreak = FALSE
 
@@ -110,7 +110,8 @@ colnames(account) <- c("account_url_id", "account_id", "account_name", "created_
 
 #outer loop runs through the list of every API key
 for(j in 1:length(all_keys))
-{
+# for(j in 1:17)
+  {
   #break out of loop if all of the keys have been used
   if(loopBreak == TRUE)
   {
