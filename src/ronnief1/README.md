@@ -1,1 +1,6 @@
-first file
+-depsy_dependency_network shows various mathematical relationships between Depsy listed R packages
+-depsy1 tried to make a data table with all the variables from a given JSON page on depsy
+  -it did not work well at all
+-datacompleteness profiles the matrices describing the R packages and their contributors
+-ronnieweb was Eirik's original sourceforge code with functions to get the facebook and google data from each project
+-depsymatricesdescription describes each of the matrices Claire made with Depsy data
