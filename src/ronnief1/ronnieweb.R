@@ -1,4 +1,4 @@
-#this is my attempt at web scraping in R
+#adaptation of Eirik's code, added functions for facebook and google social media
 library(RCurl)
 library(xml2)
 library(stringr)
@@ -160,4 +160,4 @@ for(i in 1:length(list_of_titles)){
     str_trim()
   google_vec[i] <- google
 }
-
+fb_vec

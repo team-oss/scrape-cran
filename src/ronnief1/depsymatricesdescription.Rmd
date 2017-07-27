@@ -1,0 +1,20 @@
+---
+title: "Depsy Matrices Descriptions"
+output: html_document
+---
+This describes each matrix. 
+
+all_packages_cran.Rdata:
+  List of all the packages on CRAN. 
+  
+contrib_mat.Rdata: Two column matrix listing all the contributors to packages listed on Depsy.
+
+error_vector.Rdata: Indices of all the packages not listed on Depsy.
+
+fullcontrib_mat.Rdata: Matrix of all the contributors to packages on Depsy with variables like their Git login, their actual name, and their role on the project.
+
+neighb_mat.Rdata: Matrix of Depsy packages and the all the packages under their neighbor_ids that are hosted by CRAN.
+node_mat.Rdata: Matrix of all the R packages listed on Depsy with relevant variables like number of commits and number of downloads.
+
+tag_mat.Rdata: Two column matrix with each R package on Depsy and a new row for each tag they have.
+

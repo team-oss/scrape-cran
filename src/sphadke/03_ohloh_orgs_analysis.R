@@ -45,7 +45,7 @@ ggplot(data = organization, aes(type, fill = type)) +
   geom_bar() +
   # scale_fill_manual(values = cols) +
   theme_minimal() +
-  theme(legend.position="none") +
+  theme(legend.position="bottom") +
   #ggtitle(paste("Organizations on OpenHub: Total=698")) +
   labs(x = "Organization type", y = "Count") +
   #theme(plot.title = element_text(hjust = 0.5)) +
@@ -53,6 +53,8 @@ ggplot(data = organization, aes(type, fill = type)) +
         axis.text=element_text(size=16),
         axis.title=element_text(size=20)#,
         #axis.text.x=element_text(angle=90,hjust=1)
+        ) +
+  theme(legend.title = element_text("blah")
 )
 dev.off()
 

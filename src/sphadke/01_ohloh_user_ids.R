@@ -2,10 +2,11 @@
 #### Code for OpenHub API: users/accounts ####
 ##############################################
 ## Total users as of 07/09/2017: 291906
+## This code only pulls account ids.
 
 #### Created by: sphadke
 #### Creted on: 07/09/2017
-#### Last edited on: 07/09/2017
+#### Last edited on: 07/20/2017
 
 
 ####################
@@ -55,38 +56,90 @@ api_q <- function(path, page_no, api_key){
 # We create IDs for users/accounts
 # They go into a path, which then feeds into the API call to then pull table
 
+
+####################
+#### First round of pulling IDs
+####################
+
 # Run it once per key on 1000 pages
-oh_key <- oh_key_sp
+# oh_key <- oh_key_sp
+#
+# ##Accounts
+# account_ids <- vector()
+# for (i in 1:981){
+#   get_orgs <- api_q("/accounts", paste("page=", i, sep = ""), oh_key)
+#   orgs <- content(get_orgs, as = "parsed")
+#   ids <- str_split((xml_nodes(orgs, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+#   print(i)
+#   account_ids <- c(account_ids, ids)
+# }
+#
+#
+# # Run it once per key on 1000 pages
+# oh_key <- oh_key_ssp
+#
+# ##Accounts
+# for (i in 982:1981){
+#   get_orgs <- api_q("/accounts", paste("page=", i, sep = ""), oh_key)
+#   orgs <- content(get_orgs, as = "parsed")
+#   ids <- str_split((xml_nodes(orgs, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+#   print(i)
+#   account_ids <- c(account_ids, ids)
+# }
+#
+#
+# # Run it once per key on 1000 pages
+# oh_key <- oh_key_zh
+#
+# ##Accounts
+# for (i in 1982:2981){
+#   get_orgs <- api_q("/accounts", paste("page=", i, sep = ""), oh_key)
+#   orgs <- content(get_orgs, as = "parsed")
+#   ids <- str_split((xml_nodes(orgs, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+#   print(i)
+#   account_ids <- c(account_ids, ids)
+# }
+#
+# account_ids <- unique(account_ids)
+#
+# ## Save the file
+# save(account_ids, file = "~/git/oss/data/oss/original/openhub/users/29810_account_ids.RData")
+
+
+####################
+#### Second round of pulling IDs
+####################
+
+# Run it once per key on 1000 pages
+oh_key <- oh_key_kl
 
 ##Accounts
 account_ids <- vector()
-for (i in 1:981){
+for (i in 2982:3981){
   get_orgs <- api_q("/accounts", paste("page=", i, sep = ""), oh_key)
   orgs <- content(get_orgs, as = "parsed")
   ids <- str_split((xml_nodes(orgs, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
   print(i)
   account_ids <- c(account_ids, ids)
 }
-
 
 # Run it once per key on 1000 pages
-oh_key <- oh_key_ssp
+oh_key <- oh_key_km
 
 ##Accounts
-for (i in 982:1981){
+for (i in 3982:4981){
   get_orgs <- api_q("/accounts", paste("page=", i, sep = ""), oh_key)
   orgs <- content(get_orgs, as = "parsed")
   ids <- str_split((xml_nodes(orgs, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
   print(i)
   account_ids <- c(account_ids, ids)
 }
-
 
 # Run it once per key on 1000 pages
-oh_key <- oh_key_zh
+oh_key <- oh_key_lc
 
 ##Accounts
-for (i in 1982:2981){
+for (i in 4982:5981){
   get_orgs <- api_q("/accounts", paste("page=", i, sep = ""), oh_key)
   orgs <- content(get_orgs, as = "parsed")
   ids <- str_split((xml_nodes(orgs, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
@@ -94,10 +147,29 @@ for (i in 1982:2981){
   account_ids <- c(account_ids, ids)
 }
 
-account_ids <- unique(account_ids)
+# Run it once per key on 1000 pages
+oh_key <- oh_key_lk
+
+##Accounts
+for (i in 5982:6981){
+  get_orgs <- api_q("/accounts", paste("page=", i, sep = ""), oh_key)
+  orgs <- content(get_orgs, as = "parsed")
+  ids <- str_split((xml_nodes(orgs, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+  print(i)
+  account_ids <- c(account_ids, ids)
+}
+
+# Run it once per key on 1000 pages
+oh_key <- oh_key_ma1
+
+##Accounts
+for (i in 6982:7981){
+  get_orgs <- api_q("/accounts", paste("page=", i, sep = ""), oh_key)
+  orgs <- content(get_orgs, as = "parsed")
+  ids <- str_split((xml_nodes(orgs, 'html_url') %>% html_text()), "/", simplify = TRUE)[,5]
+  print(i)
+  account_ids <- c(account_ids, ids)
+}
 
 ## Save the file
-save(account_ids, file = "~/git/oss/data/oss/original/openhub/users/29810_account_ids.RData")
-
-
-
+save(account_ids, file = "~/git/oss/data/oss/original/openhub/users/29810_to_79810_account_ids.RData")
