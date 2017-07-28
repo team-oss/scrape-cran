@@ -2,6 +2,7 @@
 title: "Depsy Matrices Descriptions"
 output: html_document
 ---
+This describes each matrix. 
 
 all_packages_cran.Rdata:
   List of all the packages on CRAN. 
