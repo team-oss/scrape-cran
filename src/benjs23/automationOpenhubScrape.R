@@ -4,15 +4,16 @@
 
 ### Created by: benjs23
 ### Created Date: 06/29/2017
-### Last edited date: 07/06/2017
+### Last edited date: 07/24/2017
 
-####### This code automates the scraping from OpenHub. It loads a list of API keys
-####### and takes a function name as input. It automatically runs through every API
-####### key, pulls the user specified tables, and tracks what information has been
-####### collected.
+####### This code automates the web scraping from OpenHub's API. It loads a list of API keys
+####### from "./src/sphadke/00_ohloh_keys.R". It relies on an array of project IDs having
+####### been scraped and saved (lines 79-92). It automatically runs through every API  key,
+####### pulls the user specified tables, and tracks what information has been collected.
+
 
 ##
-## Setup and clanup
+## Setup and cleanup
 ##
 
 library(httr)
@@ -25,10 +26,13 @@ library(readr)
 
 rm(list=ls())
 
+#Line 30 should be run when restarting a brand new dataset.
 #k <- write("k","~/git/oss/data/oss/original/openhub/projects/random/k_index.txt")
 
+#Inputs the k index as the current row in the data table.
 k <- read_file("./data/oss/original/openhub/projects/random/k_index.txt")
 
+#Sets k to 0 if it is a new dataset or to the current row number if continuing a scrape.
 if(k == "k\n")
 {
   k = 0
@@ -52,23 +56,16 @@ match <- grep(pattern = pattern, x = ls())
 key_names <- curr_ls[match]
 all_keys <- c()
 
-source("./src/sphadke/00_ohloh_keys.R")
-curr_ls <- ls()
-pattern <- '^oh_key_'
-match <- grep(pattern = pattern, x = ls())
-key_names <- curr_ls[match]
-
-all_keys <- c()
-
 for (key in key_names) {
   all_keys <- c(all_keys,get(key))
 }
 names(all_keys) <- key_names
+#check to see if keys are correct
 print(all_keys)
 
 
 ##
-# Function to create the correct path and get xml format data from it
+# Function to create the path and get xml format data from it
 ##
 api_q <- function(path, page_no, api_key){
   info <- GET(sprintf('https://www.openhub.net%s.xml?%s&api_key=%s',
@@ -91,13 +88,16 @@ load("./data/oss/original/openhub/projects/relevant/project_ids/all_project_ids_
 ## This was for random projects
 # project_ids <- all_random_project_ids
 
+#This is the object for most relevant projects (next step is all projects from most to least relevent)
 project_ids <- all_project_ids
 
+# The loopBreak boolean was never fully tested/debugged but it should exit
+# the code after all the project IDs have been called.
 loopBreak = FALSE
 
 
 ##
-## Setup an empty table
+## Setup an empty table of the correct size.
 ##
 
 project <- matrix(NA, length(project_ids), 33)
