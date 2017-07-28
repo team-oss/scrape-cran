@@ -1,3 +1,5 @@
+#WE DID NOT END UP USING THIS CODE, we used 05_new_SF_project_titles
+
 #this is the second half of web scraping for sourceforge: store the data from the project links we have collected
 #We will make a master_list by combining all of the files in the above directory, as rows in a list.
 library(RCurl)
@@ -21,9 +23,6 @@ fl <- lapply(X = fs, FUN = load_stuff)
 master_list_2 <- data.table::rbindlist(fl)
 save(master_list_2, file = '~/git/lab/oss/data/oss/original/sourceforge/master_list_2/master_list_2.RData')
 toc()
-
-
-
 
 #apply the function to the master list and store in a data frame
 #New_SF <- data.frame()

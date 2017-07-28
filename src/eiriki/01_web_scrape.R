@@ -1,4 +1,4 @@
-#this is my attempt at web scraping in R
+#this script will scrape the information from each project page on sourceforge
 library(RCurl)
 library(xml2)
 library(stringr)
@@ -61,7 +61,7 @@ sf_scrape <- function(link){
   total_down <- total_down$total
 
 
-  #Tell me that this page is NOT an enterprise page (if it is, it will change to a diff function: detect later)
+  #Tell me that this page is NOT an enterprise page (if it is, it will change to a different function)
   is_enterpise <- "Project"
 
   #Get the categories
@@ -82,7 +82,7 @@ sf_scrape <- function(link){
   #filter out for the date
   match <- grep(pattern = '[0-9]{4}-[0-9]{2}-[0-9]{2}', x = date_registered)
   date_registered <- date_registered[match]
-  #if the date is really new ex: "14 hours ago", then
+  #if the date is really new ex: "14 hours ago", then make NA (can fix later)
   if(length(match) == 0)
   {
     date_registered <- NA
@@ -118,7 +118,7 @@ sf_scrape <- function(link){
     str_trim()
 
   #6/20 the code below does not work. trying xpath stuff to no avail.
-  #this is ronnie's code for getting the facebook and google likes
+  #this is ronnie's code for getting the facebook and google likes on each sourceforge page
   #g <- read_html("https://apis.google.com/u/0/se/0/_/+1/fastbutton?usegapi=1&size=medium&annotation=bubble&origin=https%3A%2F%2Fsourceforge.net&url=https%3A%2F%2Fsourceforge.net%2Fprojects%2F" + link + "%2F&gsrc=3p&ic=1&jsh=m%3B%2F_%2Fscs%2Fapps-static%2F_%2Fjs%2Fk%3Doz.gapi.en.3t1xUeVe_Z4.O%2Fm%3D__features__%2Fam%3DAQ%2Frt%3Dj%2Fd%3D1%2Frs%3DAGLTcCN4hcAMb3eb3WPJTJu8oC1Cduzc2g#_methods=onPlusOne%2C_ready%2C_close%2C_open%2C_resizeMe%2C_renderstart%2Concircled%2Cdrefresh%2Cerefresh%2Conload&id=I0_1498069485200&parent=https%3A%2F%2Fsourceforge.net&pfname=&rpctoken=17547165")
   #google <- g %>%
     #html_node('#aggregateCount') %>%
@@ -144,7 +144,7 @@ sf_scrape <- function(link){
     #html_text() %>%
     #str_trim()
 
-
+  #store all the scraped info in a data frame
   v = list('OSS Title' = oss, 'Average Rating' = avg_rat, 'Description' = desc, 'Last Update' = last_update,
            'Number of Ratings' = num_rat, 'Weekly Downloads' = week_down, 'Total Downloads' = total_down, 'Project Type' = is_enterpise,
            'Category 1' = category[1],'Category 2' = category[2], 'Category 3' = category[3],

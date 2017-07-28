@@ -1,6 +1,5 @@
 #this code serves the purpose of scraping only the OSS TITLE, TOTAL DOWNLOAD, AND DESCRIPTION for the first 225,000
-#pages
-#this is my attempt at web scraping in R
+#pages. We did this to correct some bugs in the previous scrape
 library(RCurl)
 library(xml2)
 library(stringr)

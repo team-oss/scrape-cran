@@ -65,7 +65,7 @@ enterprise_scrape <- function(link){
     html_text() %>%
     str_trim()
 
-  #This function is only called if the project is an enterprise so disntinguish that it's an enterprise
+  #This function is only called if the project is an enterprise so distinguish that it's an enterprise
   is_enterpise <- "Enterprise"
 
   #Get the date registered
@@ -86,6 +86,7 @@ enterprise_scrape <- function(link){
   #Programming Language
   #Language
 
+  #put them in a data frame
   v = list('OSS Title' = oss, 'Average Rating' = avg_rat, 'Description' = desc, 'Last Update' = last_update,
            'Number of Ratings' = num_rat, 'Weekly Downloads' = week_down, 'Total Downloads' = total_down, 'Project Type' = is_enterpise,
            'Category 1' = category[1], 'Category 2' = category[2], 'Category 3' = category[3],

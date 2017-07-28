@@ -1,8 +1,9 @@
 #this script is for analysis of the sourceforge data, specifically looking at total downloads.
+
 knitr::opts_chunk$set(echo = FALSE)
 load(file = 'data/oss/working/sourceforge/cleaned_SF.RData')
 uncomp_SF <- cleaned_SF
-load(file = 'data/oss/working/sourceforge/DONE_SFclean.RData')
+load(file = 'data/oss/working/sourceforge/DONE_SFclean.RData') #this is the finished data set
 cleaned_SF <- as.data.frame(cleaned_SF)
 library(ggplot2)
 library(plyr)

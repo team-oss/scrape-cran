@@ -1,16 +1,18 @@
+#WE DID NOT END UP USING THIS CODE, we used 05_new_SF_project_titles
+
 #This is the script to retrieve all projects in sourceforge
 library(RCurl)
 library(XML)
 library(stringr)
 library(rvest)
-source(file = "~/git/lab/oss/src/eiriki/01_web_scrape.R")
-source(file = "~/git/lab/oss/src/eiriki/03_web_scrape_enterprise.R")
+#source(file = "~/git/lab/oss/src/eiriki/01_web_scrape.R")
+#source(file = "~/git/lab/oss/src/eiriki/03_web_scrape_enterprise.R")
 library(tictoc)
 
-#Getting ALL pages and storing them into a master list to scrape
+#Getting ALL pages and storing them into a master list to scrape later on
 master_list <- c()
 tic()
-#18810
+#18810 is the number of pages on sourceforge (and 25 projects on each page)
 for(i in 1:18810){
   SFTitle_Link <- read_html(paste("https://sourceforge.net/directory/?page=",i, sep=""))
   print(i)
@@ -27,6 +29,7 @@ for(i in 1:18810){
 
 
   #copy each title in the list over to the master list
+  #save each row of the master list as its own file, we will bind them later.
   for(j in 1:length(List_Titles)){
     new_dat <- List_Titles[j]
     save(new_dat, file= sprintf('~/git/lab/oss/data/oss/original/sourceforge/master_list/SF_%06d_%02d.RData', i, j))
