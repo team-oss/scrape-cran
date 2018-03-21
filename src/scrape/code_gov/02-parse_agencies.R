@@ -45,3 +45,4 @@ df <- data.frame('short_name' = short_names,
                  'url' = urls)
 
 saveRDS(df, 'data/oss/working/code_gov/agency_urls.RDS')
+write.csv(df, file = 'data/oss/working/code_gov/agency_urls.csv', )
