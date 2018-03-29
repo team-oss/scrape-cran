@@ -16,7 +16,7 @@ joined_counts[!joined_counts$n == joined_counts$num_projects, ]
 
 url_data$project_url
 
-button_urls <- c()
+button_url_df <- data.frame(code_gov_url = character(0), button_url = character(0))
 
 for (url in url_data$project_url) {
   print('Create new Selenium remote driver')
@@ -39,12 +39,19 @@ for (url in url_data$project_url) {
     button <- remDr$findElement(using = 'class name', 'button')
     button$clickElement()
     button_url <- button$getCurrentUrl()[[1]]
-    button_urls <- c(button_urls, button_url)
+
+    to_append <- data.frame(code_gov_url = url, button_url = button_url)
+    button_url_df <- rbind(button_url_df, to_append)
+
   }, error = function(e) {
-    button_urls <- c(button_urls, NA)
+    button_url <- NA
+
+    to_append <- data.frame(code_gov_url = url, button_url = button_url)
+    button_url_df <- rbind(button_url_df, to_append)
+
   }, finally = {
     print('-----')
-    print(button_urls)
+    print(button_url_df)
 
     sleep_time <- runif(1) * 10
     print(sprintf('Sleeping (end of url parse): %s', sleep_time))
@@ -52,3 +59,5 @@ for (url in url_data$project_url) {
     remDr$closeall()
   })
 }
+
+write.csv(button_url_df, file = 'data/oss/original/code_gov/agencies/agency_project_button_url.csv')
