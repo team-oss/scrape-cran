@@ -3,7 +3,7 @@ library(gridExtra)
 library(ggplot2)
 load(file = '~/git/oss/data/oss/working/sourceforge/DONE_SFclean.RData')
 agg_dat <- plyr::count(cleaned_SF, c('Category.1'))
-agg_dat1 <- agg_dat1[-nrow(agg_dat1),]
+agg_dat1 <- agg_dat[-nrow(agg_dat),]
 ggplot(agg_dat1)+ geom_bar(aes(x=Category.1, y=freq,fill = Category.1), stat= "identity")+ theme(legend.position="none",axis.text.x = element_text(angle = 90, hjust = 1)) + ggtitle("Project Count")
 
 agg_dat2 <- plyr::count(cleaned_SF, c('Category.1', 'Total.Downloads'))
@@ -57,3 +57,9 @@ gg2 <- ggplot_gtable(ggplot_build(g2))
 gg.mid <- ggplot_gtable(ggplot_build(g.mid))
 
 grid.arrange(gg1,gg.mid,gg2,ncol=3,widths=c(3.5/10,3/10,3.5/10))
+
+data <- agg_dat3
+colnames(data) <- c("category", "total_down", "av_down", "num_proj")
+save(data, file = '~/git/oss/data/oss/working/sourceforge/dual_barplot_dat.Rdata')
+
+save(data, file = '~/git/oss/src/ckelling/analysis/sourceforge/06_dual_barplot.R')

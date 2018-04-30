@@ -85,3 +85,5 @@ dev.off()
 
 
 dev.off()
+
+mean(dps_d$freq)
