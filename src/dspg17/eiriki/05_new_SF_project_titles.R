@@ -1,11 +1,8 @@
-#this will be attempting to use the new sourceforge XML links to retrieve all the projects
+#this script made a single data frame of all the project links on sourceforge using their API and XML
 library(RCurl)
 library(xml2)
 library(stringr)
 library(rvest)
-source(file = "~/git/lab/oss/src/eiriki/01_web_scrape.R")
-source(file = "~/git/lab/oss/src/eiriki/03_web_scrape_enterprise.R")
-library(tictoc)
 library(data.table)
 
 List_Titles_df <- c()
@@ -16,7 +13,8 @@ List_Titles <- SFTitle_Link %>%
   xml_children() %>%
   xml_text()
 List_Titles <- as.data.frame(List_Titles, stringsAsFactors = F)
-#match only the main source forge pages, then reset it as a data frame every time for format use
+
+#match only the main source forge pages(exclude reviews, support, files), then reset it as a data frame every time for format use
 List_Titles <- List_Titles[!grepl("reviews", List_Titles$List_Titles),]
 List_Titles <- as.data.frame(List_Titles, stringsAsFactors = F)
 List_Titles <- List_Titles[!grepl("support", List_Titles$List_Titles),]
