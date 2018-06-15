@@ -43,17 +43,27 @@ link_list <- link_gen %>%
   str_trim()
 
 #Append CRAN package link to front of all names to get link to all packages
-#link_list <- lapply(link_list, paste0())
-paste0(url,link_list[[1]])
-
 #now we have a list of all the links to CRAN projects
 master_list <- paste0(url, link_list)
 
-#iterate over the list and scrape each one
-master_frame <- list()
-
-#parallel library to make faster?
+#load parallel library to make faster
 library(parallel)
-for(i in 1:length(master_list)){
-  master_frame <- rbind(master_frame, page_scrape(master_list[[i]]))
-}
+library(doParallel)
+#initialize cluster
+par <- makeCluster(12)
+registerDoParallel(par)
+#load libraries and local var/function on each process
+clusterExport(par,c("page_scrape", "master_list"))
+clusterEvalQ(par,library(rvest))
+clusterEvalQ(par,library(stringr))
+
+#iterate over the list and scrape each one
+master_frame <- parLapply(cl = par, X = master_list, fun = function(x){page_scrape(x)})
+
+#close the cluster
+stopCluster(par)
+registerDoSEQ()
+
+
+#ONLY USE THIS to write out to file
+#saveRDS(master_frame, file= "data/oss/original/CRAN_2018/master_frame.RDS")
