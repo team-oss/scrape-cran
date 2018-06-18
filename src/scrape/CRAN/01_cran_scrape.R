@@ -23,11 +23,16 @@ page_scrape <- function(link){
   tabs <- CRANLink %>%
     html_node('table') %>%
     html_table()
-  tabs <- t(tabs$X2)
+  tabs <- t(tabs)
   tabs
 
   frame <- cbind(abrv,ptitle,tabs)
+  #frame[[1]][[1]] <- 'abrv'
+  #frame[[1]][[3]] <- 'desc'
   frame <- list(frame)
+  frame[[1]][1] <- "Abrv"
+  frame[[1]][3] <- "Desc"
+
 
   return(frame)
 }
@@ -50,7 +55,7 @@ master_list <- paste0(url, link_list)
 library(parallel)
 library(doParallel)
 #initialize cluster
-par <- makeCluster(12)
+par <- makeCluster(15)
 registerDoParallel(par)
 #load libraries and local var/function on each process
 clusterExport(par,c("page_scrape", "master_list"))
