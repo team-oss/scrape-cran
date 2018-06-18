@@ -12,7 +12,8 @@ page_scrape <- function(link){
   long_title <- CRANLink %>%
     html_node('h2') %>%
     html_text() %>%
-    str_trim()
+    str_trim() %>%
+    str_replace_all(pattern = '\n', replacement = ' ') #cut out newlines
 
   #parse abbreviated title
   ptitle <- str_extract(long_title,"(?<=\\: ).*")
@@ -27,8 +28,6 @@ page_scrape <- function(link){
   tabs
 
   frame <- cbind(abrv,ptitle,tabs)
-  #frame[[1]][[1]] <- 'abrv'
-  #frame[[1]][[3]] <- 'desc'
   frame <- list(frame)
   frame[[1]][1] <- "Abrv"
   frame[[1]][3] <- "Desc"
