@@ -7,6 +7,7 @@ na_count <-colSums(is.na(data))
 
 na_count <- data.frame(na_count)
 na_count <- na_count / 12614 #make percentage missing
+na_count <- round(na_count, digits =4) *100
 
 
 #temp scrape
@@ -22,8 +23,8 @@ CRANLink <- read_html('https://cran.r-project.org/web/packages/A3/')
 long_title <- CRANLink %>%
   html_node('h2') %>%
   html_text() %>%
-  str_trim() #%>%
-  #str_replace_all(pattern = '\n', replacement = ' ') #cut out newlines
+  str_trim() %>%
+  str_replace_all(pattern = '\n', replacement = ' ') #cut out newlines
 
 #parse abbreviated title
 ptitle <- str_extract(long_title,"(?<=\\: ).*")
