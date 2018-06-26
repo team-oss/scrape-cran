@@ -29,6 +29,7 @@ testthat::expect_equal(length(failed_urls), length(save_file_path))
 # Download bad XML pages ----
 
 pb <- progress_bar$new(total = length(failed_urls))
+pb$tick(0)
 for (i in 1:length(failed_urls)) {
   url <- failed_urls[i]
   path <- save_file_path[i]
@@ -40,6 +41,7 @@ for (i in 1:length(failed_urls)) {
 # Replace bad xml tags ----
 
 pb <- progress_bar$new(total = length(save_file_path))
+pb$tick(0)
 for (file in save_file_path) {
   #print(file)
   txt <- readLines(file)
