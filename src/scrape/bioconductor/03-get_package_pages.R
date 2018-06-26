@@ -1,6 +1,5 @@
 # pull all the html from each package page
 
-
 library(progress)
 library(rvest)
 
@@ -9,6 +8,7 @@ pkgs <- read.csv('./data/oss/original/bioconductor/3.7/packages_v3.7.csv', strin
 num_pkgs <- nrow(pkgs)
 
 pb <- progress_bar$new(total = num_pkgs)
+pb$tick(0)
 
 for (i in 1:num_pkgs) {
   url <- pkgs[i, 'url']
