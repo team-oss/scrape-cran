@@ -1,36 +1,10 @@
-#parse and clean the CRAN data
+#parse and clean the CRAN data, and the two other tables that we made
 library(stringr)
+library(plyr)
 library(dplyr)
 library(jsonlite)
 
 dat <- readRDS("./data/oss/original/CRAN_2018/master_frame.RDS")
-
-#wrote a loop to figure out that max number of variables is at index 835
-dat[[835]]
-tmp <- unlist(dat[[835]])
-s <- split(tmp, 1:2)
-#we set up column names based on max amount of variables
-cols_for_table <- s$`1`
-
-df <- data.frame(matrix(ncol = 20, nrow = 12614))
-colnames(df) <- cols_for_table
-
-#fill in the data frame if the information is available for that package
-#otherwise leave as NA
-# avail_names <- colnames(df)
-# for(i in 1:length(dat)){
-#   unlist_row <- unlist(dat[[i]])
-#   s <- split(unlist_row, 1:2)
-#   vars <- s$`1`
-#   var_data <- s$`2`
-#   #loop over 20 available variables
-#   for(j in 1:20){
-#     if(str_detect(vars[j],avail_names[j]))
-#     if(vars[j] == avail_names[j]){
-#       df[i,j] = var_data[j]
-#     }
-#   }
-# }
 
 #Dan's advice: List to JSON, JSON to data frame
 tmp <- dat[[1]]
@@ -39,7 +13,6 @@ toJSON(dat[[1]][[1]])
 
 
 # list of list of n x 2 matrix (2 rows), where the first row is the label
-
 dat2 <- lapply(dat, '[[', 1)
 dat2
 
@@ -65,4 +38,53 @@ dt <- data.table::rbindlist(df, fill = TRUE)
 head(dt)
 
 #save the resulting frame
-saveRDS(dt, file = "./data/oss/working/CRAN_2018/Cran_full_table.RDS")
+#saveRDS(dt, file = "./data/oss/working/CRAN_2018/Cran_full_table.RDS")
+
+###PART TWO
+##### RUN AGAIN FOR CI #####
+CI_table <- readRDS("./data/oss/original/CRAN_2018/CI_checks.RDS")
+
+#Just go from list of matrices to data from, no JSON needed here
+tmp <- CI_table[[1]]
+tmp[[1]]
+toJSON(CI_table[[1]][[1]])
+
+CI2 <- CI_table
+
+create_vector_from_mat <- function(matrix, row_name_idx = 1, data_idx = 2, number_3 = 3) {
+  keys <- matrix[row_name_idx, ]
+  values <- matrix[data_idx, ]
+  vv <- matrix[number_3,]
+
+  v <- bind_rows(keys,values,vv)
+  names(v) <- colnames(tmp)
+  return(v)
+}
+
+CI2 <- lapply(CI2, create_vector_from_mat)
+#make each entry in the list a data frame, then combine back into one data frame
+#(kind of like rbind but for list of list)
+library(data.table)
+
+tmp1 <- ldply(CI2, data.frame)
+tmp1 <- as.data.table(tmp1)
+
+#here we see that some packages only support 2 or less versions.
+table(table(tmp1$Package_Name))
+#this isn't the thing that messes everything up. Look here for the error:
+#we see the issue is when a row is ALL Na. This is a scraping issue
+tmp1 %>% dplyr::group_by(Package_Name, Version, Flavor) %>%
+  dplyr::summarize(n = n()) %>%
+  filter(n > 1)
+
+?dcast.data.table
+table(tmp1$Package_Name)[table(tmp1$Package_Name) != 3L]
+
+fin <- data.table::dcast.data.table(tmp1, Package_Name + Version ~ Flavor, value.var = 'Status')
+fin
+
+lapply(fin[, 3:6], table, useNA='always')
+tmp2 <- tmp1[!is.na(tmp1$Flavor), ]
+fin <- data.table::dcast.data.table(tmp2, Package_Name + Version ~ Flavor, value.var = 'Status')
+#save the resulting frame
+#saveRDS(fin, file = "./data/oss/working/CRAN_2018/Cran_CI.RDS")
