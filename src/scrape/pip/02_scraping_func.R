@@ -1,5 +1,8 @@
-scrape_func <- function(base_url, dev_stat)
+scrape_func <- function(base_url, dev_stat, page)
 {
+  # base_url <- "https://pypi.org/search/?q=&o=&c=Development+Status+%3A%3A+5+-+Production%2FStable&c=License+%3A%3A+OSI+Approved&o=&q=&page=1"
+  # dev_stat <- "Production/Stable"
+  # page <- 1
   pip_df <- setNames(data.frame(matrix(ncol = 10, nrow = 1)),
                      c("name", "description", "license", "author",
                      "maintainer(s)", "repository", "homepage", "py3", "development_status", "dependencies"))
@@ -11,7 +14,8 @@ scrape_func <- function(base_url, dev_stat)
 
   for (i in 1:length(names))
   {
-    Sys.sleep(3)
+    # i = 1
+    Sys.sleep(2)
 
     proj_site <- paste("https://pypi.org/project/", names[i], sep = "")
     proj_site_html <- read_html(proj_site)
@@ -88,7 +92,7 @@ scrape_func <- function(base_url, dev_stat)
 
     position <- position + 1
 
-    print(paste(dev_stat, i, sep = " "))
+    print(paste(dev_stat, page, i, sep = " "))
   }
   return(pip_df)
 }
