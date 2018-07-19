@@ -390,7 +390,10 @@ for (i in 1:length(files)) {
 }
 
 julia_specific = function(repository) {
-  repository = julia_packages$repository[1]
+  repository = basic_info$repository[1L]
+  repo
+  # repository = basic_info$repository[1]
+  repository = 'https://github.com/JuliaData/DataFrames.jl'
   owner = str_extract(string = repository,
                       pattern = '(?<=/)\\w+(?=/)')
   name = str_extract(string = repository,
@@ -409,8 +412,21 @@ julia_specific = function(repository) {
       GET(add_headers(Authorization = str_c('token ', Github_API_token))) %>%
       content(as = 'text', encoding = 'UTF-8') %>%
       fromJSON()
-  
+  license_type = license_file$license$spdx_id
+  if (is_null(x = license_type)) {
+    license_type = NA
+  }
+  download.file(license_file$download_url, destfile = filename)
+  output = data.table(owner = owner,
+                      name = str_extract(string = repository,
+                                         pattern = str_c('(?<=',
+                                                         owner,
+                                                         '/).*(?=\\.jl?$)')),
+                      license = license_type)
+  repository
   Github_API_token
+  
+  
   license_file = str_c('https://api.github.com/repos/',
                          owner,
                          '/',
