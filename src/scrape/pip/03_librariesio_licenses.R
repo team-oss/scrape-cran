@@ -5,7 +5,7 @@ library(dplyr)
 library(httr)
 library(stringr)
 api_key <- "1477f26c48cf30d2627d440f4544c548"
-# prod_mature_packages <- read.csv("~/oss/data/oss/final/PyPI/all_production_mature.csv")
+prod_mature_packages <- read.csv("~/oss/data/oss/final/PyPI/all_production_mature.csv")
 # prod_mature_packages$license <- NA
 #
 # names_list <- prod_mature_packages$name
