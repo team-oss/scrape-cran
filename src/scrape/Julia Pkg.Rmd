@@ -899,7 +899,7 @@ chk = map_df(.x = basic_information$weeks,
 
 rm(wip)
 parse_github_repo = function(slug) {
-  # slug = 'BenLauwens/SimJulia.jl'
+  # slug = slugs[977]
   baseurl = 'https://api.github.com'
   endpoint = 'repos'
   contributions = 'stats/contributors'
@@ -913,12 +913,22 @@ parse_github_repo = function(slug) {
     content(as = 'text') %>%
     fromJSON() %>%
     subset(.$author$type %in% 'User')
-  output = data.table(user = basic_information$author$login[
-    !is.null(x = basic_information$author$login)]) %>%
+  if (is_empty(x = basic_information)) {
+    output = data.table(user = NA,
+                        slug = slug,
+                        start_date = NA,
+                        end_date = NA,
+                        additions = NA,
+                        deletions = NA,
+                        commits = NA)
+  } else {
+    output = data.table(user = basic_information$author$login) %>%
     mutate(slug = slug) %>%
     cbind(map_df(.x = basic_information$weeks,
                  .f = parse_activity))
+  }
   return(value = output)
+  Sys.sleep(time = 1L)
   }
 rm(response)
 slugs = pkg_status %>%
@@ -927,19 +937,27 @@ slugs = pkg_status %>%
 
 slug = slugs[1]
 
-for(slug in slugs[15:20]) {
+for(slug in slugs) {
   print(slug)
-  parse_github_repo(slug)
+  try(a = parse_github_repo(slug = slugs[1]))
 }
 rm(basic_information)
 output = map_df(.x = slugs,
                 .f = parse_github_repo)
-
+upload_contributions
 upload_contributions = function(data) {
-  
-}
+  conn = con_db(dbname = 'oss',
+                pass = get_my_password())
+  dbWriteTable(conn = conn,
+               name = 'julia_contributions',
+               value = data,
+               row.names = FALSE,
+               overwrite = TRUE)
+  on.exit(expr = dbDisconnect(conn = conn))
+  }
+upload_contributions(data = output)
 
-chk = parse_github_repo(slug = slugs[1])
+chk = parse_github_repo(slug = slugs[977])
 chk = parse_github_repo(slug = slugs[2])
 
 chk = map_lgl(pkg_status$slug[39], travis_ci)
