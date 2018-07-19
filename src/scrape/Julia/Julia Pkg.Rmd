@@ -1,0 +1,1049 @@
+---
+title: 'Analysis of the Julia Ecosystem'
+output: html_notebook
+---
+
+# Overview
+
+[`Pkg.jl`](https://github.com/JuliaLang/Pkg.jl) is the standard package manager for Julia 1.0 and newer. It is a [`stdlib`](https://docs.julialang.org/en/latest/stdlib/Pkg/) of the [Julia language](https://julialang.org/). Packages in Julia can be installed from any source that has a valid repository. However, we only consider packages that have been *registered*. A registered package is one that is discoverable and installable from the official registry (presently [METADATA.jl](https://github.com/JuliaLang/METADATA.jl)). The Julia ecosystem provides a few tools obtaining relevant information about packages and their status. A few examples include (1) continous integration through [Travis C.I.](https://about.travis-ci.com/), code coverage through [Codecov](https://codecov.io/), documentation through [Documenter.jl](https://github.com/JuliaDocs/Documenter.jl) and hosted through [Github Pages](https://pages.github.com/). In addition, since the majority of repositories are [Github](https://github.com/) repositories additional information such as `LICENSE`, contributors (and contributions), and other characteristics can be compiled through the platform / interface (e.g., using [shields](https://shields.io/) in the `README` file). Dependencies in Julia are described in the `REQUIRE` file which is a component of any Julia package. One can access this file to parse the dependencies.
+
+A Julia package is a repository which usually lives in [Github](https://github.com/) with very few exceptions. In some cases, repositories have been deleted making the package and metadata lost. An analysis of attrition found that these cases were very limited.
+
+# Housekeeping
+
+- Install [Licensee](https://github.com/benbalter/licensee/)
+- Clone [METADATA.jl](https://github.com/JuliaLang/METADATA.jl) to `~/oss/data/oss/original/Julia/METADATA.jl` (last updated [7abfde6](https://github.com/JuliaLang/METADATA.jl/commit/7abfde68a874288b15ce5af80be9f305f267db6f) 2018-06-15)
+- Set up a [Github API Personal Token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/)
+
+```{r setup}
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+# if you run that you don't need to use the here 
+pacman::p_load(docstring, sdalr, configr, lubridate, dplyr, DBI, purrr,
+               stringr, data.table, dtplyr, httr, jsonlite, rvest)
+Sys.setenv(PATH = str_c(str_remove_all(string = Sys.getenv('PATH'),
+                                       pattern = ':~/.gem/ruby/2.5.0/bin'),
+                        '~/.gem/ruby/2.5.0/bin', sep = ':'))
+Github_API_token = 'd77961efcd1dc0ae2b9ebb2fe6c9349e1a9c3da0'
+# setwd(dir = rprojroot::find_rstudio_root_file())
+```
+
+# Obtain all packages and repositories
+
+- Using the data in the official registry we obtain the name of the package and the repository
+- Certain repositories are not available or re-direct to newer locations (these are updated)
+- The name and updated registry is uploaded to the database (`jbsc/julia_name_repository`)
+
+```{r basic_information}
+filenames = str_c('./data/oss/original/Julia/METADATA.jl/',
+                  list.files(path = './data/oss/original/Julia/METADATA.jl/') %>%
+                    subset(!str_detect(string = ., pattern = '\\.')))
+parse_registry = function(filename) {
+  name = filename %>%
+    str_sub(start = 39L)
+  versions = str_c(filename, '/versions/') %>%
+    list.files()
+  if (is_empty(x = versions)) {
+    latest_release = NA
+    dependencies = NA
+  } else {
+    versions = versions[order(package_version(str_replace_all(string = versions,
+                                                              c('-alpha' = '.0',
+                                                                '-beta' = '.1',
+                                                                '-dev' = '.0.'))))]
+    requires = str_c(filename, '/versions/', versions, '/requires')
+    latest_release = versions[length(x = versions)]
+    dependencies = suppressWarnings(expr = readLines(con = requires[length(x = versions)]))
+    dependencies = dependencies %>%
+      subset(!str_detect(string = .,
+                         pattern = '^julia')) %>%
+      str_extract(pattern = '(?<=(^|@osx|@linux|@windows)\\s{0,1})\\w+')
+    dependencies = dependencies %>%
+      subset(!is.na(x = dependencies))
+    if (is_empty(x = dependencies)) {
+      dependencies = NA
+    }
+  }
+  output = list(name = name,
+                latest_release = latest_release,
+                dependencies = dependencies)
+  return(value = output)
+  }
+pkgs = map(.x = filenames,
+           .f = parse_registry)
+dependencies = function(pkg) {
+  if (is_empty(x = pkg$dependencies)) {
+    latest_release = NA
+    dependency = NA
+  } else {
+    latest_release = pkg$latest_release
+    dependency = pkg$dependencies
+  }
+  output = data.table(name = pkg$name,
+                      latest_release = latest_release,
+                      dependency = dependency)
+  return(value = output)
+}
+pkg_dependency = map_df(.x = pkgs,
+                        .f = dependencies)
+upload_pkg_dependency = function(data) {
+  conn = con_db(dbname = 'oss',
+                pass = get_my_password())
+  dbWriteTable(conn = conn,
+               name = 'julia_pkg_dependencies',
+               value = data,
+               row.names = FALSE,
+               overwrite = TRUE)
+  on.exit(expr = dbDisconnect(conn = conn))
+  }
+upload_pkg_dependency(data = pkg_dependency)
+```
+
+### Slug
+
+```{r}
+read_pkg_dependency = function() {
+  conn = con_db(dbname = 'oss',
+                pass = get_my_password())
+  output = dbReadTable(conn = conn,
+                       name = 'julia_pkg_dependencies') %>%
+    data.table()
+  on.exit(expr = dbDisconnect(conn = conn))
+  return(value = output)
+  }
+pkg_dependency = read_pkg_dependency()
+helper = function(filename) {
+  url = filename %>%
+    readLines() %>%
+    getElement(name = 1L)
+    if (str_detect(string = url,
+                   pattern = 'github.com')) {
+      output = str_c('https://github.com/',
+                     str_extract(string = url,
+                                 pattern = '(?<=(com/))(\\w|-|\\.)+/(\\w|-)+(\\.jl)?'))
+                      } else if (str_detect(string = url,
+                                     pattern = 'gitlab.com')) {
+                        output = str_c('https://gitlab.com/',
+                                       str_extract(string = url,
+                                                   pattern = '(?<=(com/))(\\w|-|\\.)+/(\\w|-)+(\\.jl)?'))
+                        } else {
+                          output = url
+                          }
+                      return(value = output)
+}
+urls = str_c(filenames, 'url', sep = '/') %>%
+  map_chr(.f = helper)
+urls = urls %>%
+  str_replace(pattern = 'git://git.colberg.org/OnlineMoments.jl.git',
+              replacement = 'https://git.colberg.org/peter/OnlineMoments.jl')
+# file.size('./data/oss/original/Julia/github/CUBLAS')
+urls[str_detect(string = urls,
+           pattern = '/Twiddle(\\.jl)?$') %>%
+  which()]
+get_github_repos = function(repo) {
+  slug = str_extract(string = repo,
+                     pattern = '(?<=/)\\w+(\\.jl)?$')
+  name = str_remove(string = slug,
+                     pattern = '\\.jl$')
+  destfile = str_c('./data/oss/original/Julia/github/',
+                                 name)
+  download.file(url = repo,
+                destfile = destfile)
+  fs = file.size(destfile)
+  if (fs == 9L) {
+    return()
+  }
+  if (fs < 1e3) {
+    url = destfile %>%
+      read_html() %>%
+      html_node(css = 'a') %>%
+      html_attr(name = 'href')
+    get_github_repos(repo = url)
+    }
+  }
+# for (url in urls[map_lgl(.x = list.files(path = './data/oss/original/Julia/github',
+#                         full.names = TRUE),
+#              .f = function(f) {
+#                f %>%
+#                  file.info() %>%
+#                  pull(mtime) > mistake
+#              })]) {
+#   get_github_repos(repo = url)
+#              }
+for (repo in urls) {
+  get_github_repos(repo = repo)
+}
+for (file in list.files(path = './data/oss/original/Julia/github',
+                        full.names = TRUE)) {
+  fs = file.size(file)
+  # fs = file.info(file) %>%
+  #   pull(mtime)
+  # if (fs > mistake) {
+  if ((fs < 1e3) & (fs > 9)) {
+    print(file)
+    url = file %>%
+      read_html() %>%
+      html_node(css = 'a') %>%
+      html_attr(name = 'href')
+    download.file(url = url,
+                destfile = file)
+    }
+}
+
+urls[str_detect(urls, 'FixedPoint')]
+pkg_names[str_detect(urls, 'FixedPoint')]
+helper = function(repo) {
+  # repo = urls[10L]
+  # repo = pkg_names[1]
+  output = data.table()
+  print(repo)
+  fz = file.size(repo)
+  if (fz == 9L) {
+    return(value = output)
+  } else {
+    content_parsed = read_html(x = repo)
+    url = content_parsed %>%
+      html_node(xpath = "//meta[@property='og:url']/@content") %>%
+      html_text()
+    if (!str_detect(string = url,
+                   pattern = 'github\\.com')) {
+      return(value = output)
+      }
+    slug = content_parsed %>%
+      html_nodes(css = '.public') %>%
+      html_text(trim = TRUE)
+    owner = slug %>%
+      str_extract(pattern = '(\\w|-)+(?=/)')
+    repo = slug %>%
+      str_extract(pattern = '(?<=/)\\w+(\\.jl)?')
+    kw = content_parsed %>%
+      html_nodes(css = '.topic-tag-link') %>%
+      html_text(trim = TRUE)
+    if (is_empty(x = kw)) {
+      kw = NA
+    }
+    description = content_parsed %>%
+      html_nodes(css = '.mr-2') %>%
+      html_text(trim = TRUE) %>%
+      subset(. != '')
+    if (is_empty(x = description)) {
+      description = NA
+    }
+    output = data.table(owner = owner,
+                        repository = url,
+                        description = description,
+                        keywords = str_c(kw, collapse = ', '))
+  return(value = output)
+    }
+  }
+pkg_names = str_c('./data/oss/original/Julia/github/',
+                  str_extract(string = filenames,
+                              pattern = '(?<=/)\\w+$'))
+str_detect(pkg_names, 'AMD') %>%
+  which()
+pkg_names[26L]
+
+list.files(path = './data/oss/original/Julia/github',
+                                    full.names = TRUE)
+
+basic_info = map_df(.x = list.files(path = './data/oss/original/Julia/github',
+                                    full.names = TRUE),
+                    .f = helper) %>%
+  unique()
+str_detect(pkg_names, 'FixedEffectModels') %>%
+  which()
+helper(pkg_names[608L])
+NonGithub = basic_info$repository[!str_detect(basic_info$repository, 'github\\.com')]
+```
+
+# Obtaining the license information from the repository
+
+The licenses were parsed detected by using Licensee 9.9.1 [2018-06-15]
+
+```{r}
+helper = function(repo) {
+  filename = str_c('./data/oss/original/Julia/Licenses/',
+                   str_extract(string = repo,
+                               pattern = '(?<=\\.com/).*') %>%
+                     str_remove(pattern = '\\.jl$') %>%
+                     str_replace(pattern = '/',
+                                 replacement = '_'),
+                   '.txt')
+  system(command = str_c('touch ', filename))
+  if (file.info(filename)$size == 0L) {
+    print(repo)
+      system(command = str_c('OCTOKIT_ACCESS_TOKEN=',
+                           Github_API_token,
+                           ' licensee detect ',
+                           repo,
+                           ' > ',
+                           filename))
+      Sys.sleep(time = 5e-1)
+      }
+  }
+
+for (repo in basic_info$repository) {
+  helper(repo)
+  }
+
+files = list.files(path = './data/oss/original/Julia/Licenses',
+                   full.names = TRUE)
+files %>%
+  subset(str_detect(files, 'AbaqusReader'))
+parse_license_type = function(textfile) {
+  owner = str_extract(string = textfile,
+                      pattern = '(?<=Licenses/).*(?=_)')
+  name = str_extract(string = textfile,
+                     pattern = str_c('(?<=', owner, '_).*(?=.txt)'))
+  license_text = readLines(con = textfile)
+  if (is_empty(x = license_text)) {
+    license = NA
+    confidence = NA
+  } else if (license_text[1] == 'License:  None') {
+    license = 'BC'
+    confidence = 1e2
+  } else if (license_text[1] != 'License:        NOASSERTION') {
+    license = str_remove(string = license_text[1],
+                         pattern = '\\s*License:\\s+')
+    confidence = license_text[str_detect(string =  license_text,
+                                         pattern = '  Confidence:\\s+')]
+    confidence = str_extract(string = confidence,
+                             pattern = '\\d{1,3}.\\d{2}') %>%
+      as.numeric()
+  } else {
+    license = license_text[str_detect(string = license_text,
+                                    pattern = '  License:\\s+')]
+    license = license[license != '  License:       NOASSERTION']
+    if (!is_empty(x = license)) {
+      license = str_remove(string = license,
+                         pattern = '\\s+License:\\s+')
+      confidence = str_extract(string = license_text,
+                               pattern = '\\d{1,3}\\.\\d{2}') %>%
+        na.omit() %>%
+        getElement(name = 1L) %>%
+        as.numeric()
+    } else {
+      license = str_detect(string = license_text,
+                           pattern = '\\d{1,3}\\.\\d{2}') %>%
+        which() %>%
+        getElement(name = 1L)
+      confidence = str_extract(string = license_text[license],
+                               pattern = '\\d{1,3}\\.\\d{2}') %>%
+        as.numeric()
+      license = str_extract(string = license_text[license],
+                            pattern = '.*(?=similarity)') %>%
+        str_trim()
+    }
+  }
+  output = data.table(owner = owner,
+                      name = name,
+                      license = license,
+                      confidence = confidence)
+  return(value = output)
+  }
+for (file in files) {
+  print(file)
+  parse_license_type(file)
+}
+
+licensee = map_df(.x = files,
+                  .f = parse_license_type)
+
+for (i in 1:nrow(x = julia_packages)) {
+  if (with(data = julia_packages,
+           expr = available[i] & (remote_platform[i] %in% 'github.com'))) {
+    filename = str_c('./data/oss/original/Julia/Licenses/',
+                     julia_packages$owner[i],
+                     '_',
+                     str_remove(string = julia_packages$name[i],
+                                 pattern = '.jl$'),
+                     '.txt')
+    system(command = str_c('touch ', filename))
+    if (file.info(filename)$size == 0L) {
+      print(i)
+      system(command = str_c('OCTOKIT_ACCESS_TOKEN=',
+                           Github_API_token,
+                           ' licensee detect ',
+                           julia_packages$repository[i],
+                           ' > ',
+                           filename))
+      Sys.sleep(time = 5e-1)
+      }
+    }
+  }
+
+basic_info = basic_info %>%
+unique()
+
+
+  url = response$url
+  if (status_code(x = response) == 200L) {
+    content_parsed = response %>%
+      content(as = 'parsed')
+    kw = content_parsed %>%
+      html_nodes(css = '.topic-tag-link') %>%
+      html_text(trim = TRUE)
+    if (is_empty(x = kw)) {
+      kw = NA
+    }
+    description = content_parsed %>%
+      html_nodes(css = '.mr-2') %>%
+      html_text(trim = TRUE) %>%
+      subset(. != '')
+    if (is_empty(x = description)) {
+      description = NA
+    }
+    slug = content_parsed %>%
+      html_nodes(css = '.public') %>%
+      html_text(trim = TRUE)
+    owner = slug %>%
+      str_extract(pattern = '(\\w|-)+(?=/)')
+    repo = slug %>%
+      str_extract(pattern = '(?<=/)\\w+(\\.jl)?')
+  } else {
+    owner = url %>%
+      str_extract(pattern = '(?<=\\.\\w{3}/)(\\w|-)+(?=/)')
+    repo = url %>%
+      str_extract(pattern = str_c('(?<=', owner, '/)\\w+(\\.jl)?'))
+    kw = NA
+    description = NA
+    }
+  output = data.table(owner = owner,
+                      repository = url,
+                      description = description,
+                      keywords = str_c(kw, collapse = ', '))
+  return(value = output)
+  }
+basic_information = map_df(.x = urls,
+                           .f = helper) %>%
+  mutate(name = str_extract(string = filenames,
+                            pattern = '(?<=/)\\w+$'))
+```
+
+### Downloading the Github License Information
+```{r}
+basic_info$repository[1:10]
+dir.create(path = './data/oss/original/Julia/Licenses_Text')
+github_license = function(repository) {
+  # repository = 'https://github.com/JuliaGraphs/LightGraphs.jl'
+  print(repository)
+  owner = str_extract(string = repository,
+                      pattern = '(?<=/)[\\w-]+(?=/)')
+  name = str_extract(string = repository,
+                     pattern = str_c('(?<=', owner, '/).*'))
+  license_file = str_c('https://api.github.com/repos/',
+                         owner,
+                         '/',
+                         name,
+                         '/',
+                       'license') %>%
+      GET(add_headers(Authorization = str_c('token ', Github_API_token))) %>%
+      content(as = 'text', encoding = 'UTF-8') %>%
+      fromJSON()
+  license_type = license_file$license$spdx_id
+  if (is_null(x = license_type)) {
+    license_type = NA
+  }
+  if (!is_null(x = license_file$download_url)) {
+    filename = str_c('./data/oss/original/Julia/Licenses_Text/',
+                   owner,
+                   '_',
+                   name)
+    system(command = str_c('touch ', filename))
+    download.file(license_file$download_url, destfile = filename)
+  }
+  output = data.table(owner = owner,
+                      name = str_extract(string = repository,
+                                         pattern = str_c('(?<=',
+                                                         owner,
+                                                         '/).*(?=\\.jl?$)')),
+                      license = license_type)
+  return(value = output)
+  }
+output = map_df(.x = basic_info$repository,
+                .f = github_license)
+upload_julia_licenses_github = function(data) {
+  conn = con_db(dbname = 'oss',
+                pass = get_my_password())
+  dbWriteTable(conn = conn,
+               name = 'julia_licenses_github',
+               value = data,
+               row.names = FALSE,
+               overwrite = TRUE)
+  on.exit(expr = dbDisconnect(conn = conn))
+  }
+upload_julia_licenses_github(data = output)
+```
+
+### Manual Parsing of Files
+```{r}
+
+all_pkgs = pkg_names %>%
+  str_sub(start = 34L)
+on_file = list.files(path = './data/oss/original/Julia/Licenses_Text') %>%
+  str_extract(pattern = '(?<=_).*') %>%
+  str_remove(pattern = '\\.jl$')
+what_is_missing = setdiff(x = all_pkgs, y = on_file)
+chk = basic_info %>%
+  filter((repository %>%
+            str_extract(pattern = str_c('(?<=', owner, '/).*')) %>%
+            str_remove(pattern = '\\.jl$')) %in%
+           what_is_missing)
+
+manual = map_df(.x = list.files(path = './data/oss/original/Julia/Licenses_Text',
+                                full.names = TRUE),
+                .f = function(filename) {
+                  # filename = './data/oss/original/Julia/Licenses_Text/JuliaGraphs_LightGraphs.jl'
+                  print(filename)
+                  slug = str_extract(string = filename,
+                                     pattern = '(?<=Licenses_Text/).*') %>%
+                    str_split(pattern = '_') %>%
+                    unlist()
+                  lines = readLines(con = filename,
+                                        encoding = 'UTF-8')
+                  if (is_empty(x = lines)) {
+                    firstline = NA
+                  } else {
+                    if (any(str_detect(string = lines,
+                                       pattern = 'is (licensed|distributed) under'))) {
+                      firstline = lines %>%
+                        subset(str_detect(string = lines,
+                                       pattern = 'is (licensed|distributed) under')) %>%
+                        getElement(name = 1L)
+                    } else if (str_detect(string = lines[1L],
+                                          pattern = 'Copyright')) {
+                      firstline = lines %>%
+                        subset(!str_detect(string = .,
+                                          pattern = 'Copyright')) %>%
+                        subset(. != '') %>%
+                        getElement(name = 1L)
+                    } else {
+                      firstline = lines[1L]
+                    }
+                  }
+                  output = data.table(owner = slug[1L],
+                                      name = slug[2L],
+                                      firstline = firstline)
+                  return(value = output)
+  })
+
+license_parser = function(x) {
+  if (is.na(x = x)) {
+    output = NA
+  } else if (str_detect(string = x, pattern = 'MIT')) {
+    output = 'MIT'
+  } else if (str_detect(string = x, pattern = 'Apache')) {
+    output = 'Apache-2.0'
+  } else if (str_detect(string = x, pattern = 'Simplified "2-clause" BSD')) {
+    output = 'BSD-2-Clause'
+  } else if (str_detect(string = x, pattern = '3-[Cc]lause') |
+             str_detect(string = x, pattern = 'New BSD License')) {
+    output = 'BSD-3-Clause'
+  } else if (str_detect(string = x, pattern = 'Lesser GNU Public License, Version 3.0+') | str_detect(string = x, pattern = '\\[LGPL\\]')) {
+    output = 'LGPL-3.0-or-later'
+  } else if (str_detect(string = x, pattern = 'Mozilla Public License Version 2.0')) {
+    output = 'MPL-2.0'
+  } else if (str_detect(string = x, pattern = '(?i)GNU GENERAL PUBLIC LICENSE')) {
+    output = 'GPL-3.0'
+  } else if (str_detect(string = x, pattern = 'GNU Public License, Version 3.0+') |
+             str_detect(string = x, pattern = 'GNU GPL')) {
+    output = 'GPL-3.0-or-later'
+  } else {
+    output = NA
+  }
+  return(value = output)
+  }
+
+manual2 = manual %>%
+  mutate(firstline = ifelse(test = str_detect(string = firstline,
+                                              pattern = 'is (licensed|distributed) under'),
+                            yes = str_extract(string = firstline,
+                                              pattern = '(?<=(licensed|distributed) under).*'),
+                            no = firstline),
+         license = map_chr(.x = firstline,
+                           .f = license_parser))
+# Manual Fixes
+manual2$license[manual2$name %in% 'VegaLite.jl'] = 'MIT'
+manual2$license[manual2$name %in% 'CoreNLP.jl'] = 'GPL-3.0-or-later'
+manual2$license[manual2$name %in% 'AffineInvariantMCMC.jl'] = 'GPL-2.0-or-later'
+```
+
+
+```{r}
+read_github = function() {
+  conn = con_db(dbname = 'oss',
+                pass = get_my_password())
+  output = dbReadTable(conn = conn,
+                       name = 'julia_licenses_github') %>%
+    data.table()
+  on.exit(expr = dbDisconnect(conn = conn))
+  return(value = output)
+}
+github = read_github() %>%
+  setnames(old = 'license', new = 'github')
+licensee = licensee %>%
+  setnames(old = 'license', new = 'licensee')
+manual3 = manual2 %>%
+  data.table() %>%
+  mutate(name = str_remove(string = name, pattern = '\\.jl$')) %>%
+  setnames(old = 'license', new = 'manual')
+valid_license = data.table(repository = basic_info$repository) %>%
+  mutate(owner = str_extract(string = repository,
+                             pattern = '(?<=\\.com/)[\\w-]+(?=/)'),
+         name = str_extract(string = repository,
+                            pattern = str_c('(?<=', owner, '/).*')) %>%
+           str_remove(pattern = '\\.jl$')) %>%
+  merge(y = github) %>%
+  merge(y = licensee) %>%
+  merge(y = manual3) %>%
+  mutate(license = ifelse(test = !is.na(x = github),
+                          yes = github,
+                          no = NA)) %>%
+  mutate(license = ifelse(test = is.na(x = license),
+                          yes = manual,
+                          no = license)) %>%
+  mutate(license = ifelse(test = is.na(x = license),
+                          yes = licensee,
+                          no = license))
+licenses = function() {
+  conn = con_db(dbname = 'oss',
+                pass = get_my_password())
+  output = dbReadTable(conn = conn,
+                       name = 'licenses') %>%
+    data.table()
+  return(value = output)
+  on.exit(expr = dbDisconnect(conn = conn))
+  }
+licenses = licenses() %>%
+  filter(osi) %>%
+  pull(id)
+valid_license = valid_license %>%
+  mutate(osi = license %in% licenses)
+upload_julia_licenses = function(data) {
+  conn = con_db(dbname = 'oss',
+                pass = get_my_password())
+  dbWriteTable(conn = conn,
+               name = 'julia_licenses',
+               value = data,
+               row.names = FALSE,
+               overwrite = TRUE)
+  on.exit(expr = dbDisconnect(conn = conn))
+  }
+upload_julia_licenses(data = valid_license %>%
+                        select(owner, name, repository, license, osi) %>%
+                        data.table(key = c('owner', 'name')))
+```
+
+### Package Status
+```{r}
+pkg_status = valid_license %>%
+  filter(osi & !(owner %in% 'JuliaArchive')) %>%
+  mutate(slug = str_extract(string = repository,
+                            pattern = '(?<=\\.com/).*')) %>%
+  select(slug, repository, name)
+pkg_status$name = pkg_status$name %>%
+  recode('SNN' = 'SpikingNetworks',
+         'ANN' = 'ImputationAlgamest',
+         'AMG' = 'AlgebraicMultigrid',
+         'fstformat' = 'FstFileFormat')
+pkg_status$name = pkg_status$name %>%
+  recode('SNN' = 'SpikingNetworks',
+         'ANN' = 'ImputationAlgamest',
+         'AMG' = 'AlgebraicMultigrid',
+         'fstformat' = 'FstFileFormat')
+pkg_dependency$name = pkg_dependency$name %>%
+  recode('SNN' = 'SpikingNetworks',
+         'ANN' = 'ImputationAlgamest',
+         'AMG' = 'AlgebraicMultigrid',
+         'fstformat' = 'FstFileFormat')
+valid_license$name = valid_license$name %>%
+  recode('SNN' = 'SpikingNetworks',
+         'ANN' = 'ImputationAlgamest',
+         'AMG' = 'AlgebraicMultigrid',
+         'fstformat' = 'FstFileFormat')
+pkg_dependency$dependency = pkg_dependency$dependency %>%
+  recode('SNN' = 'SpikingNetworks',
+         'ANN' = 'ImputationAlgamest',
+         'AMG' = 'AlgebraicMultigrid',
+         'fstformat' = 'FstFileFormat')
+pkg_dependency = pkg_dependency %>%
+  rbind(data.table(name = 'ImputationAlgamest',
+                   latest_release = '0.0.2',
+                   dependency = NA)) %>%
+  rbind(data.table(name = 'SpikingNetworks',
+                   latest_release = '0.0.4',
+                   dependency = NA)) %>%
+  unique() %>%
+  data.table(key = c('name', 'dependency'))
+pkg_dependency = pkg_dependency %>%
+  filter(name %in% unique(valid_license$name))
+setdiff(pkg_status$name, pkg_dependency$name)
+
+upload_
+upload_pkg_dependency(data = pkg_dependency)
+upload_julia_licenses(data = valid_license)
+
+# Renamed a few packages for consistency
+# SNN to SpikingNetworks
+# ANN to ImputationAlgamest
+# AMG to AlgebraicMultigrid
+# fstformat to FstFileFormat
+```
+
+# Package Status
+```{r}
+read_pkg_dependency = function() {
+  conn = con_db(dbname = 'oss',
+                pass = get_my_password())
+  output = dbReadTable(conn = conn,
+                       name = 'julia_pkg_dependencies') %>%
+    data.table()
+  on.exit(expr = dbDisconnect(conn = conn))
+  return(value = output)
+  }
+read_valid_license = function() {
+  conn = con_db(dbname = 'oss',
+                pass = get_my_password())
+  output = dbReadTable(conn = conn,
+                       name = 'julia_licenses') %>%
+    data.table()
+  on.exit(expr = dbDisconnect(conn = conn))
+  return(value = output)
+  }
+
+pkg_dependency = read_pkg_dependency()
+valid_license = read_valid_license()
+
+pkg_status = valid_license %>%
+  filter(osi) %>%
+  select(name, repository) %>%
+  mutate(slug = str_extract(string = repository,
+                            pattern = '(?<=github\\.com/).*')) %>%
+  merge(y = pkg_dependency %>%
+          select(name, latest_release) %>%
+          unique(),
+        by = 'name')
+travis_ci = function(slug) {
+  # slug = 'sam81/BDF.jl'
+  slug = 'jstrube/LCIO.jl'
+  output = FALSE
+  try(expr = {
+    ci = GET(url = str_c('https://api.travis-ci.org/repos/', slug, '/branches'),
+                 add_headers(c(Accept = 'application/json',
+                               Authorization = 'token DRt1TjjDmPG4wX8bq0YqVg'))) %>%
+      content(as = 'text', encoding = 'UTF-8') %>%
+      fromJSON()
+    branches = ci$branches
+    release_0.6 = branches$started_at >= as.Date('2017-06-19')
+    valid = map_lgl(.x = branches$config$julia,
+            .f = function(x) {any(str_detect(string = x, pattern = '0\\.6'))}) |
+      (release_0.6 & map_lgl(.x = branches$config$julia,
+            .f = function(x) {any(str_detect(string = x, pattern = 'release'))}))
+    branches = branches %>%
+      subset(valid)
+    commits = ci$commits %>%
+      subset(valid)
+    if (any(branches$state %in% 'passed')) {
+      output = TRUE
+    } else {
+      for (job in branches$id) {
+        response = GET(url = str_c('https://api.travis-ci.org/builds',
+                                   job,
+                                   sep = '/'),
+                       add_headers(c(Accept = 'application/json',
+                                     Authorization = 'token DRt1TjjDmPG4wX8bq0YqVg'))) %>%
+          content(as = 'text', encoding = 'UTF-8') %>%
+          fromJSON()
+        output = any(response$matrix %>%
+                       subset(.$config$julia %in% '0.6') %>%
+                       getElement(name = 'result') == 0L,
+                     na.rm = TRUE)
+        if (output) {
+          break
+          }
+        }
+      }
+    },
+    silent = TRUE)
+  return(value = output)
+  }
+
+print(travis_ci(slug = '4gh/WorldBankData.jl'))
+
+get_last_commit = function(slug) {
+  last_commit = str_c('https://api.github.com/repos',
+                      slug,
+                      'commits',
+                      sep = '/') %>%
+    GET(add_headers(Authorization = str_c('token ', Github_API_token))) %>%
+    content(as = 'text', encoding = 'UTF-8') %>%
+    fromJSON()
+  output = data.table(slug = slug,
+                      last_commit = last_commit$commit$committer$date[1L] %>%
+                        as.Date())
+  }
+
+last_commit = map_df(.x = pkg_status$slug,
+                     .f = get_last_commit)
+
+pkg_status = pkg_status %>%
+  mutate(status = map_lgl(.x = slug,
+                          .f = travis_ci))
+to_fix = pkg_status2 %>%
+  filter(!status | is.na(x = status)) %>%
+  mutate(status = map_lgl(.x = slug,
+                          .f = travis_ci))
+pkg_status3 = merge(x = pkg_status2,
+                    y = to_fix,
+                    by = setdiff(names(pkg_status2),
+                                 'status'),
+                    all.x = TRUE) %>%
+  mutate(status.x = ifelse(test = is.na(status.x),
+                           yes = status.y,
+                           no = status.x)) %>%
+  mutate(status.x = ifelse(test = !is.na(status.y),
+                           yes = status.y,
+                           no = status.x)) %>%
+  select(-status.y) %>%
+  data.table() %>%
+  setnames(old = 'status.x', new = 'status') %>%
+  mutate(status = ifelse(test = str_detect(string = slug,
+                                           pattern = '^JuliaArchive/'),
+                         yes = FALSE,
+                         no = status))
+
+deprecated = basic_info %>%
+  filter(str_detect(string = description,
+                                 pattern = '(?i)(deprecated)')) %>%
+  pull(repository) %>%
+  unique()
+pkg_status3 = pkg_status3 %>%
+  mutate(status = ifelse(test = repository %in% deprecated,
+         yes = FALSE,
+         no = status))
+table(pkg_status3$status)
+
+wip = basic_info %>%
+  filter(str_detect(string = description,
+                                 pattern = '(?i)WIP'))
+
+pkg_status$status[pkg_status$name %in% 'LCIO'] = TRUE # Manual fix
+
+read_pkg_status = function(data) {
+  conn = con_db(dbname = 'oss',
+                pass = get_my_password())
+  output = dbReadTable(conn = conn,
+              name = 'julia_pkg_status') %>%
+    data.table()
+  on.exit(expr = dbDisconnect(conn = conn))
+  return(value = output)
+  }
+pkg_status = read_pkg_status()
+
+upload_pkg_status = function(data) {
+  conn = con_db(dbname = 'oss',
+                pass = get_my_password())
+  dbWriteTable(conn = conn,
+               name = 'julia_pkg_status',
+               value = data,
+               row.names = FALSE,
+               overwrite = TRUE)
+  on.exit(expr = dbDisconnect(conn = conn))
+  }
+upload_pkg_status(pkg_status)
+
+length(intersect(pkg_status3 %>%
+                   filter(status) %>%
+                   pull(name),
+                 valid_license %>%
+                   filter(osi) %>%
+                   pull(name)))
+helper = function(idx) {
+  activity = basic_information$weeks[[idx]] %>%
+    filter(c > 0L)
+  time_period = activity$w
+  adc = colSums(activity[,2:4])
+  output = data.table(slug = slug,
+                      contributor = basic_information$author$login[idx],
+                      start_date = as.Date(as.POSIXct(time_period[1L],
+                                                      origin = '1970-01-01')),
+                      end_date = as.Date(as.POSIXct(time_period[length(
+                        x = time_period)],
+                        origin = '1970-01-01')),
+                      additions = adc[1L],
+                      deletions = adc[2L],
+                      commits = adc[3L])
+  return(value = output)
+  }
+parser = function(basic_information) {
+  output = map_df(.x = 1L:nrow(x = basic_information),
+                  .f = helper)
+  }
+activity = basic_information$weeks[[1]]
+names(chk)
+parse_activity = function(activity) {
+  activity = activity %>%
+    filter(c > 0)
+  output = data.table(start_date = as.Date(as.POSIXct(activity$w[1L],
+                                                      origin = '1970-01-01')),
+                      end_date = as.Date(as.POSIXct(activity$w[length(
+                        x = activity$w)],
+                        origin = '1970-01-01')),
+                      additions = sum(activity$a),
+                      deletions = sum(activity$d),
+                      commits = sum(activity$c))
+  return(value = output)
+  }
+# slug = 'JuliaStats/StatsBase.jl' # Change the slug to the owner/repo form
+chk = map_df(.x = basic_information$weeks,
+             .f = parse_activity)
+
+rm(wip)
+parse_github_repo = function(slug) {
+  # slug = slugs[977]
+  baseurl = 'https://api.github.com'
+  endpoint = 'repos'
+  contributions = 'stats/contributors'
+  response = str_c(baseurl,
+                   endpoint,
+                   slug,
+                   contributions,
+                   sep = '/') %>%
+    GET(add_headers(Authorization = str_c('token ', Github_API_token)))
+  basic_information = response %>%
+    content(as = 'text') %>%
+    fromJSON() %>%
+    subset(.$author$type %in% 'User')
+  if (is_empty(x = basic_information)) {
+    output = data.table(user = NA,
+                        slug = slug,
+                        start_date = NA,
+                        end_date = NA,
+                        additions = NA,
+                        deletions = NA,
+                        commits = NA)
+  } else {
+    output = data.table(user = basic_information$author$login) %>%
+    mutate(slug = slug) %>%
+    cbind(map_df(.x = basic_information$weeks,
+                 .f = parse_activity))
+  }
+  return(value = output)
+  Sys.sleep(time = 1L)
+  }
+rm(response)
+slugs = pkg_status %>%
+  filter(status) %>%
+  pull(slug)
+
+slug = slugs[1]
+
+for(slug in slugs) {
+  print(slug)
+  try(a = parse_github_repo(slug = slugs[1]))
+}
+rm(basic_information)
+output = map_df(.x = slugs,
+                .f = parse_github_repo)
+upload_contributions
+upload_contributions = function(data) {
+  conn = con_db(dbname = 'oss',
+                pass = get_my_password())
+  dbWriteTable(conn = conn,
+               name = 'julia_contributions',
+               value = data,
+               row.names = FALSE,
+               overwrite = TRUE)
+  on.exit(expr = dbDisconnect(conn = conn))
+  }
+upload_contributions(data = output)
+
+chk = parse_github_repo(slug = slugs[977])
+chk = parse_github_repo(slug = slugs[2])
+
+chk = map_lgl(pkg_status$slug[39], travis_ci)
+
+pkg_status2 = pkg_status %>%
+  unique() %>%
+  merge(y = last_commit,
+        by = 'slug') %>%
+  unique()
+pkg_status2 = pkg_status2 %>%
+  mutate(status = ifelse(test = str_detect(string = slug,
+                                           pattern = '^JuliaArchive/'),
+                         yes = FALSE,
+                         no = status))
+
+verify = pkg_status %>%
+  filter(!status)
+
+print(travis_ci(slug = 'Keno/Cxx.jl'))
+
+
+
+ builds = GET(url = str_c('https://api.travis-ci.org/repos/', slug, '/builds'),
+               add_headers(c(Accept = 'application/json',
+                             Authorization = 'token DRt1TjjDmPG4wX8bq0YqVg'))) %>%
+    content(as = 'text', encoding = 'UTF-8') %>%
+    fromJSON()
+}
+
+```
+
+
+
+
+
+
+
+helper = function(i) {
+  if (i == 2L) {
+    output = data.table(a = 1:3, b = 1:3)
+  } else {
+    output = data.table()
+  }
+  return(output)
+}
+a = map_df(.x = 1:3, .f = helper)
+urls[str_detect(string = urls, 'ca') %>%
+  which()]
+responses = 
+```
+
+urls
+
+
+```{r}
+pkg_status = data.table(name = julia_support$name,
+                        status = NA,
+                        criteria = NA) %>%
+  mutate(status = ifelse(test = julia_support$julia_max %in% '0.7',
+                         yes = 'Development',
+                         no = status),
+         criteria = ifelse(test = julia_support$julia_max %in% '0.7',
+                           yes = '0.7 Only',
+                           no = criteria)) %>%
+  mutate(status = ifelse(test = is.na(x = julia_support$julia_max),
+                         yes = 'Unmaintained',
+                         no = status),
+         criteria = ifelse(test = is.na(x = julia_support$julia_max),
+                           yes = 'Not Installable',
+                           no = criteria))
+travis = 
+```
+
+table(is.na(pkg_status$status))
+
+pkgs[[49L]]
+for (i in 1:length(pkgs)) {
+  print(i)
+  julia_min_max(pkg = pkgs[[i]])
+}
+
+str_detect(string = filenames,
+           pattern = '/StatsBase$') %>%
+  which()
+filenames[c(687,1312,1764)]
+parse_registry(filename = filenames[1L])
+parse_registry(filename = filenames[1764L])
+}
+```
