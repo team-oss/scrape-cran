@@ -1,27 +1,7 @@
 # Housekeeping
-library(docstring)
-library(httr)
-library(jsonlite)
-library(stringr)
-library(data.table)
-library(dtplyr)
+pacman::p_load(docstring, httr, jsonlite, stringr, data.table, dtplyr, purrr)
 
-
-github_personal_token = '1c06459fc9b515e2a5aa748b06913f3495068a45'
-
-osi_pkgs <- read.csv("~/oss/data/oss/final/PyPI/osi_approved_w_repos.csv")
-osi_pkgs$repository <- as.character(osi_pkgs$repository)
-osi_pkgs$author <- NA
-osi_pkgs$repo_name <- NA
-for (i in 1:length(osi_pkgs$repository))
-{
-  if (!is.na(osi_pkgs$repository[i]))
-  {
-    osi_pkgs$author[i] <- strsplit(osi_pkgs$repository[i],"/")[[1]][4]
-    osi_pkgs$repo_name[i] <- strsplit(osi_pkgs$repository[i],"/")[[1]][5]
-  }
-}
-
+github_personal_token = '1c06459fc9b515e2a5aa748b06913f3495068a45' # Get one from https://github.com/settings/tokens
 # Credentials
 token = add_headers(token = github_personal_token)
 
@@ -43,10 +23,8 @@ parser = function(idx) {
   return(value = output)
 }
 
-# slug = 'JuliaStats/StatsBase.jl' # Change the slug to the owner/repo form
-
 parse_github_repo = function(slug) {
-  baseurl = 'https://api.github.com'
+  baseurl = 'https://api.github.com/'
   endpoint = 'repos'
   contributions = 'stats/contributors'
   response = str_c(baseurl,
@@ -63,4 +41,13 @@ parse_github_repo = function(slug) {
   return(value = output)
 }
 
-output = parse_github_repo(slug = slug)
+urls <- read.csv("~/oss/data/oss/final/PyPI/osi_approved_w_repos.csv")
+urls$slugs <- NA
+for(i in 1:nrow(urls))
+{
+  urls$slugs[i] <- strsplit(as.character(urls$repository[i]), "github.com/")[[1]][2]
+}
+
+res <- parse_github_repo(urls$slugs[365])
+
+#output = parse_github_repo(slug = slug)
