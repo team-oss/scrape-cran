@@ -7,7 +7,7 @@ library(data.table)
 library(dtplyr)
 library(purrr)
 
-github_personal_token = '' # Get one from https://github.com/settings/tokens
+github_personal_token = '2d260070668afe675673e973faf2ec30b48e831c' # Get one from https://github.com/settings/tokens
 # Credentials
 token = add_headers(token = github_personal_token)
 
@@ -56,3 +56,22 @@ parse_github_repo = function(slug) {
   return(value = output)
   Sys.sleep(time = 1L)
   }
+
+slugs = str_extract(general_info$repo, "(?<=github\\.com(/|:)).*")
+for (i in 1:length(slugs)) {
+  if (!is.na(slugs[i]) & is.null(output[[i]])) {
+    try(parse_github_repo(slug = slugs[i]))
+  }
+}
+
+output = map_df(.x = na.omit(slugs),
+                .f = parse_github_repo)
+
+library(DBI)
+library(sdalr)
+my_db_con <- con_db("oss", pass=sdalr::get_my_password())
+dbWriteTable(con = my_db_con,
+             name = "cdn_contributions",
+             value = output,
+             row.names = FALSE,
+             overwrite = TRUE)
