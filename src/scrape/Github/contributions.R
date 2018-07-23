@@ -1,5 +1,11 @@
 # Housekeeping
-pacman::p_load(docstring, httr, jsonlite, stringr, data.table, dtplyr)
+library(httr)
+library(jsonlite)
+library(stringr)
+library(dplyr)
+library(data.table)
+library(dtplyr)
+library(purrr)
 
 github_personal_token = '' # Get one from https://github.com/settings/tokens
 # Credentials
@@ -28,7 +34,7 @@ parse_github_repo = function(slug) {
                    slug,
                    contributions,
                    sep = '/') %>%
-    GET(add_headers(Authorization = str_c('token ', Github_API_token)))
+    GET(add_headers(Authorization = str_c('token ', github_personal_token)))
   basic_information = response %>%
     content(as = 'text') %>%
     fromJSON() %>%
