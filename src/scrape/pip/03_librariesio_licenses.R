@@ -1,3 +1,8 @@
+# INPUT:
+#        "~/oss/data/oss/working/pypi/03_prod_mature_names.csv"
+# OUTPUT:
+#        "~/oss/data/oss/working/pypi/04_prod_mature_w_licenses.csv"
+
 library(RCurl)
 library(XML)
 library(rvest)
@@ -5,10 +10,9 @@ library(dplyr)
 library(httr)
 library(stringr)
 api_key <- "1477f26c48cf30d2627d440f4544c548"
-prod_mature_packages <- read.csv("~/oss/data/oss/final/PyPI/all_production_mature.csv")
-# prod_mature_packages$license <- NA
-#
-# names_list <- prod_mature_packages$name
+prod_mature_packages <- read.csv("~/oss/data/oss/working/pypi/03_prod_mature_names.csv")
+prod_mature_packages$license <- NA
+names_list <- prod_mature_packages$name
 
 for (i in 6390:length(names_list))
 {
@@ -31,8 +35,7 @@ for (i in 6390:length(names_list))
     print(i)
   }
 }
-#write.csv(names_list, "~/oss/data/oss/final/PyPI/production_mature_licenses1.csv")
-write.csv(prod_mature_packages, "~/oss/data/oss/final/PyPI/production_mature_licenses.csv")
+write.csv(prod_mature_packages, "~/oss/data/oss/working/pypi/04_prod_mature_w_licenses.csv")
 
 
 

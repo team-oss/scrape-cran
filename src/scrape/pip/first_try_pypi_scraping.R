@@ -4,7 +4,7 @@ library(rvest)
 library(dplyr)
 library(httr)
 library(stringr)
-source("~/oss/src/scrape/pip/02_scraping_func.R")
+source("~/oss/src/scrape/pip/first_try_scraping_func.R")
 
 # pypi_df <- setNames(data.frame(matrix(ncol = 10, nrow = 1)), c("name", "description", "license", "author", "maintainer(s)", "repository", "homepage",  "py3", "development_status", "dependencies"))
 
