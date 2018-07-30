@@ -3,22 +3,18 @@ library(tidyr)
 
 source('./R/count_values.R')
 
-PROJECT_KEY_COLUMN <- 'name'
-
-code_gov_df <- readRDS('./data/oss/original/code_gov/api_pull/repo_contents.RDS')
+PROJECT_KEY_COLUMNS <- readRDS('./data/oss/working/code_gov/api_pull/project_key_columns.RDS')
+code_gov_df <- readRDS('./data/oss/working/code_gov/api_pull/repo_contents_missing.RDS')
 
 ## initial data filter ----
 
-code_gov <- dplyr::select(code_gov_df, PROJECT_KEY_COLUMN, contains('license'))
-
-# expect all names to be unique
-testthat::expect_true(all(table(code_gov$name)))
+code_gov <- dplyr::select(code_gov_df, PROJECT_KEY_COLUMNS, contains('license'))
 
 
 ## pretty much the same steps as get_languages, but for the licenses
 
 code_gov_license <- code_gov %>%
-  dplyr::select(PROJECT_KEY_COLUMN, contains('licenses.name'))
+  dplyr::select(PROJECT_KEY_COLUMNS, contains('licenses.name'))
 
 code_gov_license$num_licenses <- apply(code_gov_license, MARGIN = 1, .GlobalEnv$count_values)
 tmp_tab <- table(code_gov_license$num_licenses, useNA = 'always') # everyone has a license! cool!
