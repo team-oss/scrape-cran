@@ -26,6 +26,9 @@ parse_activity = function(activity) {
   }
 
 parse_github_repo = function(slug) {
+  if (is.na(slug)) {
+    return(NA)
+  }
   baseurl = 'https://api.github.com'
   endpoint = 'repos'
   contributions = 'stats/contributors'
