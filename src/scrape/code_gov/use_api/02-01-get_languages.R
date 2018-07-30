@@ -3,9 +3,8 @@ library(tidyr)
 
 source('./R/count_values.R')
 
-PROJECT_KEY_COLUMN <- 'name'
-
-code_gov_df <- readRDS('./data/oss/original/code_gov/api_pull/repo_contents.RDS')
+PROJECT_KEY_COLUMNS <- readRDS('./data/oss/working/code_gov/api_pull/project_key_columns.RDS')
+code_gov_df <- readRDS('./data/oss/working/code_gov/api_pull/repo_contents_missing.RDS')
 
 
 ## initial data filter ----
@@ -17,8 +16,8 @@ code_gov <- code_gov_df %>%
          contains('language'),
          contains('license'))
 
-# expect all names to be unique
-testthat::expect_true(all(table(code_gov$name)))
+# make sure my primary keys are in the dataset
+testthat::expect_true(all(PROJECT_KEY_COLUMNS %in% names(code_gov)))
 
 ## prep language columns ----
 
@@ -42,7 +41,7 @@ addmargins(table(code_gov$num_languages, code_gov$language_missing, useNA = 'alw
 
 # using name as key
 code_gov_proj_languages_none <- code_gov %>%
-  dplyr::select(PROJECT_KEY_COLUMN, "language_missing") %>%
+  dplyr::select(PROJECT_KEY_COLUMNS, "language_missing") %>%
   dplyr::filter(language_missing == "missing") %>%
   dplyr::select(-language_missing) %>%
   dplyr::mutate(language = 'none')
@@ -50,7 +49,7 @@ testthat::expect_true(table(code_gov$num_languages, useNA = 'always')['0'] == nr
 
 code_gov_proj_languages_has <- code_gov %>%
   dplyr::filter(language_missing == 'has') %>%
-  dplyr::select(PROJECT_KEY_COLUMN, contains('language'), -"language_missing") %>%
+  dplyr::select(PROJECT_KEY_COLUMNS, contains('language'), -"language_missing") %>%
   tidyr::gather(key = 'language_col', value = 'language',
                 dplyr::starts_with('languages')) %>%
   dplyr::select(-language_col) %>%
@@ -60,14 +59,14 @@ head(code_gov_proj_languages_has)
 # check has values
 # are the grouped language counts, the same as the original row-wise lang counts?
 tmp_chk_1 <- code_gov_proj_languages_has %>%
-  dplyr::group_by_(PROJECT_KEY_COLUMN) %>%
+  dplyr::group_by_(PROJECT_KEY_COLUMNS) %>%
   dplyr::summarize(num_languages = n()) %>%
-  dplyr::arrange_(PROJECT_KEY_COLUMN)
+  dplyr::arrange_(PROJECT_KEY_COLUMNS)
 
 tmp_chk_2 <- code_gov %>%
   dplyr::filter(language_missing == 'has') %>%
   dplyr::select(name, num_languages) %>%
-  dplyr::arrange_(PROJECT_KEY_COLUMN)
+  dplyr::arrange_(PROJECT_KEY_COLUMNS)
 
 testthat::expect_equal(tmp_chk_1, tmp_chk_2)
 
