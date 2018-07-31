@@ -60,9 +60,12 @@ github_commits_contributors = function(slug, until) {
   output = data.table(slug = slug,
                       until = until,
                       commits = commits,
-                      contributors)
-  return(value = output)
+                      contributors = contributors)
+  if (as.integer(x = response$headers$`x-ratelimit-remaining`) < 5L) {
+    Sys.sleep(time = 3.6e3)
   }
+  return(value = output)
+}
 
 # output = map2_df(.x = slugs,
 #                  .y = until,
