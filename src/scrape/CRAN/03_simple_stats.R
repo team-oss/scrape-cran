@@ -8,4 +8,4 @@ na_count <-colSums(is.na(data))
 na_count <- data.frame(na_count)
 na_count <- na_count / 12614 #make percentage missing
 na_count <- round(na_count, digits =4) *100
-
+na_count
