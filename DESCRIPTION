@@ -1,0 +1,31 @@
+Package: sdaloss
+Type: Package
+Title: Measuring the Cost and Value of Open Source Software
+Version: 0.1.0
+Date: 2018-08
+Author: José Bayoán Santiago Calderón
+Maintainer: José Bayoán Santiago Calderón <naoyabpr@gmail.com>
+Authors@R: c(
+  person(given = 'José Bayoán',
+         family = 'Santiago Calderón',
+         email = 'naoyabpr@gmail.com',
+         role = c('cre', 'aut')),
+  person(family = 'The Social and Decision Analytics Laboratory',
+         role = 'cph'))
+Description: Measuring the Cost and Value of Open Source Software
+License: ISC
+URL: https://devlab.vbi.vt.edu/sdal/oss
+BugReports: https://devlab.vbi.vt.edu/sdal/oss/issues
+Encoding: UTF-8
+LazyData: true
+Imports:
+    dplyr,
+    data.table,
+    dtplyr,
+    stringr,
+    httr,
+    jsonlite,
+    purrr,
+    zipcode,
+    geosphere
+RoxygenNote: 6.0.1
