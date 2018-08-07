@@ -1,3 +1,9 @@
+# INPUT:
+#        "~/oss/data/oss/working/pypi/06_osi_approved_w_repos.csv"
+# OUTPUT:
+#        "~/oss/data/oss/working/pypi/10_github_api_info.csv"
+
+
 # Housekeeping
 pacman::p_load(docstring, httr, jsonlite, stringr, data.table, dtplyr, dplyr)
 
@@ -5,7 +11,7 @@ github_personal_token = '1c06459fc9b515e2a5aa748b06913f3495068a45' # Get one fro
 # Credentials
 token = add_headers(token = github_personal_token)
 
-urls <- read.csv("~/oss/data/oss/final/PyPI/osi_approved_w_repos.csv")
+urls <- read.csv("~/oss/data/oss/working/pypi/06_osi_approved_w_repos.csv")
 urls$slugs <- NA
 for(i in 1:nrow(urls))
 {
@@ -27,15 +33,15 @@ for(i in 1:nrow(urls))
 
 }
 
-# for (slugs in na.omit(urls$slugs[1:5000]))
-# {
-#   parse_github_repo(slugs)
-# }
-# slugs = na.omit(urls$slugs[1:5000])
-# output = map_df(.x = slugs,
-#                 .f = parse_github_repo)
-# output <- output[1:14695,]
-# write.csv(output, "~/oss/data/oss/final/PyPI/github_api01.csv")
+for (slugs in na.omit(urls$slugs[1:5000]))
+{
+  parse_github_repo(slugs)
+}
+slugs = na.omit(urls$slugs[1:5000])
+output = map_df(.x = slugs,
+                .f = parse_github_repo)
+output <- output[1:14695,]
+
 
 
 for (slugs in na.omit(urls$slugs[3435:nrow(urls)]))
@@ -45,7 +51,7 @@ for (slugs in na.omit(urls$slugs[3435:nrow(urls)]))
 slugs = na.omit(urls$slugs[3435:nrow(urls)])
 output2 = map_df(.x = slugs,
                 .f = parse_github_repo)
-write.csv(output2, "~/oss/data/oss/final/PyPI/github_api02.csv")
+
 
 
 parse_activity = function(activity) {
@@ -106,9 +112,7 @@ parse_github_repo = function(slug) {
   Sys.sleep(time = 1L)
 }
 
+all_github <- rbind(output, output2)
+write.csv(all_github, "~/oss/data/oss/working/pypi/10_github_api_info.csv")
 
-o1 <- read.csv("~/oss/data/oss/final/PyPI/github_api01.csv")
-o2 <- read.csv("~/oss/data/oss/final/PyPI/github_api02.csv")
-all_github <- rbind(o1, o2)
-write.csv(all_github, "~/oss/data/oss/final/PyPI/all_github_api.csv")
 

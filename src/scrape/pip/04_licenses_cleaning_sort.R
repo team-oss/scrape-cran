@@ -1,7 +1,13 @@
+# INPUT:
+#        "~/oss/data/oss/working/pypi/04_prod_mature_w_licenses.csv"
+#        "~/oss/data/oss/final/PyPI/osi_approved_licenses.csv"
+# OUTPUT:
+#        "~/oss/data/oss/working/pypi/05_prod_mature_names_w_osi_approved_status.csv"
+
 library(ggplot2)
 
-prod_mature_pkgs <- read.csv("~/oss/data/oss/final/PyPI/production_mature_licenses.csv")
-osi_licences <- read.csv("~/oss/data/oss/final/PyPI/licenses.csv")
+prod_mature_pkgs <- read.csv("~/oss/data/oss/working/pypi/04_prod_mature_w_licenses.csv")
+osi_licences <- read.csv("~/oss/data/oss/final/PyPI/osi_approved_licenses.csv")
 
 prod_mature_pkgs$osi_approved <- NA
 
@@ -17,9 +23,9 @@ for (i in 1:length(prod_mature_pkgs$name))
 prod_mature_pkgs$X.1 <- NULL
 prod_mature_pkgs$X <- NULL
 
-write.csv(prod_mature_pkgs, "~/oss/data/oss/final/PyPI/osi_approved_prod_mature.csv")
+write.csv(prod_mature_pkgs, "~/oss/data/oss/working/pypi/05_prod_mature_names_w_osi_approved_status.csv")
 
-
+# EXPLORATORY ANALYSIS WORK
 num_osi_approved <- sum(which(prod_mature_pkgs$osi_approved == TRUE))
 
 osi_app = prod_mature_pkgs[grep(TRUE, prod_mature_pkgs$osi_approved), ]

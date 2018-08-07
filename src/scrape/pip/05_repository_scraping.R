@@ -1,3 +1,10 @@
+# INPUT:
+#        "~/oss/data/oss/working/pypi/05_prod_mature_names_w_osi_approved_status.csv"
+# OUTPUT:
+#        "~/oss/data/oss/working/pypi/06_osi_approved_w_repos.csv"
+#        "~/oss/data/oss/working/pypi/07_names_prod_mature_osi_approved.csv"
+
+
 library(RCurl)
 library(XML)
 library(rvest)
@@ -6,7 +13,7 @@ library(httr)
 library(stringr)
 api_key <- "1477f26c48cf30d2627d440f4544c548"
 
-packages <- read.csv("~/oss/data/oss/final/PyPI/osi_approved_prod_mature.csv")
+packages <- read.csv("~/oss/data/oss/working/pypi/05_prod_mature_names_w_osi_approved_status.csv")
 packages$repository <- NA
 osi_packages <- packages[grep(TRUE, packages$osi_approved), ]
 
@@ -41,6 +48,5 @@ for (i in 1:length(osi_packages$name))
 
 }
 
-write.csv(osi_packages, "~/oss/data/oss/final/PyPI/osi_approved_w_repos.csv")
-
-write.csv(osi_packages$name, "~/oss/data/oss/final/PyPI/names_prod_mature_osi_approved.csv")
+write.csv(osi_packages, "~/oss/data/oss/working/pypi/06_osi_approved_w_repos.csv")
+write.csv(osi_packages$name, "~/oss/data/oss/working/pypi/07_names_prod_mature_osi_approved.csv")

@@ -1,8 +1,8 @@
-# download.file("https://zenodo.org/record/1196312/files/Libraries.io-open-data-1.2.0.tar.gz", "~/oss/data/oss/final/PyPI/librariesio.tar.gz")
+# INPUT: N/A
 #
-# dir.create("~/oss/data/oss/working/pypi/libraries_io/")
-#
-# untar("~/oss/data/oss/final/PyPI/librariesio.tar.gz", files = "~/oss/data/oss/working/pypi/libraries_io/")
+# OUTPUT:
+#         "~/oss/data/oss/working/pypi/02_prod_stable_pkgs_names.csv"
+#         "~/oss/data/oss/working/pypi/02_mature_pkgs_names.csv"
 library(RCurl)
 library(XML)
 library(rvest)
@@ -17,7 +17,7 @@ for (i in 1:500)
 {
   temp1 <- rbind(temp1, names_func(page_url = paste("https://pypi.org/search/?c=Development+Status+%3A%3A+5+-+Production%2FStable&o=&q=&page=", i, sep = ""), "Production/Stable"))
 }
-write.csv(temp1, "~/oss/data/oss/final/PyPI/temp1_names.csv")
+write.csv(temp1, "~/oss/data/oss/working/pypi/02_prod_stable_pkgs_names.csv")
 
 
 temp2 <- setNames(data.frame(matrix(ncol = 2, nrow = 1)), c("name", "development_status"))
@@ -27,7 +27,7 @@ for (k in 1:22)
 }
 temp2 <- temp2[1:423,]
 
-write.csv(temp2, "~/oss/data/oss/final/PyPI/temp2_names.csv")
+write.csv(temp2, "~/oss/data/oss/working/pypi/02_mature_pkgs_names.csv")
 
 names_func <- function(page_url, dev_stat)
 {

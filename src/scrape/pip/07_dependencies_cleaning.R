@@ -1,12 +1,21 @@
-file_names_list <- read.csv("~/oss/data/oss/final/PyPI/names_prod_mature_osi_approved.csv")
+# INPUT:
+#        "~/oss/data/oss/working/pypi/07_names_prod_mature_osi_approved.csv"
+#        "~/oss/data/oss/working/pypi/01_dependencies_files/"
+# OUTPUT:
+#        "~/oss/data/oss/final/PyPI/python_pkg_dependencies.csv"
+
+pacman::p_load(docstring, sdalr, configr, lubridate, dplyr, DBI, purrr,
+               stringr, data.table, dtplyr, httr, jsonlite, rvest)
+
+file_names_list <- read.csv("~/oss/data/oss/working/pypi/07_names_prod_mature_osi_approved.csv")
 file_names_list <- as.vector(file_names_list$x)
 dependencies <- setNames(data.frame(matrix(ncol = 2, nrow = 1)), c("package_name", "dependency_name"))
 pos <- 1
 
 for (i in 1:length(file_names_list))
 {
-  result <- try(file(paste("~/oss/data/oss/working/pypi/", file_names_list[i], ".txt", sep = ""), open = "r"), silent = TRUE)
-  close(file(paste("~/oss/data/oss/working/pypi/", file_names_list[i], ".txt", sep = ""), open = "r"))
+  result <- try(file(paste("~/oss/data/oss/working/pypi/01_dependencies_files/", file_names_list[i], ".txt", sep = ""), open = "r"), silent = TRUE)
+  close(file(paste("~/oss/data/oss/working/pypi/01_dependencies_files/", file_names_list[i], ".txt", sep = ""), open = "r"))
   if (class(result)[1] == "try-error")
   {
     dependencies$package_name[pos] <- file_names_list[i]
@@ -15,7 +24,7 @@ for (i in 1:length(file_names_list))
     next()
   }
 
-  open_file <- file(paste("~/oss/data/oss/working/pypi/", file_names_list[i], ".txt", sep = ""), open = "r")
+  open_file <- file(paste("~/oss/data/oss/working/pypi/01_dependencies_files/", file_names_list[i], ".txt", sep = ""), open = "r")
   file_lines <-readLines(open_file)
   file_table <- as.data.frame(file_lines)
   file_table$file_lines <- as.character(file_table$file_lines)
@@ -69,10 +78,23 @@ for (i in 1:length(file_names_list))
   }
 }
 
+write.csv(dependencies, "~/oss/data/oss/final/PyPI/python_pkg_dependencies.csv")
 
-write.csv(dependencies, "~/oss/data/oss/final/PyPI/01_dependencies.csv")
+# Uploading to Database
+deps <- read.csv("~/oss/data/oss/final/PyPI/python_pkg_dependencies.csv")
+deps$X <- NULL
 
-
+upload_pkg_dependency = function(data) {
+  conn = con_db(dbname = 'oss',
+                pass = get_my_password())
+  dbWriteTable(conn = conn,
+               name = 'python_pkg_dependencies',
+               value = data,
+               row.names = FALSE,
+               overwrite = TRUE)
+  on.exit(expr = dbDisconnect(conn = conn))
+}
+upload_pkg_dependency(deps)
 
 
 
