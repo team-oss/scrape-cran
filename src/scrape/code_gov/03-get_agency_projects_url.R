@@ -10,19 +10,26 @@ testthat::expect_equal(length(urls), length(names))
 
 rerun <- c()
 
-agency_project_url_data <- data.frame(agency = character(0), agency_url = character(0),
-                                      project_name = character(0), project_url = character(0))
+agency_full_name <- data.frame(short_name = character(0),
+                               long_name = character(0))
+agency_full_name
+
+agency_project_url_data <- data.frame(agency = character(0),
+                                      agency_url = character(0),
+                                      project_name = character(0),
+                                      project_url = character(0))
 agency_project_url_data
 
-agency_project_count_data <- data.frame(agency = character(0), num_projects = numeric(0))
+agency_project_count_data <- data.frame(agency = character(0),
+                                        num_projects = numeric(0))
 agency_project_count_data
 
 # loop through each agency url
 # i <- 2
 for (i in 1:length(urls)) {
   print('Create new Selenium remote driver')
-  remDr <- remoteDriver(remoteServerAddr = "selenium_chrome"
-                        , port = 4444
+  remDr <- remoteDriver(remoteServerAddr = "selenium_chrome_chend"
+                        , port = 4440
                         , browserName = "chrome"
   )
   sink(tempfile())
