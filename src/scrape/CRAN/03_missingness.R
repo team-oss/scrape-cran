@@ -1,4 +1,4 @@
-#analysis of cran
+#missingness of every variable from cran
 data <- readRDS(file = './data/oss/working/CRAN_2018/Cran_full_table.RDS')
 data <- data.frame(data)
 
