@@ -10,7 +10,7 @@ code_gov_df <- readRDS('./data/oss/working/code_gov/api_pull/repo_contents_missi
 ## initial data filter ----
 
 code_gov <- code_gov_df %>%
-  select(name, organization, description, contact.email, contact.name, status,
+  select(repoID, name, organization, description, contact.email, contact.name, status,
          downloadURL, repositoryURL, homepageURL,
          agency.name, agency.acronym, agency.website, agency.codeUrl,
          contains('language'),

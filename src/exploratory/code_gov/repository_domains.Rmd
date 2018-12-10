@@ -1,0 +1,136 @@
+---
+title: "repository domains"
+output: 
+  html_document: 
+    toc: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r eval=FALSE}
+# run this instead of clicking `knit`
+rmarkdown::render(here::here('./src/exploratory/code_gov/repository_domains.Rmd'),
+                  output_dir = here::here('./output/code_gov'))
+bad_html <- './src/exploratory/code_gov/repository_domains.html'
+if (file.exists(here::here(bad_html))) file.remove(here::here(bad_html))
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(magrittr)
+library(here)
+library(tibble)
+library(dplyr)
+library(urltools)
+
+source(here::here('./R/file_paths.R'))
+
+code_gov_df <- readr::read_delim(here::here(.GlobalEnv$CODE_GOV_CLEANED_FILE), delim = '\t')
+```
+
+```{r, include=FALSE}
+repo_url <- code_gov_df #%>%
+  #select(repoID, name, agency.acronym, downloadURL, repositoryURL, permissions.licenses.name, repositoryURL_domain)
+
+repo_github <- repo_url %>%
+  filter(stringr::str_detect(repositoryURL_domain, 'github'))
+
+repo_bitbucket <- repo_url %>%
+  filter(stringr::str_detect(repositoryURL_domain, 'bitbucket'))
+
+repo_gitlab <- repo_url %>%
+  filter(stringr::str_detect(repositoryURL_domain, 'gitlab'))
+
+non <- repo_url %>%
+  filter(!repoID %in% c(repo_github$repoID, repo_bitbucket$repoID, repo_gitlab$repoID))
+```
+
+# Domains by agency
+
+The domain is the "base" of the URL.
+
+All domain counts by agency
+
+```{r}
+domain_count <- table(code_gov_df$repositoryURL_domain,
+                      code_gov_df$agency.acronym,
+                      useNA = 'always') %>%
+  addmargins()
+save_dir <- './data/oss/working/code_gov/domain_counts/domains_by_agency.csv'
+write.csv(domain_count, here::here(save_dir))
+domain_count
+```
+
+The raw unfiltered frequency table of domains by agencies can be found here: `r save_dir`.
+
+The project repositoryURL's that are not github, bitbucket, or gitlab
+
+```{r}
+domain_count <- table(non$repositoryURL_domain,
+                      non$agency.acronym,
+                      useNA = 'always') %>%
+  addmargins()
+save_dir <- './data/oss/working/code_gov/domain_counts/domains_by_agency_no_github_bitbucket_gitlab.csv'
+write.csv(domain_count, here::here(save_dir))
+domain_count
+```
+
+The frequency table of the non github/bitbucket/gitlab domains by agencies can be found in `r save_dir`.
+
+# Licenses
+
+If it not an OSI approved licence then we don't have to worry about the fact we cannot get the code.
+
+```{r}
+table(code_gov_df$osi_approved, useNA = 'always') %>% addmargins()
+```
+
+Only a 1/3 are OSI approved.
+
+```{r}
+osi <- code_gov_df %>% dplyr::filter(osi_approved == TRUE)
+```
+
+```{r}
+domain_count <- table(osi$repositoryURL_domain,
+                      osi$agency.acronym,
+                      useNA = 'always') %>%
+  addmargins()
+save_dir <- './data/oss/working/code_gov/domain_counts/domains_by_agency_osi.csv'
+write.csv(domain_count, here::here(save_dir))
+domain_count
+```
+
+The frequency table of domains by agency filtered by OSI approved repositories can be found in `r save_dir`.
+
+# Non "standard" domain URLs
+
+
+
+
+```{r tidy=TRUE, tidy.opts=list(width.cutoff=120)}
+osi_filtered_domains <- osi %>%
+  filter(!repositoryURL_domain %in% c('github', 'bitbucket', 'gitlab')) %>%
+  select(agency.acronym, name, repositoryURL, repositoryURL_domain, osi_approved) %>%
+  arrange(agency.acronym, repositoryURL_domain)
+
+save_dir <- './data/oss/working/code_gov/domain_urls/agency_name_repo_domain_osi.tsv'
+readr::write_delim(osi_filtered_domains, here::here(save_dir), delim = '\t')
+```
+
+The table of agency repository name with the domain and full URL to the project of the OSI approved projects for non github/bitbucket/gitlab domans can be found in `r save_dir`
+
+```{r, echo=FALSE}
+original_width <- getOption('width')
+options(width = 999)
+```
+
+```{r}
+knitr::kable(osi_filtered_domains)
+```
+
+```{r, echo=FALSE}
+options(width = original_width)
+```
+

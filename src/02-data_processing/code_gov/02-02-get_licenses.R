@@ -30,3 +30,4 @@ code_gove_license_has <- code_gov_license %>%
 head(code_gove_license_has)
 
 write.csv(code_gove_license_has, file = './data/oss/final/code_gov/project_licenses.csv', row.names = FALSE)
+

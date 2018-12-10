@@ -1,19 +1,10 @@
 library(httr)
 
-# stuffs <- httr::GET('http://code-api.app.cloud.gov/api/repos',
-#                     query = list(
-#                       'size' = '10'
-#                     ),
-#                     add_headers(
-#                       'accept' = 'application/json',
-#                       'X-Api-Key' = sdalr::get_code_gov_key()
-#                     ))
-
 #' Pulls repositories from the code.gov api
 get_repos <- function(base_url = 'http://code-api.app.cloud.gov/api/repos',
                       size_per_request = 2,
                       from = 0,
-                      key = sdalr::get_code_gov_key()) {
+                      key = Sys.getenv('CODE_GOV_API_KEY')) {
   res <- httr::GET(base_url,
                    query = list(
                      'size' = size_per_request,
@@ -21,7 +12,7 @@ get_repos <- function(base_url = 'http://code-api.app.cloud.gov/api/repos',
                    ),
                    add_headers(
                      'accept' = 'application/json',
-                     'X-Api-Key' = sdalr::get_code_gov_key()
+                     'X-Api-Key' = key
                    ))
   return(res)
 }
@@ -47,22 +38,22 @@ while (next_page) {
   repos <- get_repos(size_per_request = size_per_request,
                      from = from)
   con <- content(repos)
-  print(repos$status_code)
+  #print(repos$status_code)
 
   if (repos$status_code != 200) {
     next_page <- FALSE
   } else {
     l <- lapply(con$repos, data.frame, stringsAsFactors = FALSE)
     dt <- data.table::rbindlist(l, fill = TRUE)
-    print(head(dt))
+    #print(head(dt))
     all_data_list[[i]] <- dt
 
     i <- i + 1
     from <- from + size_per_request
-    Sys.sleep(5)
+    Sys.sleep(1)
   }
 }
 
 dt <- data.table::rbindlist(all_data_list, fill = TRUE)
 
-saveRDS(dt, './data/oss/original/code_gov/api_pull/repo_contents.RDS')
+saveRDS(dt, sprintf('./data/oss/original/code_gov/api_pull/%s-repo_contents.RDS', Sys.Date()))

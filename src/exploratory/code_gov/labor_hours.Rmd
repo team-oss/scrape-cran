@@ -1,0 +1,80 @@
+---
+title: ""
+output: 
+  html_document: 
+    toc: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r eval=FALSE}
+# run this instead of clicking `knit`
+rmarkdown::render(here::here('./src/exploratory/code_gov/_____.Rmd'),
+                  output_dir = here::here('./output/code_gov'))
+bad_html <- './src/exploratory/code_gov/_____.html'
+if (file.exists(here::here(bad_html))) file.remove(here::here(bad_html))
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(magrittr)
+library(here)
+library(tibble)
+library(dplyr)
+library(urltools)
+
+source(here::here('./R/file_paths.R'))
+
+code_gov_df <- readr::read_delim(here::here(.GlobalEnv$CODE_GOV_CLEANED_FILE), delim = '\t')
+```
+
+```{r}
+addmargins(table(code_gov_df$agency.acronym,
+                 code_gov_df$status,
+                 useNA = 'always'))
+```
+
+```{r}
+sub_cols <- code_gov_df %>%
+  select(-contains('tags'), -contains('languages'), -contains('permission'), -vcs, -starts_with('X.'))
+names(sub_cols)
+```
+
+```{r}
+hist(code_gov_df$laborHours[code_gov_df$laborHours > -1 & code_gov_df$laborHours < 10])
+
+hist(code_gov_df$laborHours[code_gov_df$laborHours > 10 & code_gov_df$laborHours < 1000])
+
+hist(code_gov_df$laborHours[code_gov_df$laborHours > 10 & code_gov_df$laborHours < 100])
+```
+
+```{r}
+hist(code_gov_df$score)
+```
+
+```{r}
+my_mode <- function(x) {
+  uni <- unique(x)
+  uni[which.max(tabulate(match(x, uni)))]
+}
+
+code_gov_df %>%
+  dplyr::group_by(agency.acronym) %>%
+  dplyr::summarize(n = n(),
+                   missing_labor_values = sum(is.na(laborHours)),
+                   num_labor_values = sum(!is.na(laborHours)),
+                   labor_stat_mean = mean(laborHours, na.rm = TRUE),
+                   labor_stat_median = median(laborHours, na.rm = TRUE),
+                   labor_stat_mode = my_mode(laborHours)
+                   ) %>%
+  dplyr::arrange(n) %>%
+  print(n = Inf)
+```
+
+```{r}
+library(ggplot2)
+
+ggplot(data = code_gov_df) + geom_histogram(aes(x = laborHours)) + ggplot2::scale_x_log10()
+```
+
