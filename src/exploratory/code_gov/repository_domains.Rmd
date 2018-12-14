@@ -134,3 +134,41 @@ knitr::kable(osi_filtered_domains)
 options(width = original_width)
 ```
 
+## URLs for missing licenses
+
+```{r}
+missing <- code_gov_df %>% dplyr::filter(is.na(permissions.licenses.name))
+```
+
+
+```{r}
+addmargins(table(
+  missing$repositoryURL_domain,
+  useNA = 'always'
+))
+```
+
+Almost all the `NA` licenses are on github.
+
+```{r}
+na_licenses <- missing %>%
+  select(agency.acronym, name, repositoryURL, repositoryURL_domain, osi_approved, permissions.licenses.name) %>%
+  arrange(agency.acronym, repositoryURL_domain)
+save_dir <- './data/oss/working/code_gov/domain_urls/agency_name_repo_domain_na.tsv'
+readr::write_delim(na_licenses, here::here(save_dir), delim = '\t')
+```
+
+The table of projects along with the agency acronym and repositoryURL for `NA` licenses can be found in `r save_dir`
+
+```{r, echo=FALSE}
+original_width <- getOption('width')
+options(width = 999)
+```
+
+```{r}
+knitr::kable(na_licenses)
+```
+
+```{r, echo=FALSE}
+options(width = original_width)
+```
