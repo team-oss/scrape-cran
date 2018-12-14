@@ -60,6 +60,7 @@ code_gov_osi_spellings <- c(
 code_gov_df <- code_gov_df %>%
   dplyr::mutate(osi_approved = dplyr::case_when(
     permissions.licenses.name %in% code_gov_osi_spellings ~ TRUE,
+    is.na(permissions.licenses.name) ~ NA,
     !permissions.licenses.name %in% code_gov_osi_spellings ~ FALSE,
     TRUE ~ NA
     # note NA values for permissions.licenses.name are coded as FALSE
@@ -68,6 +69,13 @@ code_gov_df <- code_gov_df %>%
 table(code_gov_df$osi_approved, useNA = 'always')
 
 addmargins(table(code_gov_df$permissions.licenses.name, code_gov_df$osi_approved, useNA = 'always'))
+
+res <- addmargins(table(code_gov_df$permissions.licenses.name,
+                        code_gov_df$osi_approved,
+                        code_gov_df$agency.acronym,
+                        useNA = 'always'))
+
+res <- as.data.frame(res)
 
 # repositoryURL domain -----
 
