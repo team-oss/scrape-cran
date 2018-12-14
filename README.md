@@ -3,9 +3,11 @@
 # Setup
 
 1. Get a github personal access token from: https://github.com/settings/tokens
-2. Setup your `.Renviron` file (to make it easier run: `usethis::edit_r_environ()`)
+2. Setup your `.Renviron` file (to make it easier run: `usethis::edit_r_environ()`, or edit `~/.Renviron` directly)
   - add a like this to the file: `GH_TOSS_TOKEN='YOUR_TOKEN'`
-  - You can use `GH_TOSS_TOKEN='1c06459fc9b515e2a5aa748b06913f3495068a45'`, but may not work since its not your own token.
+      - You can use `GH_TOSS_TOKEN='1c06459fc9b515e2a5aa748b06913f3495068a45'`, but may not work since its not your own token.
+  - add your database password `DB_PASSWORD='PASSWORD_IS_PROBABLY_YOUR_PID'`
+  - make sure the file ends in an empty new line
 
 # Running the CRAN analysis
 
