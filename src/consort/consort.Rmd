@@ -1,0 +1,23 @@
+---
+title: "CONSORT Graph of repositories"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(DiagrammeR)
+```
+
+```{r}
+consort <- file(here::here("./src/consort/consort.dot"))
+grViz(diagram = consort)
+close(consort)
+```
+
+```{r}
+grViz(here::here("./src/consort/consort.dot"))
+```
+

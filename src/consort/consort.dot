@@ -1,0 +1,37 @@
+digraph g {
+  #start [shape = box, label = "OSS Software"];
+
+  cran000 [shape = box, label = "All CRAN\nN=12614"];
+  cran010 [shape = box, label = "CRAN with OSI\nN="];
+  cran020 [shape = box, label = "CRAN production ready\nN="];
+  cran030 [shape = box, label = "CRAN with github\nN="];
+  cran040 [shape = box, label = "CRAN package source\nN="];
+
+  py000 [shape = box, label = "All Python\nN=700"];
+  py010 [shape = box, label = "Python with OSI\nN=100"];
+
+  gov000 [shape = box, label = "All code.gov\nN=5288"];
+  gov010 [shape = box, label = "OSI approved\nN=1742"];
+  gov020 [shape = box, label = "Missing license info\nN=1221"];
+  gov030 [shape = box, label = "Found via repositoryURL\nN=xxxx"];
+  gov040 [shape = box, label = "OSI approved v2 \nN=1221 + xxxx"];
+
+  cdn000 [shape = box, label = "All CDN.js\nN=150"];
+
+  julia000 [shape = box, label = "All Julia\nN=200"];
+
+  #start -> {node000 node040 node060 node070 node080};
+
+  cran000 -> cran010;
+  cran010 -> cran020;
+  cran020 -> cran030;
+  cran030 -> cran040;
+
+  gov000 -> gov010;
+  gov000 -> gov020;
+  gov020 -> gov030;
+  gov030 -> gov040;
+  gov010 -> gov040;
+
+  py000 -> py010;
+}
