@@ -8,6 +8,7 @@
       - You can use `GH_TOSS_TOKEN='1c06459fc9b515e2a5aa748b06913f3495068a45'`, but may not work since its not your own token.
   - add your database password `DB_PASSWORD='PASSWORD_IS_PROBABLY_YOUR_PID'`
   - make sure the file ends in an empty new line
+  - restart your R session so the environment variables are picked up
 
 # Running the CRAN analysis
 
