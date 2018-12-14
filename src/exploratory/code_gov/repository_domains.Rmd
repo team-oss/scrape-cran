@@ -7,7 +7,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r eval=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 # run this instead of clicking `knit`
 rmarkdown::render(here::here('./src/exploratory/code_gov/repository_domains.Rmd'),
                   output_dir = here::here('./output/code_gov'))
@@ -24,10 +24,17 @@ library(tibble)
 library(dplyr)
 library(urltools)
 
+options(max.print=1000000)
+
 source(here::here('./R/file_paths.R'))
 
 code_gov_df <- readr::read_delim(here::here(.GlobalEnv$CODE_GOV_CLEANED_FILE), delim = '\t')
 ```
+
+```{r, echo=FALSE}
+print(sprintf('data location: %s', .GlobalEnv$CODE_GOV_CLEANED_FILE))
+```
+
 
 ```{r, include=FALSE}
 repo_url <- code_gov_df #%>%
@@ -59,7 +66,7 @@ domain_count <- table(code_gov_df$repositoryURL_domain,
   addmargins()
 save_dir <- './data/oss/working/code_gov/domain_counts/domains_by_agency.csv'
 write.csv(domain_count, here::here(save_dir))
-domain_count
+print(domain_count, n = 99999999)
 ```
 
 The raw unfiltered frequency table of domains by agencies can be found here: `r save_dir`.
@@ -99,15 +106,12 @@ domain_count <- table(osi$repositoryURL_domain,
   addmargins()
 save_dir <- './data/oss/working/code_gov/domain_counts/domains_by_agency_osi.csv'
 write.csv(domain_count, here::here(save_dir))
-domain_count
+print(domain_count, n = 9999)
 ```
 
 The frequency table of domains by agency filtered by OSI approved repositories can be found in `r save_dir`.
 
 # Non "standard" domain URLs
-
-
-
 
 ```{r tidy=TRUE, tidy.opts=list(width.cutoff=120)}
 osi_filtered_domains <- osi %>%
