@@ -38,7 +38,7 @@ dt <- data.table::rbindlist(df, fill = TRUE)
 head(dt)
 
 #save the resulting frame
-#saveRDS(dt, file = "./data/oss/working/CRAN_2018/Cran_full_table.RDS")
+saveRDS(dt, file = "./data/oss/working/CRAN_2018/Cran_full_table.RDS")
 
 ###PART TWO
 ##### RUN AGAIN FOR CI #####
@@ -87,4 +87,4 @@ lapply(fin[, 3:6], table, useNA='always')
 tmp2 <- tmp1[!is.na(tmp1$Flavor), ]
 fin <- data.table::dcast.data.table(tmp2, Package_Name + Version ~ Flavor, value.var = 'Status')
 #save the resulting frame
-#saveRDS(fin, file = "./data/oss/working/CRAN_2018/Cran_CI.RDS")
+saveRDS(fin, file = "./data/oss/working/CRAN_2018/Cran_CI.RDS")

@@ -70,4 +70,4 @@ registerDoSEQ()
 
 
 #ONLY USE THIS to write out to file
-#saveRDS(master_frame, file= "data/oss/original/CRAN_2018/master_frame.RDS")
+saveRDS(master_frame, file = "data/oss/original/CRAN_2018/master_frame.RDS")
