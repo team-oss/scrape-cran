@@ -86,6 +86,17 @@ Note: some code in this script breaks because we cannot use the “sdalr” pack
                 Mostly data cleaning steps here
 - `13_github_fix.R`
                 We missed a few packages in data cleaning, so we just make sure to obtain relevant information on what we missed:
+- `14_costs.R`
+                Attaching cost calculation to an analysis table
+
+- `15_cost_comparisons.R`
+                Exploratory work to look at the difference in lines of code between source files from CRAN and lines of code info from Github.
+                Small plotting efforts but nothing that was used in the poster
+
+- `16_HEX.R`
+                Exploratory plotting comparing outdegree and cost across Python, Julia, CDN(JS), and R. None of these visuals were used in the poster
+
+Also, there are two other scripts in the repo right now (chk.R and dependencies.R). I’m pretty certain that Bayoan wrote these scripts either to check my work or to do a little bit of work on CRAN. Either way I don’t think I used/edited anything in those scripts.
 
 ```r
 #load our list of keys, and identify the set of packages that we have missed
