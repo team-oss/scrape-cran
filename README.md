@@ -117,7 +117,7 @@ Some of the "original" data sets cannot be located, but they have been saved in 
 
 ### Script descriptions
 
-- `00_final_cleaning.R`
+- `00_final_cleaning.R` **Run this script last, after `10`**
                 Using the final data table produced in `10_num_contributors.R`, this script cleans all of the final data.
     - input: `~/oss/data/oss/final/PyPI/complete_osi_info.csv`
         from: `10_num_contributors_loc.R`
@@ -127,7 +127,7 @@ Some of the "original" data sets cannot be located, but they have been saved in 
         from: `07_dependencies_cleaning.R`
     - output: db: `oss/python_cost_estimates`
 - `01_names.R`
-                This is the beginning of the Pip data collection and cleaning.
+                **This is the beginning of the Pip data collection and cleaning.**
                 This script collects all of the names of Python packages from pypi.org in the development categories Production/ Stable and Mature.
     - input: None
     - output: `~/oss/data/oss/working/pypi/02_prod_stable_pkgs_names.csv`
