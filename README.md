@@ -120,8 +120,11 @@ Some of the "original" data sets cannot be located, but they have been saved in 
 - `00_final_cleaning.R`
                 Using the final data table produced in `10_num_contributors.R`, this script cleans all of the final data.
     - input: `~/oss/data/oss/final/PyPI/complete_osi_info.csv`
+        from: `10_num_contributors_loc.R`
     - input: `~/oss/data/oss/working/pypi/10_github_api_info.csv`
+        from: `06_github_api.R`
     - input: `~/oss/data/oss/final/PyPI/python_pkg_dependencies.csv`
+        from: `07_dependencies_cleaning.R`
     - output: db: `oss/python_cost_estimates`
 - `01_names.R`
                 This is the beginning of the Pip data collection and cleaning.
@@ -147,6 +150,7 @@ Some of the "original" data sets cannot be located, but they have been saved in 
                 This script also includes some exploratory analysis code.
     - input: `~/oss/data/oss/working/pypi/04_prod_mature_w_licenses.csv`
     - input: `~/oss/data/oss/final/PyPI/osi_approved_licenses.csv`
+        from: unknown
     - output: `~/oss/data/oss/working/pypi/05_prod_mature_names_w_osi_approved_status.csv`
 - `05_repository_scraping.R`
                 Using the list of just the packages with OSI-approved licenses that was created from `04_licenses_cleaning_sort.R`,
@@ -184,6 +188,7 @@ Some of the "original" data sets cannot be located, but they have been saved in 
                 Using the data produced in “09_additonal_info.R”,
                 this script sums the number of contributors and lines of code from the contribution information previously collected.
     - input: `~/oss/data/oss/working/pypi/10_github_api_info.csv`
+        from: `06_github_api.R`
     - input: `~/oss/data/oss/working/pypi/10_github_and_additional_info.csv`
     - output: `~/oss/data/oss/final/PyPI/complete_osi_info.csv`
 - `first_try_pypi_scraping.R`
