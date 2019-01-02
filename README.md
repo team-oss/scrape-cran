@@ -108,6 +108,15 @@ After identifying what we missed we get the information and bind it back to our 
 
 # Running the Python pip analysis
 
+Some of the "original" data sets cannot be located, but they have been saved in the database.
+
+- `./data/oss/final/PyPI/complete_osi_info.csv` can be found in the SDAL Database as `postgresql/oss/public/python_general_pkg_info`
+- `./data/oss/working/pypi/10_github_api_info.csv` can be found in the SDAL Database as `postgresql/oss/public/python_final`
+- `./data/oss/final/PyPI/python_pkg_dependencies.csv` can be found in the SDAL Database as `postgresql/oss/public/python_pkg_dependencies`
+
+
+### Script descriptions
+
 - `00_final_cleaning.R`
                 Using the final data table produced in `10_num_contributors.R`, this script cleans all of the final data.
 - `01_names.R`
