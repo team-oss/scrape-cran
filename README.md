@@ -106,6 +106,52 @@ missed <- setdiff(keys$slug, Analysis$slug) #this should be 220 packages
 After identifying what we missed we get the information and bind it back to our master analysis table
 ```
 
+# Running the Python pip analysis
+
+- `00_final_cleaning.R`
+                Using the final data table produced in `10_num_contributors.R`, this script cleans all of the final data.
+- `01_names.R`
+                This is the beginning of the Pip data collection and cleaning.
+                This script collects all of the names of Python packages from pypi.org in the development categories Production/ Stable and Mature.
+- `02_all_names_cleaning.R`
+                Using the names scraped from pypi.org in the Production/ Stable and Mature categories from the `01_names.R` script,
+                this script cleans the data to result in a final clean list of these package names.
+- `03_librariesio_licenses.R`
+                Using the final list of package names produced from `02_all_names_cleaning.R`
+                this script scrapes libraries.io to collect licenses for the packages.
+- `04_licenses_cleaning_sort.R`
+                Using the licenses collected in `03_librariesio_licenses.R`
+                this script uses an already produced data set of all OSI-approved licenses
+                to create a column for each package that indicates if the license for that package is an OSI-approved license.
+                This script also includes some exploratory analysis code.
+- `05_repository_scraping.R`
+                Using the list of just the packages with OSI-approved licenses that was created from `04_licenses_cleaning_sort.R`,
+                this script collects repository URLs for these packages using libraries.io.
+- `06_github_api.R`
+                Using the list of packages with OSI-approved licenses and repository URLs collected from `05_repository_scraping.R`,
+                this script uses the Github API to collect repositories for packages where libraries.io had no repository listed and/or
+                to ensure that if the package has a Github.com repository,
+                the data table has the correct url for the repository on Github to be used later.
+                This script also utilizes the Github API to collect information for packages with valid Github repositories about their activity including
+                start date, end date, additions, and deletions for the top contributors to the project.
+- `07_dependencies_cleaning.R`
+                Using the dependencies collected for all Production/Stable and Mature OSI-approved packages in “dep_script.py”,
+                this script parses out just the dependencies for each package.
+- `08_github_contd.R`
+                Using the list of packages with OSI-approved licenses and repository URLs collected from “05_repository_scraping.R”,
+                this script uses the Github API to collect numbers of stars for each package with a valid Github repository.
+- `09_additional_info.R`
+                Using the data produced in “08_github_contd.R”,
+                this script collects the latest release date as well as latest version number for these packages from pypi.org.
+- `10_num_contributors_loc.R`
+                Using the data produced in “09_additonal_info.R”,
+                this script sums the number of contributors and lines of code from the contribution information previously collected.
+- `first_try_pypi_scraping.R`
+                Initial attempt to scrape pypi.
+- `first_try_scraping_func.R`
+                Another first attempt to scrape pypi.
+
+
 # Running the code.gov analysis
 
 The Data is collected from the API from the following script (you only want to run this once)
