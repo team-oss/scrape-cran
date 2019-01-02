@@ -119,23 +119,41 @@ Some of the "original" data sets cannot be located, but they have been saved in 
 
 - `00_final_cleaning.R`
                 Using the final data table produced in `10_num_contributors.R`, this script cleans all of the final data.
+        - input: `~/oss/data/oss/final/PyPI/complete_osi_info.csv`
+        - input: `~/oss/data/oss/working/pypi/10_github_api_info.csv`
+        - input: `~/oss/data/oss/final/PyPI/python_pkg_dependencies.csv`
+        - output: db: `oss/python_cost_estimates`
 - `01_names.R`
                 This is the beginning of the Pip data collection and cleaning.
                 This script collects all of the names of Python packages from pypi.org in the development categories Production/ Stable and Mature.
+        - input: None
+        - output: `~/oss/data/oss/working/pypi/02_prod_stable_pkgs_names.csv`
+        - output: `~/oss/data/oss/working/pypi/02_mature_pkgs_names.csv`
 - `02_all_names_cleaning.R`
                 Using the names scraped from pypi.org in the Production/ Stable and Mature categories from the `01_names.R` script,
                 this script cleans the data to result in a final clean list of these package names.
+        - input: `~/oss/data/oss/working/pypi/02_prod_stable_pkgs_names.csv`
+        - intput: `~/oss/data/oss/working/pypi/02_mature_pkgs_names.csv`
+        - output: `~/oss/data/oss/working/pypi/03_prod_mature_names.csv`
 - `03_librariesio_licenses.R`
                 Using the final list of package names produced from `02_all_names_cleaning.R`
                 this script scrapes libraries.io to collect licenses for the packages.
+        - input: `~/oss/data/oss/working/pypi/03_prod_mature_names.csv`
+        - output: `~/oss/data/oss/working/pypi/04_prod_mature_w_licenses.csv`
 - `04_licenses_cleaning_sort.R`
                 Using the licenses collected in `03_librariesio_licenses.R`
                 this script uses an already produced data set of all OSI-approved licenses
                 to create a column for each package that indicates if the license for that package is an OSI-approved license.
                 This script also includes some exploratory analysis code.
+        - input: `~/oss/data/oss/working/pypi/04_prod_mature_w_licenses.csv`
+        - input: `~/oss/data/oss/final/PyPI/osi_approved_licenses.csv`
+        - output: `~/oss/data/oss/working/pypi/05_prod_mature_names_w_osi_approved_status.csv`
 - `05_repository_scraping.R`
                 Using the list of just the packages with OSI-approved licenses that was created from `04_licenses_cleaning_sort.R`,
                 this script collects repository URLs for these packages using libraries.io.
+        - input: `~/oss/data/oss/working/pypi/05_prod_mature_names_w_osi_approved_status.csv`
+        - output: `~/oss/data/oss/working/pypi/06_osi_approved_w_repos.csv`
+        - output: `~/oss/data/oss/working/pypi/07_names_prod_mature_osi_approved.csv`
 - `06_github_api.R`
                 Using the list of packages with OSI-approved licenses and repository URLs collected from `05_repository_scraping.R`,
                 this script uses the Github API to collect repositories for packages where libraries.io had no repository listed and/or
@@ -143,18 +161,31 @@ Some of the "original" data sets cannot be located, but they have been saved in 
                 the data table has the correct url for the repository on Github to be used later.
                 This script also utilizes the Github API to collect information for packages with valid Github repositories about their activity including
                 start date, end date, additions, and deletions for the top contributors to the project.
+        - input: `~/oss/data/oss/working/pypi/06_osi_approved_w_repos.csv`
+        - output: `~/oss/data/oss/working/pypi/10_github_api_info.csv`
 - `07_dependencies_cleaning.R`
                 Using the dependencies collected for all Production/Stable and Mature OSI-approved packages in “dep_script.py”,
                 this script parses out just the dependencies for each package.
+        - input: `~/oss/data/oss/working/pypi/07_names_prod_mature_osi_approved.csv`
+        - input: `~/oss/data/oss/working/pypi/01_dependencies_files/`
+        - output: `~/oss/data/oss/final/PyPI/python_pkg_dependencies.csv`
+        - output: db: `oss/python_pkg_dependencies`
 - `08_github_contd.R`
                 Using the list of packages with OSI-approved licenses and repository URLs collected from “05_repository_scraping.R”,
                 this script uses the Github API to collect numbers of stars for each package with a valid Github repository.
+        - input: `~/oss/data/oss/working/pypi/06_osi_approved_w_repos.csv`
+        - output: `~/oss/data/oss/working/pypi/09_github_api_info_w_stars.csv`
 - `09_additional_info.R`
                 Using the data produced in “08_github_contd.R”,
                 this script collects the latest release date as well as latest version number for these packages from pypi.org.
+        - input: `~/oss/data/oss/working/pypi/09_github_api_info_w_stars.csv`
+        - output: `~/oss/data/oss/working/pypi/10_github_and_additional_info.csv`
 - `10_num_contributors_loc.R`
                 Using the data produced in “09_additonal_info.R”,
                 this script sums the number of contributors and lines of code from the contribution information previously collected.
+        - input: `~/oss/data/oss/working/pypi/10_github_api_info.csv`
+        - input: `~/oss/data/oss/working/pypi/10_github_and_additional_info.csv`
+        - output: `~/oss/data/oss/final/PyPI/complete_osi_info.csv`
 - `first_try_pypi_scraping.R`
                 Initial attempt to scrape pypi.
 - `first_try_scraping_func.R`
