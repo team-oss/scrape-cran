@@ -196,6 +196,51 @@ Some of the "original" data sets cannot be located, but they have been saved in 
 - `first_try_scraping_func.R`
                 Another first attempt to scrape pypi.
 
+# Running the Javascript CDN analysis
+
+Scripts found under `01-data_collection/scrape/CDN/01-scrape_w_API.R`
+
+### Script descriptions
+
+- `01-scrape_w_API.R`: scarping cdnjs with CDN API. This phase obtains project names, repo url, and least realiable package info
+    - output: `data/oss/working/CDN/raw_response.csv`
+- `02-scrape_w_gitHub_api.R`: obtaion info  with github api. save author information, license, and version and dependencies as csv
+    - input: `data/oss/final/CDN/general_info.csv`
+    - input: `./data/oss/original/CDN/CDN_json/*`
+    - output: db: `CDN_authors_info`
+    - output: db: `CDN_licenses_info`
+    - output: db: `CDN_dependencies_info`
+    - output: db: `cdn_keywords_info`
+- `03-parsing_CDN.R`: parsing the one big data set into several subsets
+    - input: `data/oss/working/CDN/raw_response.csv`
+    - output: `data/oss/final/CDN/general_info.csv`
+    - output: `data/oss/final/CDN/keword_info.csv`
+    - output: `data/oss/final/CDN/author_info.csv`
+- `04-revise_general_info.R`: parse the general info df again to improve data quality
+    - input: `data/oss/final/CDN/general_info.csv`
+    - output: `data/oss/working/CDN/pkg_langs.csv`
+    - output: `data/oss/working/CDN/pkg_langs_finalized.csv`
+    - output: `data/oss/final/CDN/general_info.csv`
+- `05-process_author.R`: parse author info in the first round
+    - input: `data/oss/final/CDN/general_info.csv`
+    - input: `./data/oss/original/CDN/CDN_json/*`
+    - output: db: `CDN_authors_info`
+- `06-process_license.R`: parse license info in the first round
+    - input: `./data/oss/original/CDN/CDN_json/*`
+    - output: db: `CDN_licenses_info`
+- `07-process_dependencies.R`: parse dependencies for each package
+    - input: `./data/oss/original/CDN_json/*`
+    - output: db: `cdn_dependencies_info`
+- `08-revise_author.R`: parse author info in the second round
+    - input: db: `CDN_authors_info`
+    - input: `data/oss/final/CDN/general_info.csv`
+    - output: db: `cdn_authors_info`
+- `09-revise_license.R`: parse license info in the second round
+    - input: db: `licenses`
+    - input: db: `CDN_licenses_info`
+    - input: `data/oss/final/CDN/general_info.csv`
+    - output: `data/oss/final/CDN/license_per_manual.csv`
+    - output: db: `cdn_license_info`
 
 # Running the code.gov analysis
 
