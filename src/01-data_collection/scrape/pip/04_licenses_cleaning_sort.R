@@ -6,8 +6,8 @@
 
 library(ggplot2)
 
-prod_mature_pkgs <- read.csv("~/oss/data/oss/working/pypi/04_prod_mature_w_licenses.csv")
-osi_licences <- read.csv("~/oss/data/oss/final/PyPI/osi_approved_licenses.csv")
+prod_mature_pkgs <- read.csv("./data/oss/working/pypi/04_prod_mature_w_licenses.csv")
+osi_licences <- read.csv("./data/oss/final/PyPI/osi_approved_licenses.csv")
 
 prod_mature_pkgs$osi_approved <- NA
 

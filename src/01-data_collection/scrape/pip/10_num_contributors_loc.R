@@ -4,8 +4,8 @@
 # OUTPUT:
 #        "~/oss/data/oss/final/PyPI/complete_osi_info.csv"
 
-github_info <- read.csv("~/oss/data/oss/working/pypi/10_github_api_info.csv")
-osi_production_mature <- read.csv("~/oss/data/oss/working/pypi/10_github_and_additional_info.csv")
+github_info <- read.csv("./data/oss/working/pypi/10_github_api_info.csv")
+osi_production_mature <- read.csv("./data/oss/working/pypi/10_github_and_additional_info.csv")
 osi_production_mature$num_contributors <- NA
 osi_production_mature$lines_of_code <- NA
 

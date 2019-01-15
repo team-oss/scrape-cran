@@ -13,7 +13,7 @@ library(httr)
 library(stringr)
 api_key <- "1477f26c48cf30d2627d440f4544c548"
 
-packages <- read.csv("~/oss/data/oss/working/pypi/05_prod_mature_names_w_osi_approved_status.csv")
+packages <- read.csv("./data/oss/working/pypi/05_prod_mature_names_w_osi_approved_status.csv")
 packages$repository <- NA
 osi_packages <- packages[grep(TRUE, packages$osi_approved), ]
 
