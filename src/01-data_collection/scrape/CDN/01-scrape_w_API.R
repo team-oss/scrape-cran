@@ -56,7 +56,7 @@ for (i in 1:length(name)) {
   info[[i]] <- GET(url = str_c("https://api.cdnjs.com/libraries/", name[i])) %>%
     content(as = 'text', encoding = 'UTF-8') %>%
     fromJSON()
-  
+
   Sys.sleep(runif(1) * 0.2)
 }
 
@@ -70,6 +70,6 @@ output = map_df(.x = info,
 
 
 #save RDS
-saveRDS(info, file = 'data/oss/working/CDN/raw_response.RDS')
-outfile <- file.path("data/oss/working/CDN/raw_response.csv")
+saveRDS(info, file = 'data/oss/original/CDN/raw_response.RDS')
+outfile <- file.path("data/oss/original/CDN/raw_response.csv")
 write.csv(output, outfile, row.names = FALSE)

@@ -13,11 +13,11 @@ library(tidyr)
 rm(list = ls())
 
 #read in raw response created by 01
-before <- read.csv("data/oss/working/CDN/raw_response.csv", stringsAsFactors = FALSE, check.names=FALSE)
+before <- read.csv("data/oss/original/CDN/raw_response.csv", stringsAsFactors = FALSE, check.names=FALSE)
 
 
 #general info
-before <- read.csv("data/oss/working/CDN/raw_response.csv", stringsAsFactors = FALSE, check.names=FALSE)
+before <- read.csv("data/oss/original/CDN/raw_response.csv", stringsAsFactors = FALSE, check.names=FALSE)
 
 #retain useful info only
 general_info <- select(before, name, description, repository.type, repository.url)
@@ -75,7 +75,7 @@ write.csv(licence_info, outfile, row.names = FALSE)
 #returns a df with author info
 parse_ausr = function(row) {
   name = row[1]
-  
+
   if (is.na(row[2]) && is.na(row[3])) {
     output = data.frame(name = name,
                         author.name = NA,
