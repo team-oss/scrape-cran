@@ -11,6 +11,26 @@ knitr::opts_chunk$set(echo = TRUE)
 library(DiagrammeR)
 ```
 
+# CRAN
+
+```{r}
+cran_master <- readRDS('./data/oss/working/CRAN_2018/Cran_full_table.RDS')
+cran_all <- nrow(cran_master)
+```
+
+```{r}
+cran_all
+```
+
+
+# Python
+
+# CDN
+
+# Julia
+
+# code.gov
+
 ```{r}
 consort <- file(here::here("./src/consort/consort.dot"))
 grViz(diagram = consort)

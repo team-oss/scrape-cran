@@ -1,22 +1,30 @@
 digraph g {
   #start [shape = box, label = "OSS Software"];
 
-  cran000 [shape = box, label = "All CRAN\nN=12614"];
-  cran010 [shape = box, label = "CRAN with OSI\nN="];
-  cran020 [shape = box, label = "CRAN production ready\nN="];
-  cran030 [shape = box, label = "CRAN with github\nN="];
+  cran000 [shape = box, label = "All CRAN\nN=12,614"];
+  cran010 [shape = box, label = "CRAN production ready\nN=12,163"];
+  cran020 [shape = box, label = "CRAN with OSI\nN=11,886"];
+  cran030 [shape = box, label = "CRAN with github\nN=2,398"];
   cran040 [shape = box, label = "CRAN package source\nN="];
+  cran100 [shape = box, label = "For gross LOC analysis\nN="];
+  cran110 [shape = box, label = "For net LOC analysis\nN="];
 
-  py000 [shape = box, label = "All Python\nN=700"];
-  py010 [shape = box, label = "Python with OSI\nN=100"];
+  py000 [shape = box, label = "All Python\nN=164,836"];
+  py010 [shape = box, label = "Production/Stable/Mature\nN=10,423"];
+  py020 [shape = box, label = "OSI\nN=7,392"];
+  py030 [shape = box, label = "repos via libraries.io\nN=xxxx"];
+  py040 [shape = box, label = "repos via github\nN=xxxx"];
+  py999 [shape = box, label = "For anylysis\nN=7392"];
 
   gov000 [shape = box, label = "All code.gov\nN=5288"];
   gov010 [shape = box, label = "OSI approved\nN=1742"];
   gov020 [shape = box, label = "Missing license info\nN=1221"];
   gov030 [shape = box, label = "Found via repositoryURL\nN=xxxx"];
   gov040 [shape = box, label = "OSI approved v2 \nN=1221 + xxxx"];
+  gov050 [shape = box, label = "Production ready \nN=yyyy"];
+  gov060 [shape = box, label = "Projects for analysis \nN=42"];
 
-  cdn000 [shape = box, label = "All CDN.js\nN=150"];
+  cdn000 [shape = box, label = "All CDN.js\nN=3,367"];
 
   julia000 [shape = box, label = "All Julia\nN=200"];
 
@@ -25,13 +33,21 @@ digraph g {
   cran000 -> cran010;
   cran010 -> cran020;
   cran020 -> cran030;
-  cran030 -> cran040;
+  cran020 -> cran040;
+  cran030 -> cran100;
+  cran040 -> cran110;
 
   gov000 -> gov010;
   gov000 -> gov020;
   gov020 -> gov030;
   gov030 -> gov040;
   gov010 -> gov040;
+  gov040 -> gov050;
+  gov050 -> gov060;
 
   py000 -> py010;
+  py010 -> py020;
+  py020 -> py030;
+  py020 -> py040;
+  py040 -> py999;
 }

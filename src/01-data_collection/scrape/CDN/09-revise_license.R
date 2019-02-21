@@ -1,10 +1,17 @@
+#parse license info in the second round
+
+#libraries
 library(data.table)
 library(stringr)
 library(dplyr)
 library(purrr)
 library(httr)
+library(DBI)
+library(sdalr)
+source("functions_keren.R")
 
 #set up
+#load dfs
 my_db_con <- sdalr::con_db("oss", pass=sdalr::get_my_password())
 standard_licenses <- DBI::dbReadTable(my_db_con, "licenses")
 standard_licenses <- rbind(standard_licenses, data.frame(name = "custom", id = "Custom", osi = FALSE))
@@ -12,8 +19,13 @@ standard_licenses <- rbind(standard_licenses, data.frame(name = "Public Domain",
 licenses <- DBI::dbReadTable(my_db_con, "CDN_licenses_info")
 general_info <- read.csv("data/oss/final/CDN/general_info.csv",
                          stringsAsFactors = FALSE, check.names=FALSE)
+
+#change this to personal github token
 Github_API_token = "2d260070668afe675673e973faf2ec30b48e831c"
 
+#these are part of the licenses recognized/valid for this researches purpose
+#these are the licenses fixed in the standarlize function;
+#this serves solely as a list of license; not explicitly used anywhere
 dabbed_license = c("AGPL-3.0",
                    "Apache-2.0",
                    "Artistic-2.0",
@@ -32,11 +44,17 @@ dabbed_license = c("AGPL-3.0",
                    "PD",
                    "Zlib")
 
+#functions
+#hardcoded: standarlize the format of valid licenses
+#license is a vector of licenses of a package
+#returns the standarlized version of the license vector
 standarlize = function (license){
 
+  #helper functions serving as and/or str_detect
   and_checker = function(x){all(str_detect(x, regex(targets, ignore_case = T)))}
   or_checker = function(x){any(str_detect(x, regex(targets, ignore_case = T)))}
 
+  #detect and fix licenses
   targets = c("AGPL", "3")
   license[map_lgl(.x = license, .f = and_checker)] = "AGPL-3.0"
 
@@ -92,18 +110,17 @@ standarlize = function (license){
   targets = "Zlib"
   license[map_lgl(.x = license, .f = and_checker)] = "Zlib"
 
+  #return the fixed vector
   return(license)
 }
 
-
-fix_url = function(repo) {
-  fixed = str_replace(repo, "^.*(?<=github.com.)", "https://github.com/") %>%
-    str_remove("(/|\\.git)$")
-  return(fixed)
-}
+#parse the result from licensee
+#textfile is the licensee resulting text file's content as a string
+#returns a dt containing parsed license info
+#PS: this could be from Bayoan
 parse_license_type = function(textfile) {
-  # textfile = files[107]
 
+  #detect the owner and pkg name of the corresponfing pkg
   owner = str_extract(string = textfile,
 
                       pattern = '(?<=Licenses/).*(?=_)')
@@ -114,19 +131,24 @@ parse_license_type = function(textfile) {
 
   license_text = readLines(con = textfile)
 
+  #if textfile is empty
   if (is_empty(x = license_text)) {
 
     license = NA
 
     confidence = NA
 
-  } else if (license_text[1] == 'License:  None') {
+  }
+  #if there is no license
+  else if (license_text[1] == 'License:  None') {
 
     license = 'BC'
 
     confidence = 1e2
 
-  } else if (license_text[1] != 'License:        NOASSERTION') {
+  }
+  #if there is no confident license
+  else if (license_text[1] != 'License:        NOASSERTION') {
 
     license = str_remove(string = license_text[1],
 
@@ -142,8 +164,11 @@ parse_license_type = function(textfile) {
 
       as.numeric()
 
-  } else {
+  }
+  #there is at least a license detected, parse it
+  else {
 
+    #extract possible licenses
     license = license_text[str_detect(string = license_text,
 
                                       pattern = '  License:\\s+')]
@@ -192,6 +217,7 @@ parse_license_type = function(textfile) {
 
   }
 
+  #output dt
   output = data.table(owner = owner,
 
                       name = name,
@@ -203,6 +229,10 @@ parse_license_type = function(textfile) {
   return(value = output)
 
 }
+
+#detect license using licensee
+#repo is the repo url
+#PS: this could be from Bayoan
 helper = function(repo) {
   filename = str_c('./data/oss/original/CDN/Licenses/',
                    str_extract(string = repo,
@@ -220,8 +250,8 @@ helper = function(repo) {
                      str_remove("(/|\\.git)$"),
                    '/',
                    'contents') %>%
-    GET(add_headers(Authorization = 'token 2d260070668afe675673e973faf2ec30b48e831c'))
-  #print(status_code(response))
+    GET(add_headers(Authorization = str_c('token ', Github_API_token)))
+  
   if ((file.info(filename)$size == 0L) & (status_code(response) == 200)) {
     system(command = str_c('OCTOKIT_ACCESS_TOKEN=',
                            Github_API_token,
@@ -232,16 +262,20 @@ helper = function(repo) {
     Sys.sleep(time = 5e-1)
   }
 }
+
+#get the first row of a df
+#df is a dataframe
+#returns the first row of the df
 get_top = function(df) {
   if (nrow(df) == 0) {
     return(data.frame())
   }
   return(df[1])
 }
-#####
-test = licenses_list[1:5]
-test1 = lapply(test, get_top)
-######
+
+#read all the licensee results in as dt
+#returns a dt contaning all the licenses corresponding to each pkg by licesee
+#PS: this could be from Bayoan
 standarlize_licensee = function() {
 
   filenames = str_c('./data/oss/original/CDN/Licenses',
@@ -255,6 +289,10 @@ standarlize_licensee = function() {
   return(dt)
 }
 
+#combines results from hardcoded standarlization (standarlize) and licensee results (parse_license_type)
+#per_manual is the result from hardcoded standarlization
+#per_licensee is the result from licensee
+#returns the merged result df
 standarlize_overall = function(per_manual, per_licensee) {
   temp = merge(per_manual, per_licensee, by = "name", all = TRUE)
   temp = mutate(temp, license_selected = ifelse((is.na(license_selected) | str_detect(license_selected, "http")),
@@ -266,6 +304,10 @@ standarlize_overall = function(per_manual, per_licensee) {
   result = data.frame(result$name, result$author, result$license_selected)
   return (result)
 }
+
+#detect whether a package has a license recognized by osi
+#pkg_license is a string of a license
+#returns true if the license is recognized by osi, false if otherwise
 osi_status = function(pkg_license) {
   if (pkg_license %in% standard_licenses$id) {
     return(standard_licenses$osi[standard_licenses$id == pkg_license])
@@ -273,34 +315,40 @@ osi_status = function(pkg_license) {
   return(FALSE)
 }
 #################################################################
-manual_license = data.frame(name = licenses$pkg_name, license_selected = standarlize(licenses$license_selected))
+#script
 
+#manual detection
+manual_license = data.frame(name = licenses$pkg_name, license_selected = standarlize(licenses$license_selected))
+#save csv
 write.csv(manual_license, file = "data/oss/final/CDN/license_per_manual.csv", row.names=FALSE)
-###############################
+
+#extract repos
 repos = general_info$repository.url[str_detect(string = general_info$repository.url, pattern = 'github\\.com') %in% TRUE]
 list = lapply(X = repos, FUN = fix_url)
 list = do.call(what = rbind, args = list)
-
-for (i in list[3100:3327]) {
+#slow down the request for licensee
+for (i in list) {
   helper(i)
 }
 
-# filenames = str_c('./data/oss/original/CDN/Licenses',
-#                   list.files(path = './data/oss/original/CDN/Licenses'),
-#                   sep = '/')
-
+#parse licensee result
 per_licensee = standarlize_licensee()
+
+#combine manual and licesee results
 cdn_license_info = standarlize_overall(manual_license, per_licensee)
+
+#reorder
 names(cdn_license_info) <- c('name', 'author', 'license')
 
+#detect osi status
 cdn_license_info$osi <- lapply(cdn_license_info$license, osi_status)
+
 cdn_license_info = cdn_license_info %>%
   mutate(osi = unlist(osi))
 
 
 
-library(DBI)
-library(sdalr)
+#upload result
 my_db_con <- con_db("oss", pass=sdalr::get_my_password())
 dbWriteTable(con = my_db_con,
              name = "cdn_license_info",
@@ -308,26 +356,5 @@ dbWriteTable(con = my_db_con,
              row.names = FALSE,
              overwrite = TRUE)
 
-#str(cdn_license_info)
-#parse_license_type(filenames[3267])
-######################################################
-tester = function (repo){
-  filename = str_c('./data/oss/original/CDN/Licenses/',
-                   str_extract(string = repo,
-                               pattern = '(?<=github\\.com(/|:)).*') %>%
-                     str_remove("(/|\\.git)$") %>%
-                     str_replace_all("/", "_"),
-                   '.txt')
 
-  return(filename)
-}
-
-response = str_c('https://api.github.com/',
-                 'repos',
-                 '/',
-                 str_extract(string = "https://github.com/bootflat/bootflat.github.io",
-                             pattern = '(?<=github\\.com(/|:)).*') %>%
-                   str_remove("(/|\\.git)$"),
-                 '/',
-                 'contents') %>%
-  GET(add_headers(Authorization = 'token 2d260070668afe675673e973faf2ec30b48e831c'))
+on.exit(dbDisconnect(conn = xxx))

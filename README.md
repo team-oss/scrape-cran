@@ -86,6 +86,17 @@ Note: some code in this script breaks because we cannot use the “sdalr” pack
                 Mostly data cleaning steps here
 - `13_github_fix.R`
                 We missed a few packages in data cleaning, so we just make sure to obtain relevant information on what we missed:
+- `14_costs.R`
+                Attaching cost calculation to an analysis table
+
+- `15_cost_comparisons.R`
+                Exploratory work to look at the difference in lines of code between source files from CRAN and lines of code info from Github.
+                Small plotting efforts but nothing that was used in the poster
+
+- `16_HEX.R`
+                Exploratory plotting comparing outdegree and cost across Python, Julia, CDN(JS), and R. None of these visuals were used in the poster
+
+Also, there are two other scripts in the repo right now (chk.R and dependencies.R). I’m pretty certain that Bayoan wrote these scripts either to check my work or to do a little bit of work on CRAN. Either way I don’t think I used/edited anything in those scripts.
 
 ```r
 #load our list of keys, and identify the set of packages that we have missed
@@ -94,6 +105,142 @@ Analysis <- readRDS('./data/oss/working/CRAN_2018/Analysis.RDS') # from uploads 
 missed <- setdiff(keys$slug, Analysis$slug) #this should be 220 packages
 After identifying what we missed we get the information and bind it back to our master analysis table
 ```
+
+# Running the Python pip analysis
+
+Some of the "original" data sets cannot be located, but they have been saved in the database.
+
+- `./data/oss/final/PyPI/complete_osi_info.csv` can be found in the SDAL Database as `postgresql/oss/public/python_general_pkg_info`
+- `./data/oss/working/pypi/10_github_api_info.csv` can be found in the SDAL Database as `postgresql/oss/public/python_final`
+- `./data/oss/final/PyPI/python_pkg_dependencies.csv` can be found in the SDAL Database as `postgresql/oss/public/python_pkg_dependencies`
+
+
+### Script descriptions
+
+- `00_final_cleaning.R` **Run this script last, after `10`**
+                Using the final data table produced in `10_num_contributors.R`, this script cleans all of the final data.
+    - input: `~/oss/data/oss/final/PyPI/complete_osi_info.csv`
+        from: `10_num_contributors_loc.R`
+    - input: `~/oss/data/oss/working/pypi/10_github_api_info.csv`
+        from: `06_github_api.R`
+    - input: `~/oss/data/oss/final/PyPI/python_pkg_dependencies.csv`
+        from: `07_dependencies_cleaning.R`
+    - output: db: `oss/python_cost_estimates`
+- `01_names.R`
+                **This is the beginning of the Pip data collection and cleaning.**
+                This script collects all of the names of Python packages from pypi.org in the development categories Production/ Stable and Mature.
+    - input: None
+    - output: `~/oss/data/oss/working/pypi/02_prod_stable_pkgs_names.csv`
+    - output: `~/oss/data/oss/working/pypi/02_mature_pkgs_names.csv`
+- `02_all_names_cleaning.R`
+                Using the names scraped from pypi.org in the Production/ Stable and Mature categories from the `01_names.R` script,
+                this script cleans the data to result in a final clean list of these package names.
+    - input: `~/oss/data/oss/working/pypi/02_prod_stable_pkgs_names.csv`
+    - intput: `~/oss/data/oss/working/pypi/02_mature_pkgs_names.csv`
+    - output: `~/oss/data/oss/working/pypi/03_prod_mature_names.csv`
+- `03_librariesio_licenses.R`
+                Using the final list of package names produced from `02_all_names_cleaning.R`
+                this script scrapes libraries.io to collect licenses for the packages.
+    - input: `~/oss/data/oss/working/pypi/03_prod_mature_names.csv`
+    - output: `~/oss/data/oss/working/pypi/04_prod_mature_w_licenses.csv`
+- `04_licenses_cleaning_sort.R`
+                Using the licenses collected in `03_librariesio_licenses.R`
+                this script uses an already produced data set of all OSI-approved licenses
+                to create a column for each package that indicates if the license for that package is an OSI-approved license.
+                This script also includes some exploratory analysis code.
+    - input: `~/oss/data/oss/working/pypi/04_prod_mature_w_licenses.csv`
+    - input: `~/oss/data/oss/final/PyPI/osi_approved_licenses.csv`
+        from: unknown
+    - output: `~/oss/data/oss/working/pypi/05_prod_mature_names_w_osi_approved_status.csv`
+- `05_repository_scraping.R`
+                Using the list of just the packages with OSI-approved licenses that was created from `04_licenses_cleaning_sort.R`,
+                this script collects repository URLs for these packages using libraries.io.
+    - input: `~/oss/data/oss/working/pypi/05_prod_mature_names_w_osi_approved_status.csv`
+    - output: `~/oss/data/oss/working/pypi/06_osi_approved_w_repos.csv`
+    - output: `~/oss/data/oss/working/pypi/07_names_prod_mature_osi_approved.csv`
+- `06_github_api.R`
+                Using the list of packages with OSI-approved licenses and repository URLs collected from `05_repository_scraping.R`,
+                this script uses the Github API to collect repositories for packages where libraries.io had no repository listed and/or
+                to ensure that if the package has a Github.com repository,
+                the data table has the correct url for the repository on Github to be used later.
+                This script also utilizes the Github API to collect information for packages with valid Github repositories about their activity including
+                start date, end date, additions, and deletions for the top contributors to the project.
+    - input: `~/oss/data/oss/working/pypi/06_osi_approved_w_repos.csv`
+    - output: `~/oss/data/oss/working/pypi/10_github_api_info.csv`
+- `07_dependencies_cleaning.R`
+                Using the dependencies collected for all Production/Stable and Mature OSI-approved packages in “dep_script.py”,
+                this script parses out just the dependencies for each package.
+    - input: `~/oss/data/oss/working/pypi/07_names_prod_mature_osi_approved.csv`
+    - input: `~/oss/data/oss/working/pypi/01_dependencies_files/`
+    - output: `~/oss/data/oss/final/PyPI/python_pkg_dependencies.csv`
+    - output: db: `oss/python_pkg_dependencies`
+- `08_github_contd.R`
+                Using the list of packages with OSI-approved licenses and repository URLs collected from “05_repository_scraping.R”,
+                this script uses the Github API to collect numbers of stars for each package with a valid Github repository.
+    - input: `~/oss/data/oss/working/pypi/06_osi_approved_w_repos.csv`
+    - output: `~/oss/data/oss/working/pypi/09_github_api_info_w_stars.csv`
+- `09_additional_info.R`
+                Using the data produced in “08_github_contd.R”,
+                this script collects the latest release date as well as latest version number for these packages from pypi.org.
+    - input: `~/oss/data/oss/working/pypi/09_github_api_info_w_stars.csv`
+    - output: `~/oss/data/oss/working/pypi/10_github_and_additional_info.csv`
+- `10_num_contributors_loc.R`
+                Using the data produced in “09_additonal_info.R”,
+                this script sums the number of contributors and lines of code from the contribution information previously collected.
+    - input: `~/oss/data/oss/working/pypi/10_github_api_info.csv`
+        from: `06_github_api.R`
+    - input: `~/oss/data/oss/working/pypi/10_github_and_additional_info.csv`
+    - output: `~/oss/data/oss/final/PyPI/complete_osi_info.csv`
+- `first_try_pypi_scraping.R`
+                Initial attempt to scrape pypi.
+- `first_try_scraping_func.R`
+                Another first attempt to scrape pypi.
+
+# Running the Javascript CDN analysis
+
+Scripts found under `01-data_collection/scrape/CDN/01-scrape_w_API.R`
+
+### Script descriptions
+
+- `01-scrape_w_API.R`: scarping cdnjs with CDN API. This phase obtains project names, repo url, and least realiable package info
+    - output: `data/oss/working/CDN/raw_response.csv`
+- `02-scrape_w_gitHub_api.R`: obtaion info  with github api. save author information, license, and version and dependencies as csv
+    - input: `data/oss/final/CDN/general_info.csv`
+    - input: `./data/oss/original/CDN/CDN_json/*`
+    - output: db: `CDN_authors_info`
+    - output: db: `CDN_licenses_info`
+    - output: db: `CDN_dependencies_info`
+    - output: db: `cdn_keywords_info`
+- `03-parsing_CDN.R`: parsing the one big data set into several subsets
+    - input: `data/oss/working/CDN/raw_response.csv`
+    - output: `data/oss/final/CDN/general_info.csv`
+    - output: `data/oss/final/CDN/keword_info.csv`
+    - output: `data/oss/final/CDN/author_info.csv`
+- `04-revise_general_info.R`: parse the general info df again to improve data quality
+    - input: `data/oss/final/CDN/general_info.csv`
+    - output: `data/oss/working/CDN/pkg_langs.csv`
+    - output: `data/oss/working/CDN/pkg_langs_finalized.csv`
+    - output: `data/oss/final/CDN/general_info.csv`
+- `05-process_author.R`: parse author info in the first round
+    - input: `data/oss/final/CDN/general_info.csv`
+    - input: `./data/oss/original/CDN/CDN_json/*`
+    - output: db: `CDN_authors_info`
+- `06-process_license.R`: parse license info in the first round
+    - input: `./data/oss/original/CDN/CDN_json/*`
+    - output: db: `CDN_licenses_info`
+- `07-process_dependencies.R`: parse dependencies for each package
+    - input: `./data/oss/original/CDN_json/*`
+    - output: db: `cdn_dependencies_info`
+- `08-revise_author.R`: parse author info in the second round
+    - input: db: `CDN_authors_info`
+    - input: `data/oss/final/CDN/general_info.csv`
+    - output: db: `cdn_authors_info`
+- `09-revise_license.R`: parse license info in the second round
+    - input: db: `licenses`
+    - input: db: `CDN_licenses_info`
+    - input: `data/oss/final/CDN/general_info.csv`
+    - output: `data/oss/final/CDN/license_per_manual.csv`
+    - output: db: `cdn_license_info`
 
 # Running the code.gov analysis
 

@@ -11,7 +11,7 @@ github_personal_token = '1c06459fc9b515e2a5aa748b06913f3495068a45' # Get one fro
 # Credentials
 token = add_headers(token = github_personal_token)
 
-urls <- read.csv("~/oss/data/oss/working/pypi/06_osi_approved_w_repos.csv")
+urls <- read.csv("./data/oss/working/pypi/06_osi_approved_w_repos.csv")
 urls$slugs <- NA
 for(i in 1:nrow(urls))
 {
